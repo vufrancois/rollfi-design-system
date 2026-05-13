@@ -77,6 +77,10 @@ export { ActivityFeed } from './ActivityFeed/ActivityFeed';
 export { Item } from './Item/Item';
 export { NotificationItem } from './NotificationItem/NotificationItem';
 export { Carousel } from './Carousel/Carousel';
+export { IconTile } from './IconTile/IconTile';
+export { StatCard } from './StatCard/StatCard';
+export { SettingsRow } from './SettingsRow/SettingsRow';
+export { DataGrid } from './DataGrid/DataGrid';
 
 // Deprecated alias — `ProgressBar` is the legacy name for `SegmentedProgress`.
 /** @deprecated Use `SegmentedProgress` instead. */

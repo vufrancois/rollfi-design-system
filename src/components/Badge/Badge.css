@@ -54,9 +54,11 @@
 .rf-badge--purple {
   background: var(--rf-color-accent-purple-soft);
   color: var(--rf-color-accent-purple-text);
+  border-color: var(--rf-color-accent-purple-border);
 }
 
 .rf-badge--orange {
   background: var(--rf-color-accent-orange-soft);
   color: var(--rf-color-accent-orange-text);
+  border-color: var(--rf-color-accent-orange-border);
 }

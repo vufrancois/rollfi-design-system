@@ -73,6 +73,14 @@
   align-items: center;
 }
 
+.rf-sidebar__secondary {
+  padding: 10px;
+  border-top: 1px solid var(--rf-color-sidebar-border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .rf-sidebar__footer {
   padding: 12px;
   border-top: 1px solid var(--rf-color-sidebar-border);

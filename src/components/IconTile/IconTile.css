@@ -1,0 +1,24 @@
+.rf-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+}
+
+.rf-icon-tile--sm { width: 24px; height: 24px; }
+.rf-icon-tile--md { width: 32px; height: 32px; }
+.rf-icon-tile--lg { width: 40px; height: 40px; }
+
+.rf-icon-tile--square { border-radius: var(--rf-radius-sm); }
+.rf-icon-tile--circle { border-radius: var(--rf-radius-full); }
+
+.rf-icon-tile--neutral { background: var(--rf-color-surface-elevated); color: var(--rf-color-text-secondary); }
+.rf-icon-tile--success { background: var(--rf-color-success-soft); color: var(--rf-color-success-text); }
+.rf-icon-tile--danger  { background: var(--rf-color-danger-soft);  color: var(--rf-color-danger-text); }
+.rf-icon-tile--warning { background: var(--rf-color-warning-soft); color: var(--rf-color-warning-text); }
+.rf-icon-tile--info    { background: var(--rf-color-info-soft);    color: var(--rf-color-info-text); }
+.rf-icon-tile--teal    { background: var(--rf-color-accent-teal-soft); color: var(--rf-color-accent-teal-text); }
+.rf-icon-tile--purple  { background: var(--rf-color-accent-purple-soft); color: var(--rf-color-accent-purple-text); }
+.rf-icon-tile--orange  { background: var(--rf-color-accent-orange-soft); color: var(--rf-color-accent-orange-text); }

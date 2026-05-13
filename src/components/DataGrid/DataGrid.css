@@ -1,0 +1,24 @@
+.rf-data-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.rf-data-grid--sm { gap: 16px; }
+.rf-data-grid--md { gap: 24px; }
+.rf-data-grid--lg { gap: 32px; }
+
+.rf-data-grid__item {
+  min-width: 0;
+}
+
+.rf-data-grid__label {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+  margin-bottom: 2px;
+}
+
+.rf-data-grid__value {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  font-variant-numeric: tabular-nums;
+}

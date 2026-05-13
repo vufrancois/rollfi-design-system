@@ -82,11 +82,13 @@
   --rf-color-accent-orange: #FF6905;
   --rf-color-accent-orange-soft: rgba(255, 105, 5, 0.1);
   --rf-color-accent-orange-text: #cc5400;
+  --rf-color-accent-orange-border: rgba(255, 105, 5, 0.25);
 
   /* ── Accent: Purple (#9146FF) ── */
   --rf-color-accent-purple: #9146FF;
   --rf-color-accent-purple-soft: rgba(145, 70, 255, 0.08);
   --rf-color-accent-purple-text: #7a2de6;
+  --rf-color-accent-purple-border: rgba(145, 70, 255, 0.25);
 
   /* ── Accent: Teal (#0891B2) — payroll/ready status ── */
   --rf-color-accent-teal: #0891B2;
@@ -181,11 +183,13 @@
   --rf-color-accent-orange: #ff8438;
   --rf-color-accent-orange-soft: rgba(255, 105, 5, 0.14);
   --rf-color-accent-orange-text: #ff8438;
+  --rf-color-accent-orange-border: rgba(255, 132, 56, 0.3);
 
   /* ── Accent: Purple (#9146FF) ── */
   --rf-color-accent-purple: #a76aff;
   --rf-color-accent-purple-soft: rgba(145, 70, 255, 0.14);
   --rf-color-accent-purple-text: #a76aff;
+  --rf-color-accent-purple-border: rgba(167, 106, 255, 0.3);
 
   /* ── Accent: Teal (#0891B2) — payroll/ready status ── */
   --rf-color-accent-teal: #22d3ee;

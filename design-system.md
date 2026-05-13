@@ -36,8 +36,10 @@ Semantic tokens that flip automatically between light and dark themes:
 | `--rf-color-text-secondary` | Secondary text |
 | `--rf-color-text-tertiary` | Muted/placeholder text |
 | `--rf-color-info` / `success` / `warning` / `danger` | Semantic states |
-| `--rf-color-accent-teal` | Highlight accent for payroll/ready statuses (used by Badge `teal` variant) |
-| `--rf-color-accent-lime` / `-orange` / `-purple` | Brand highlight accents |
+| `--rf-color-accent-teal` (+ `-soft` / `-bg` / `-text` / `-border`) | Highlight accent for payroll/ready statuses (used by Badge `teal` variant) |
+| `--rf-color-accent-lime` (+ `-soft` / `-text` / `-border`) | Lime highlight accent |
+| `--rf-color-accent-orange` (+ `-soft` / `-text` / `-border`) | Orange highlight accent |
+| `--rf-color-accent-purple` (+ `-soft` / `-text` / `-border`) | Purple highlight accent |
 | `--rf-color-sidebar` (+ `-active` / `-hover` / `-text` / `-text-dim` / `-border`) | Sidebar — stays dark in both themes |
 | `--rf-color-{state}-soft` | Translucent background for badges/toasts |
 | `--rf-color-{state}-text` | Text color for semantic states |
@@ -717,6 +719,51 @@ Single notification row with optional unread dot, semantic icon background, time
 </Carousel>
 ```
 Horizontal snap-scroll with chevron controls and optional dot indicators.
+
+### StatCard
+```tsx
+<StatCard label="Number of companies" value="725" />
+<StatCard label="MRR" value="$21,800" helper="+12% vs last month" />
+
+// Custom content (e.g. a selector instead of a number)
+<StatCard label="Select client">
+  <ClientPicker value={client} onClear={...} />
+</StatCard>
+```
+Operational KPI tile. The label uses the standard `label` type token (14px, weight 500, tertiary color, sentence case — **not** uppercase) for parity with form labels and other titled surfaces. The value uses `display-md` and is anchored to the bottom of the card so a row of stat cards keeps consistent baselines regardless of label length.
+
+**Props:** `label`, `value?` (large display number), `helper?` (small line below the value), `children?` (custom content slot, replaces `value`), `className?`.
+
+### SettingsRow
+```tsx
+<SettingsRow
+  title="Enable notifications"
+  description="Get an email when a payroll draft is ready"
+  control={<Switch checked={on} onChange={setOn} />}
+  active={on}
+/>
+
+<SettingsRow
+  icon={<Bell />}
+  title="Quiet hours"
+  description="No notifications between 6 PM and 9 AM"
+  control={<Button size="sm" variant="secondary">Configure</Button>}
+/>
+```
+Reusable settings / preferences row. Title + description on the left, a control slot on the right (`Switch`, `Button`, `Badge`, anything). Pass `active` to highlight the row with the success-tinted state — useful for "this feature is enabled" affordances. Pass an `icon` for an icon-tile leading element, and `onClick` to make the whole row clickable (clicks on the control itself don't propagate).
+
+**Props:** `title`, `description?`, `control` (right-side ReactNode), `icon?`, `active?`, `onClick?`, `className?`.
+
+### IconTile
+```tsx
+<IconTile variant="danger"><Clock size={16} /></IconTile>
+<IconTile variant="success" size="lg" shape="circle"><Check /></IconTile>
+```
+Colored container for an icon — used in task lists, settings rows, notification icons, file rows, and anywhere a tinted icon "chip" is needed.
+
+**Variants:** `neutral` (default) | `success` | `danger` | `warning` | `info` | `teal` | `purple` | `orange`
+**Sizes:** `sm` (24px) | `md` (32px, default) | `lg` (40px)
+**Shapes:** `square` (default, `radius-sm`) | `circle`
 
 ## Patterns
 

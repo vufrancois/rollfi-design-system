@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   IconContext, Info, Warning, CheckCircle, XCircle, MagnifyingGlass, Envelope, ArrowRight,
   House, User, Gear, Bell, CreditCard, ChartBar, Calendar as CalendarIcon, FileText, Lock, Trash,
   Plus, PencilSimple, Download, Upload, Cloud, Heart, Star, Globe, Lightning, Briefcase,
   UserCircle, Eye, EyeSlash, Bank, ArrowLeft, CheckCircle as CheckCircleIcon,
+  Clock, X,
 } from '@phosphor-icons/react';
 import {
   ThemeProvider, useTheme,
@@ -28,6 +29,7 @@ import {
   Calendar, DatePicker, TimePicker,
   AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
+  IconTile, StatCard, SettingsRow, DataGrid,
 } from './components';
 import './tokens/index.css';
 
@@ -420,6 +422,14 @@ function Demo() {
           <Field label="Company" required>
             <Select placeholder="Choose..." options={[{ value: 'a', label: 'Acme' }]} />
           </Field>
+        </div>
+      </Section>
+
+      <Section title="StatCard">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, maxWidth: 720 }}>
+          <StatCard label="Number of companies" value="725" />
+          <StatCard label="Active people" value="782" helper="Across all clients" />
+          <StatCard label="MRR" value="$21,800" helper={<span style={{ color: 'var(--rf-color-success-text)' }}>+12% vs last month</span>} />
         </div>
       </Section>
 
@@ -1695,14 +1705,200 @@ function OnboardingMock({ onExit }: { onExit: () => void }) {
   );
 }
 
-const PORTAL_COMPANIES = [
-  { id: '1', name: 'Acme Corp', employees: 124, plan: 'Pro', status: 'active', mrr: 2400, days: 4, tasks: 0 },
-  { id: '2', name: 'Globex Inc', employees: 38, plan: 'Starter', status: 'payroll_ready', mrr: 600, days: 1, tasks: 0 },
-  { id: '3', name: 'Initech Industries', employees: 412, plan: 'Enterprise', status: 'active', mrr: 12000, days: 12, tasks: 2 },
-  { id: '4', name: 'Umbrella LLC', employees: 22, plan: 'Pro', status: 'action_required', mrr: 2400, days: 2, tasks: 3 },
-  { id: '5', name: 'Stark Enterprises', employees: 86, plan: 'Pro', status: 'active', mrr: 2400, days: 7, tasks: 1 },
-  { id: '6', name: 'WeWork', employees: 64, plan: 'Pro', status: 'payroll_ready', mrr: 2400, days: 3, tasks: 0 },
+interface CompanyTask { task: string; description: string; blocking?: boolean; }
+interface CompanyAddOns { timeTracking: boolean; pto: boolean; }
+interface PortalCompany {
+  id: string;
+  name: string;
+  employees: number;
+  plan: string;
+  addOns: CompanyAddOns;
+  status: string;
+  mrr: number;
+  daysUntilPayroll: number;
+  hasFailedTx?: boolean;
+  tasks: CompanyTask[];
+  [key: string]: unknown;
+}
+
+const PORTAL_COMPANIES: PortalCompany[] = [
+  {
+    id: 'a1b2c3d4-0001', name: 'Acme Corp', employees: 124, plan: 'Pro', status: 'active', mrr: 2400, daysUntilPayroll: 4,
+    addOns: { timeTracking: true, pto: true },
+    tasks: [],
+  },
+  {
+    id: 'a1b2c3d4-0002', name: 'Globex Inc', employees: 38, plan: 'Starter', status: 'payroll_ready', mrr: 600, daysUntilPayroll: 1,
+    addOns: { timeTracking: false, pto: false },
+    tasks: [
+      { task: 'Form 8655 Signature request', description: 'Form 8655 allows us to file and pay taxes on your behalf.' },
+      { task: 'Workers\' comp policy', description: 'Provide proof of workers\' compensation coverage.' },
+    ],
+  },
+  {
+    id: 'a1b2c3d4-0003', name: 'Initech Industries', employees: 412, plan: 'Enterprise', status: 'active', mrr: 12000, daysUntilPayroll: 12,
+    addOns: { timeTracking: true, pto: false },
+    tasks: [
+      { task: 'Missing State tax information', description: 'Missing State Tax Registration Details for TX.' },
+      { task: 'Workers\' comp policy', description: 'Provide proof of workers\' compensation coverage.' },
+    ],
+  },
+  {
+    id: 'a1b2c3d4-0004', name: 'Umbrella LLC', employees: 22, plan: 'Pro', status: 'action_required', mrr: 2400, daysUntilPayroll: -2,
+    hasFailedTx: true,
+    addOns: { timeTracking: false, pto: true },
+    tasks: [
+      { task: 'Bank verification', description: 'Verify routing and account numbers for direct deposit.', blocking: true },
+      { task: 'EIN confirmation', description: 'Upload your IRS-issued EIN confirmation letter.' },
+      { task: 'Missing State tax information', description: 'Missing State Tax Registration Details for CA.' },
+    ],
+  },
+  {
+    id: 'a1b2c3d4-0005', name: 'Stark Enterprises', employees: 86, plan: 'Pro', status: 'active', mrr: 2400, daysUntilPayroll: 7,
+    addOns: { timeTracking: false, pto: false },
+    tasks: [
+      { task: 'Form 8655 Signature request', description: 'Form 8655 allows us to file and pay taxes on your behalf.' },
+    ],
+  },
+  {
+    id: 'a1b2c3d4-0006', name: 'WeWork', employees: 64, plan: 'Pro', status: 'payroll_ready', mrr: 2400, daysUntilPayroll: 0,
+    addOns: { timeTracking: true, pto: true },
+    tasks: [],
+  },
 ];
+
+// Task domain classification — for grouping in the Implementations card details
+type TaskDomain = 'compliance' | 'banking' | 'payroll_config' | 'documents' | 'other';
+
+const taskDomain = (name: string): TaskDomain => {
+  const n = name.toLowerCase();
+  if (n.includes('kyb') || n.includes('form') || n.includes('signature') || n.includes('registration') || n.includes('state tax') || n.includes('ein')) return 'compliance';
+  if (n.includes('bank') || n.includes('account') || n.includes('check') || n.includes('deposit')) return 'banking';
+  if (n.includes('wage') || n.includes('schedule') || n.includes('payroll') || n.includes('run')) return 'payroll_config';
+  if (n.includes('i-9') || n.includes('w-4') || n.includes('document') || n.includes('workers')) return 'documents';
+  return 'other';
+};
+
+const DOMAIN_LABELS: Record<TaskDomain, { label: string; variant: 'danger' | 'orange' | 'teal' | 'purple' | 'neutral' }> = {
+  compliance: { label: 'Compliance & KYB', variant: 'danger' },
+  banking: { label: 'Banking setup', variant: 'orange' },
+  payroll_config: { label: 'Payroll config', variant: 'teal' },
+  documents: { label: 'Documents', variant: 'purple' },
+  other: { label: 'Other', variant: 'neutral' },
+};
+
+// ─── Payroll history mocks ──────────────────────────────────────────────
+interface PayrollImport {
+  id: string;
+  company: string;
+  period: string;
+  employeeCount: number;
+  recordCount: number;
+  source: string;
+  importedAt: string; // ISO
+  importedBy: string;
+  status: 'completed' | 'completed_with_warnings' | 'processing' | 'failed';
+  warningCount?: number;
+}
+
+interface ExistingPayroll {
+  priorProviderPayrollThisYear: boolean;
+  firstRollfiPaycheck: string | null;
+  paychecksOnRollfi: number;
+}
+
+const MOCK_IMPORTS: PayrollImport[] = [
+  { id: 'imp_001', company: 'WeWork', period: '2026-01-01 → 2026-04-30', employeeCount: 41, recordCount: 312, source: 'Gusto CSV', importedAt: '2026-04-29T14:22:00Z', importedBy: 'Pam Beesly', status: 'completed' },
+  { id: 'imp_002', company: 'Pets.com', period: '2026-01-01 → 2026-03-31', employeeCount: 17, recordCount: 102, source: 'ADP CSV', importedAt: '2026-04-12T09:14:00Z', importedBy: 'Jim Halpert', status: 'completed' },
+  { id: 'imp_003', company: 'Juicero', period: '2026-01-01 → 2026-03-31', employeeCount: 28, recordCount: 168, source: 'Paychex CSV', importedAt: '2026-04-08T16:48:00Z', importedBy: 'Dwight Schrute', status: 'completed_with_warnings', warningCount: 3 },
+];
+
+const MOCK_EXISTING_PAYROLL: Record<string, ExistingPayroll> = {
+  'WeWork':            { priorProviderPayrollThisYear: true,  firstRollfiPaycheck: '2026-04-15', paychecksOnRollfi: 2 },
+  'Theranos':          { priorProviderPayrollThisYear: false, firstRollfiPaycheck: '2026-03-01', paychecksOnRollfi: 4 },
+  'Quibi':             { priorProviderPayrollThisYear: true,  firstRollfiPaycheck: '2026-05-15', paychecksOnRollfi: 0 },
+  'Pets.com':          { priorProviderPayrollThisYear: true,  firstRollfiPaycheck: '2026-05-01', paychecksOnRollfi: 0 },
+  'Juicero':           { priorProviderPayrollThisYear: true,  firstRollfiPaycheck: null,         paychecksOnRollfi: 0 },
+  'FTX':               { priorProviderPayrollThisYear: false, firstRollfiPaycheck: null,         paychecksOnRollfi: 0 },
+  'Solyndra':          { priorProviderPayrollThisYear: true,  firstRollfiPaycheck: '2026-03-15', paychecksOnRollfi: 3 },
+};
+
+function fmtIsoDate(iso: string | null): string {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-').map(Number);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[m - 1]} ${d}, ${y}`;
+}
+
+function fmtIsoDateTime(iso: string): string {
+  const d = new Date(iso);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const hr = d.getHours();
+  const min = String(d.getMinutes()).padStart(2, '0');
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  const hr12 = hr % 12 || 12;
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()} · ${hr12}:${min} ${ampm}`;
+}
+
+// ─── Bank account mocks ────────────────────────────────────────────────
+interface BankAccount {
+  id: string;
+  companyId: string;
+  bankName: string;
+  accountName: string;
+  accountType: 'checking' | 'savings';
+  accountNumber: string;
+  routingNumber: string;
+  status: 'active' | 'pending_verification' | 'inactive';
+  method: 'plaid' | 'manual';
+  addedOn: string;
+  microDepositsSentOn?: string;
+}
+
+const MOCK_BANK_ACCOUNTS: Record<string, BankAccount[]> = {
+  'a1b2c3d4-0001': [
+    { id: 'ba-ac-001', companyId: 'a1b2c3d4-0001', bankName: 'Silicon Valley Bank', accountName: 'Primary payroll', accountType: 'checking', accountNumber: '••• 4491', routingNumber: '••• 8901', status: 'active', method: 'plaid', addedOn: '2026-01-14' },
+  ],
+  'a1b2c3d4-0002': [
+    { id: 'ba-gb-001', companyId: 'a1b2c3d4-0002', bankName: 'Chase Bank', accountName: 'Operating account', accountType: 'checking', accountNumber: '••• 7723', routingNumber: '••• 0021', status: 'pending_verification', method: 'manual', addedOn: '2026-04-28', microDepositsSentOn: '2026-04-29' },
+  ],
+  'a1b2c3d4-0003': [
+    { id: 'ba-in-001', companyId: 'a1b2c3d4-0003', bankName: 'Bank of America', accountName: 'Payroll funding', accountType: 'checking', accountNumber: '••• 9910', routingNumber: '••• 3456', status: 'active', method: 'plaid', addedOn: '2026-02-01' },
+    { id: 'ba-in-002', companyId: 'a1b2c3d4-0003', bankName: 'Citibank', accountName: 'Backup account', accountType: 'savings', accountNumber: '••• 1234', routingNumber: '••• 7890', status: 'inactive', method: 'manual', addedOn: '2025-11-10' },
+  ],
+  'a1b2c3d4-0004': [],
+  'a1b2c3d4-0005': [
+    { id: 'ba-st-001', companyId: 'a1b2c3d4-0005', bankName: 'First Republic', accountName: 'Main account', accountType: 'checking', accountNumber: '••• 5566', routingNumber: '••• 1122', status: 'active', method: 'manual', addedOn: '2026-03-15' },
+  ],
+  'a1b2c3d4-0006': [
+    { id: 'ba-ww-001', companyId: 'a1b2c3d4-0006', bankName: 'Mercury', accountName: 'Operating', accountType: 'checking', accountNumber: '••• 2200', routingNumber: '••• 4400', status: 'active', method: 'plaid', addedOn: '2026-01-20' },
+  ],
+};
+
+interface EmployeeDirectDeposit {
+  userId: string;
+  name: string;
+  jobTitle: string;
+  email: string;
+  paymentMethod: 'Direct Deposit' | 'Check';
+  linkStatus: 'linked' | 'pending' | 'not_linked';
+  linkedAccountNumber?: string;
+  linkType?: 'plaid' | 'manual';
+  inviteExpiresAt?: string;
+}
+
+const MOCK_EMPLOYEE_DDS: Record<string, EmployeeDirectDeposit[]> = {
+  'a1b2c3d4-0001': [
+    { userId: 'e1', name: 'Pam Beesly', jobTitle: 'Receptionist', email: 'pam@acme.com', paymentMethod: 'Direct Deposit', linkStatus: 'linked', linkedAccountNumber: '••• 4521', linkType: 'plaid' },
+    { userId: 'e2', name: 'Jim Halpert', jobTitle: 'Sales', email: 'jim@acme.com', paymentMethod: 'Direct Deposit', linkStatus: 'pending', inviteExpiresAt: '2026-05-20' },
+    { userId: 'e3', name: 'Dwight Schrute', jobTitle: 'Asst. to the RM', email: 'dwight@acme.com', paymentMethod: 'Direct Deposit', linkStatus: 'not_linked' },
+    { userId: 'e4', name: 'Stanley Hudson', jobTitle: 'Sales', email: 'stanley@acme.com', paymentMethod: 'Check', linkStatus: 'not_linked' },
+  ],
+  'a1b2c3d4-0002': [
+    { userId: 'g1', name: 'Mia Thompson', jobTitle: 'Operations Lead', email: 'mia@globex.com', paymentMethod: 'Direct Deposit', linkStatus: 'linked', linkedAccountNumber: '••• 7791', linkType: 'manual' },
+    { userId: 'g2', name: 'Alex Park', jobTitle: 'Designer', email: 'alex@globex.com', paymentMethod: 'Direct Deposit', linkStatus: 'not_linked' },
+  ],
+};
 
 const statusVariant = (s: string) =>
   s === 'active' ? 'success' :
@@ -1714,17 +1910,62 @@ const statusLabel = (s: string) =>
   s === 'payroll_ready' ? 'Payroll ready' :
   s === 'action_required' ? 'Action required' : s;
 
-function StatCard({ label, value }: { label: string; value: string }) {
+// Onboarding readiness derived from tasks
+const companyReadiness = (tasks: CompanyTask[]): 'complete' | 'payroll_ready' | 'action_required' => {
+  if (!tasks || tasks.length === 0) return 'complete';
+  if (tasks.some(t => t.blocking)) return 'action_required';
+  return 'payroll_ready';
+};
+const readinessLabel = (r: string) =>
+  r === 'complete' ? 'Complete' : r === 'payroll_ready' ? 'Payroll ready' : 'Action required';
+const readinessBadgeVariant = (r: string) =>
+  r === 'complete' ? 'success' : r === 'payroll_ready' ? 'teal' : 'danger';
+
+// Relative deadline formatter ("Past due" / "Due today" / "X days") with semantic color
+function deadlineDisplay(days: number) {
+  const isPast = days < 0;
+  const isSoon = days >= 0 && days <= 3;
+  const danger = isPast || isSoon;
+  const label = isPast ? 'Past due' : days === 0 ? 'Due today' : `${days} ${days === 1 ? 'day' : 'days'}`;
+  return { label, danger };
+}
+
+function ClientSelectorCard({ client, onClear }: { client: string; onClear: () => void }) {
   return (
-    <Card variant="outlined" padding="md">
-      <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>{label}</div>
-      <div style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)', color: 'var(--rf-color-text)' }}>{value}</div>
-    </Card>
+    <StatCard label="Select client">
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '9px 12px',
+        border: '1px solid var(--rf-color-border)',
+        borderRadius: 'var(--rf-radius-sm)',
+        background: 'var(--rf-color-surface)',
+      }}>
+        <span style={{ flex: 1, font: 'var(--rf-text-body-sm-strong)' }}>
+          {client || <span style={{ color: 'var(--rf-color-text-tertiary)', fontWeight: 400 }}>Select a client…</span>}
+        </span>
+        {client && (
+          <button
+            type="button"
+            onClick={onClear}
+            style={{ background: 'transparent', border: 'none', color: 'var(--rf-color-text-tertiary)', cursor: 'pointer', display: 'flex', padding: 2 }}
+            aria-label="Clear client"
+          >
+            <X size={12} />
+          </button>
+        )}
+      </div>
+    </StatCard>
   );
 }
 
 function DashboardView() {
   const { toast } = useToast();
+  const [client, setClient] = useState('Rollfi');
+  const [search, setSearch] = useState('');
+
+  const filtered = PORTAL_COMPANIES.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
+  const failedCompanies = PORTAL_COMPANIES.filter(c => c.hasFailedTx).map(c => c.name);
+
   return (
     <>
       <PageHeader
@@ -1733,60 +1974,929 @@ function DashboardView() {
         action={<Button variant="secondary" size="sm" icon={<Plus size={14} />}>Add new company</Button>}
       />
 
-      <div style={{ marginBottom: 20 }}>
-        <Banner
-          variant="danger"
-          icon={<Warning size={18} weight="fill" />}
-          action={<Button variant="danger" size="sm" onClick={() => toast('Opening activity')}>View activity</Button>}
-        >
-          <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Transaction failures require attention</div>
-          <div>Umbrella LLC has a failed payroll transaction. Open Payroll activity to investigate and resolve.</div>
-        </Banner>
-      </div>
+      {failedCompanies.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <Banner
+            variant="danger"
+            icon={<Warning size={18} weight="fill" />}
+            action={<Button variant="danger" size="sm" onClick={() => toast('Opening activity')}>View activity</Button>}
+          >
+            <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Transaction failures require attention</div>
+            <div>
+              {failedCompanies.length === 1
+                ? `${failedCompanies[0]} has a failed payroll transaction.`
+                : `${failedCompanies.join(', ')} have failed payroll transactions.`}
+              {' '}Open Payroll activity to investigate and resolve.
+            </div>
+          </Banner>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-        <StatCard label="Client" value="Rollfi" />
-        <StatCard label="Companies" value="725" />
-        <StatCard label="Active people" value="782" />
+        <ClientSelectorCard client={client} onClear={() => setClient('')} />
+        <StatCard label="Number of companies" value="725" />
+        <StatCard label="Number of active people" value="782" />
       </div>
 
       <Card variant="outlined" padding="none">
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--rf-color-border)' }}>
-          <Input icon={<MagnifyingGlass size={14} />} placeholder="Search companies..." inputSize="sm" />
+          <div style={{ maxWidth: 320 }}>
+            <Input
+              icon={<MagnifyingGlass size={14} />}
+              placeholder="Search companies"
+              inputSize="sm"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
         </div>
         <Table
           columns={[
             { key: 'name', header: 'Company', sortable: true, render: row => (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Avatar name={row.name as string} size="sm" />
                 <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
+                {row.hasFailedTx ? (
+                  <Badge variant="danger" icon={<Warning size={9} weight="fill" />}>Failed tx</Badge>
+                ) : null}
               </div>
             ) },
-            { key: 'days', header: 'Days until payroll', align: 'right', sortable: true, render: row => {
-              const d = row.days as number;
-              return <span style={{ color: d <= 2 ? 'var(--rf-color-danger-text)' : 'var(--rf-color-text)' }}>{d}d</span>;
+            { key: 'readiness', header: 'Onboarding status', sortable: true, sortValue: row => companyReadiness(row.tasks as CompanyTask[]), render: row => {
+              const r = companyReadiness(row.tasks as CompanyTask[]);
+              return <Badge variant={readinessBadgeVariant(r)}>{readinessLabel(r)}</Badge>;
             } },
-            { key: 'tasks', header: 'Tasks', align: 'right', render: row => {
-              const t = row.tasks as number;
-              return t === 0 ? <Badge variant="success">Ready</Badge> : <Badge variant="warning">{t} open</Badge>;
+            { key: 'daysUntilPayroll', header: 'Days till payroll deadline', sortable: true, render: row => {
+              const d = row.daysUntilPayroll as number;
+              const { label, danger } = deadlineDisplay(d);
+              return <span style={{ font: 'var(--rf-text-body-sm-strong)', color: danger ? 'var(--rf-color-danger-text)' : 'var(--rf-color-text)' }}>{label}</span>;
             } },
-            { key: 'status', header: 'Status', render: row => (
-              <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge>
-            ) },
+            { key: 'tasks', header: 'Tasks', align: 'right', sortable: true, sortValue: row => (row.tasks as CompanyTask[]).length, render: row => {
+              const count = (row.tasks as CompanyTask[]).length;
+              const r = companyReadiness(row.tasks as CompanyTask[]);
+              return <Badge variant={readinessBadgeVariant(r)}>{count}</Badge>;
+            } },
           ]}
-          data={PORTAL_COMPANIES}
+          data={filtered}
           rowKey={r => r.id as string}
-          expandable={row => (
-            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Upcoming tasks</div>
-              <DetailRow label="Onboarding" value={<Badge variant="success">Complete</Badge>} />
-              <DetailRow label="Bank verification" value={(row.tasks as number) > 0 ? <Badge variant="warning">Pending</Badge> : <Badge variant="success">Verified</Badge>} />
-              <DetailRow label="Payroll cycle" value={`Every 2 weeks · ${row.days}d remaining`} />
-            </div>
-          )}
+          emptyMessage="No companies match your search."
+          expandable={row => {
+            const tasks = row.tasks as CompanyTask[];
+            return (
+              <div style={{ padding: '16px 24px 20px' }}>
+                <Card variant="default" padding="md">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <CheckCircle size={14} weight="fill" style={{ color: 'var(--rf-color-danger)' }} />
+                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>Tasks for {row.name as string}</span>
+                  </div>
+                  {tasks.length === 0 ? (
+                    <div style={{ padding: '14px 0', font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+                      All tasks are complete — this company is fully onboarded.
+                    </div>
+                  ) : tasks.map((t, i) => (
+                    <div key={i} style={{
+                      display: 'flex', gap: 12, alignItems: 'flex-start',
+                      padding: '14px 0',
+                      borderTop: i === 0 ? 'none' : '1px solid var(--rf-color-border-subtle)',
+                    }}>
+                      <IconTile variant="danger" size="md"><Clock size={16} /></IconTile>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ font: 'var(--rf-text-body-sm-strong)', marginBottom: 2 }}>{t.task}</div>
+                        <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', lineHeight: 1.55 }}>{t.description}</div>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              </div>
+            );
+          }}
         />
       </Card>
     </>
+  );
+}
+
+function ReadinessKpiCard({ label, count, variant }: { label: string; count: number; variant: 'danger' | 'teal' | 'success' }) {
+  const color = variant === 'danger' ? 'var(--rf-color-danger-text)'
+    : variant === 'teal' ? 'var(--rf-color-accent-teal-text)'
+    : 'var(--rf-color-success-text)';
+  return (
+    <StatCard label={label} value={<span style={{ color }}>{count}</span>} />
+  );
+}
+
+function CompanyReadinessCard({ company }: { company: PortalCompany }) {
+  const [expanded, setExpanded] = useState(false);
+  const [addOns, setAddOns] = useState(company.addOns);
+  const readiness = companyReadiness(company.tasks);
+  const taskCount = company.tasks.length;
+
+  const domainGroups = company.tasks.reduce<Record<TaskDomain, CompanyTask[]>>((acc, t) => {
+    const d = taskDomain(t.task);
+    (acc[d] ||= []).push(t);
+    return acc;
+  }, {} as Record<TaskDomain, CompanyTask[]>);
+
+  return (
+    <Card variant="default" padding="md">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ font: 'var(--rf-text-body-md-strong)', color: 'var(--rf-color-text)' }}>{company.name}</div>
+          <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', fontFamily: 'var(--rf-font-mono)' }}>
+            {company.id.slice(0, 13)}…
+          </div>
+        </div>
+        <Badge variant={readinessBadgeVariant(readiness)}>{taskCount} {taskCount === 1 ? 'task' : 'tasks'}</Badge>
+      </div>
+
+      {taskCount > 0 && (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 12 }}>
+            {company.tasks.map((t, i) => (
+              <div key={i} style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', lineHeight: 1.5 }}>
+                {t.blocking && (
+                  <span style={{
+                    font: 'var(--rf-text-caption-sm)',
+                    fontWeight: 700,
+                    color: 'var(--rf-color-danger-text)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    marginRight: 6,
+                  }}>
+                    ⚠ Blocks payroll
+                  </span>
+                )}
+                {t.task}
+              </div>
+            ))}
+          </div>
+
+          <Button variant="secondary" size="sm" fullWidth onClick={() => setExpanded(!expanded)}>
+            {expanded ? 'Hide details' : 'View details'}
+          </Button>
+
+          {expanded && (
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--rf-color-border-subtle)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {Object.entries(domainGroups).map(([d, tasks]) => {
+                const cfg = DOMAIN_LABELS[d as TaskDomain];
+                return (
+                  <div key={d}>
+                    <Badge variant={cfg.variant}>{cfg.label}</Badge>
+                    <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)', marginTop: 4 }}>
+                      {tasks.length} {tasks.length === 1 ? 'item' : 'items'}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--rf-color-border-subtle)' }}>
+        <div style={{ font: 'var(--rf-text-caption-sm)', fontWeight: 700, color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+          Add-ons
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <SettingsRow
+            title="Time Tracking"
+            description="Per employee / mo"
+            active={addOns.timeTracking}
+            control={<Switch checked={addOns.timeTracking} onChange={v => setAddOns({ ...addOns, timeTracking: v })} />}
+          />
+          <SettingsRow
+            title="PTO"
+            description="Per EIN + per employee / mo"
+            active={addOns.pto}
+            control={<Switch checked={addOns.pto} onChange={v => setAddOns({ ...addOns, pto: v })} />}
+          />
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+const READINESS_SECTIONS: { key: ReturnType<typeof companyReadiness>; label: string; description: string; icon: ReactNode; variant: 'danger' | 'teal' | 'success' }[] = [
+  { key: 'action_required', label: 'Action required', description: 'KYB/KYC or bank account not yet cleared. Cannot run payroll until resolved.', icon: <Warning size={18} weight="fill" />, variant: 'danger' },
+  { key: 'payroll_ready', label: 'Payroll ready', description: 'KYB/KYC passed and bank account linked. Can run payroll. Remaining tasks needed for full onboarding.', icon: <CheckCircle size={18} weight="fill" />, variant: 'teal' },
+  { key: 'complete', label: 'Complete', description: 'All onboarding tasks done. Fully onboarded.', icon: <CheckCircle size={18} weight="fill" />, variant: 'success' },
+];
+
+function ReadinessTab() {
+  const groups = {
+    action_required: PORTAL_COMPANIES.filter(c => companyReadiness(c.tasks) === 'action_required'),
+    payroll_ready:   PORTAL_COMPANIES.filter(c => companyReadiness(c.tasks) === 'payroll_ready'),
+    complete:        PORTAL_COMPANIES.filter(c => companyReadiness(c.tasks) === 'complete'),
+  };
+
+  return (
+    <>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+        <ReadinessKpiCard label="Action required" count={groups.action_required.length} variant="danger" />
+        <ReadinessKpiCard label="Payroll ready" count={groups.payroll_ready.length} variant="teal" />
+        <ReadinessKpiCard label="Complete" count={groups.complete.length} variant="success" />
+      </div>
+
+      {READINESS_SECTIONS.map(section => {
+        const companies = groups[section.key];
+        if (companies.length === 0) return null;
+        const color = section.variant === 'danger' ? 'var(--rf-color-danger-text)'
+          : section.variant === 'teal' ? 'var(--rf-color-accent-teal-text)'
+          : 'var(--rf-color-success-text)';
+        return (
+          <div key={section.key} style={{ marginBottom: 24 }}>
+            <div style={{
+              display: 'flex', alignItems: 'baseline', gap: 8,
+              marginBottom: 12,
+              paddingBottom: 8,
+              borderBottom: '2px solid var(--rf-color-border)',
+            }}>
+              <span style={{ color, display: 'inline-flex', alignSelf: 'center' }}>{section.icon}</span>
+              <span style={{ font: 'var(--rf-text-heading-sm)', color: 'var(--rf-color-text)' }}>{section.label}</span>
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)', flex: 1, lineHeight: 1.4 }}>{section.description}</span>
+              <span style={{ font: 'var(--rf-text-body-sm-strong)', color: 'var(--rf-color-text-secondary)', flexShrink: 0 }}>
+                {companies.length} {companies.length === 1 ? 'company' : 'companies'}
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
+              {companies.map(c => <CompanyReadinessCard key={c.id} company={c} />)}
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+// ─── Payroll history derived rows ───
+interface PayrollHistoryRow {
+  id: string;
+  name: string;
+  priorPayroll: boolean;
+  firstRollfiPaycheck: string | null;
+  paychecksOnRollfi: number;
+  imports: PayrollImport[];
+  successfulImport?: PayrollImport;
+  hasMigrated: boolean;
+  needsImport: boolean;
+  atRisk: boolean;
+  status: 'migrated' | 'needs_import' | 'at_risk' | 'not_required';
+  [key: string]: unknown;
+}
+
+function buildPayrollHistoryRows(): PayrollHistoryRow[] {
+  const companyNames = Object.keys(MOCK_EXISTING_PAYROLL);
+  return companyNames.map(name => {
+    const data = MOCK_EXISTING_PAYROLL[name];
+    const imports = MOCK_IMPORTS.filter(i => i.company === name);
+    const successfulImport = imports.find(i => i.status === 'completed' || i.status === 'completed_with_warnings');
+    const hasMigrated = data.paychecksOnRollfi > 0 || !!successfulImport;
+    const needsImport = data.priorProviderPayrollThisYear && !successfulImport;
+    const atRisk = data.priorProviderPayrollThisYear && !successfulImport && data.paychecksOnRollfi > 0;
+    const status: PayrollHistoryRow['status'] =
+      atRisk ? 'at_risk'
+        : hasMigrated ? 'migrated'
+        : needsImport ? 'needs_import'
+        : 'not_required';
+    return {
+      id: name,
+      name,
+      priorPayroll: data.priorProviderPayrollThisYear,
+      firstRollfiPaycheck: data.firstRollfiPaycheck,
+      paychecksOnRollfi: data.paychecksOnRollfi,
+      imports,
+      successfulImport,
+      hasMigrated,
+      needsImport,
+      atRisk,
+      status,
+    };
+  });
+}
+
+function ImportStatusBadge({ imp }: { imp: PayrollImport }) {
+  const map = {
+    completed: { label: 'Completed', variant: 'success' as const, icon: null },
+    completed_with_warnings: { label: `${imp.warningCount ?? 0} warning${imp.warningCount === 1 ? '' : 's'}`, variant: 'warning' as const, icon: <Warning size={11} /> },
+    processing: { label: 'Processing', variant: 'info' as const, icon: null },
+    failed: { label: 'Failed', variant: 'danger' as const, icon: <XCircle size={11} weight="fill" /> },
+  };
+  const cfg = map[imp.status];
+  return <Badge variant={cfg.variant} icon={cfg.icon ?? undefined}>{cfg.label}</Badge>;
+}
+
+function PayrollHistoryStatusBadge({ status }: { status: PayrollHistoryRow['status'] }) {
+  switch (status) {
+    case 'migrated':     return <Badge variant="success">Migrated</Badge>;
+    case 'needs_import': return <Badge variant="info">Needs import</Badge>;
+    case 'at_risk':      return <Badge variant="warning">At risk</Badge>;
+    case 'not_required': return <Badge variant="neutral">Not required</Badge>;
+  }
+}
+
+function PayrollHistoryTab({ onOpenWizard }: { onOpenWizard: () => void }) {
+  const rows = buildPayrollHistoryRows();
+  const atRiskCount = rows.filter(r => r.atRisk).length;
+  const migratedCount = rows.filter(r => r.hasMigrated).length;
+  const needsImportCount = rows.filter(r => r.needsImport && !r.atRisk).length;
+  const employeesOnboarded = MOCK_IMPORTS.reduce((sum, i) => sum + i.employeeCount, 0);
+  const atRiskColor = 'var(--rf-color-warning-text)';
+
+  return (
+    <>
+      <div style={{ marginBottom: 16 }}>
+        <Callout variant="info" icon={<Info size={16} />} title="When to import payroll history">
+          Run this when onboarding a company that already ran payroll elsewhere this year. Importing those records keeps YTD wages, tax withholdings, and benefit caps accurate so year-end W-2s and 1099s reflect the full year. A company counts as migrated once it has either a completed import or its first Rollfi paycheck.
+        </Callout>
+      </div>
+
+      {atRiskCount > 0 && (
+        <div style={{ marginBottom: 16 }}>
+          <Callout variant="warning" icon={<Warning size={16} />} title={`${atRiskCount} compan${atRiskCount === 1 ? 'y' : 'ies'} migrated without a payroll history import`}>
+            Running payroll on Rollfi before importing YTD history risks amended tax filings, IRS penalties, and state agency fines at year-end. Import history for these companies as soon as possible.
+          </Callout>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+        <StatCard label="Migrated" value={<span style={{ color: 'var(--rf-color-success-text)' }}>{migratedCount}</span>} />
+        <StatCard label="Needs import" value={<span style={{ color: 'var(--rf-color-info-text)' }}>{needsImportCount}</span>} />
+        <StatCard label="At risk" value={<span style={{ color: atRiskColor }}>{atRiskCount}</span>} />
+        <StatCard label="Employees onboarded" value={employeesOnboarded} />
+      </div>
+
+      <Card variant="default" padding="none">
+        <Table
+          columns={[
+            { key: 'name', header: 'Company', sortable: true, render: row => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Avatar name={row.name as string} size="sm" />
+                <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
+                {(row as PayrollHistoryRow).atRisk && (
+                  <Badge variant="warning" icon={<Warning size={9} weight="fill" />}>At risk</Badge>
+                )}
+              </div>
+            ) },
+            { key: 'priorPayroll', header: 'Prior payroll', render: row => (
+              <span style={{ color: 'var(--rf-color-text-secondary)' }}>
+                {(row as PayrollHistoryRow).priorPayroll ? 'Yes' : 'No'}
+              </span>
+            ) },
+            { key: 'historyImport', header: 'History import', render: row => {
+              const r = row as PayrollHistoryRow;
+              if (r.successfulImport) {
+                return (
+                  <div>
+                    <ImportStatusBadge imp={r.successfulImport} />
+                    <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', marginTop: 4 }}>
+                      {r.successfulImport.period}
+                    </div>
+                  </div>
+                );
+              }
+              if (r.imports.length > 0) {
+                return <ImportStatusBadge imp={r.imports[r.imports.length - 1]} />;
+              }
+              if (r.needsImport) {
+                return <Button size="sm" onClick={onOpenWizard}>Import now</Button>;
+              }
+              return <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)' }}>Not required</span>;
+            } },
+            { key: 'firstRollfiPaycheck', header: 'First Rollfi paycheck', render: row => {
+              const date = (row as PayrollHistoryRow).firstRollfiPaycheck;
+              return date
+                ? <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--rf-color-text-secondary)' }}>{fmtIsoDate(date)}</span>
+                : <span style={{ color: 'var(--rf-color-text-tertiary)' }}>Not yet</span>;
+            } },
+            { key: 'status', header: 'Status', render: row => (
+              <PayrollHistoryStatusBadge status={(row as PayrollHistoryRow).status} />
+            ) },
+          ]}
+          data={rows}
+          rowKey={r => r.id as string}
+          expandable={row => {
+            const r = row as PayrollHistoryRow;
+            if (r.imports.length === 0) return null;
+            return (
+              <div style={{ padding: '14px 24px 18px' }}>
+                <div style={{ font: 'var(--rf-text-caption-sm)', fontWeight: 700, color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
+                  Import history
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {r.imports.map(imp => (
+                    <div key={imp.id} style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1.6fr 1fr 1fr 1.2fr 0.9fr',
+                      gap: 16, alignItems: 'center',
+                      padding: '10px 14px',
+                      background: 'var(--rf-color-surface)',
+                      border: '1px solid var(--rf-color-border)',
+                      borderRadius: 'var(--rf-radius-md)',
+                    }}>
+                      <div>
+                        <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{imp.period}</div>
+                        <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', marginTop: 1 }}>{imp.source}</div>
+                      </div>
+                      <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>{imp.employeeCount} employees</span>
+                      <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>{imp.recordCount.toLocaleString()} records</span>
+                      <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>{fmtIsoDateTime(imp.importedAt)}</span>
+                      <span style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <ImportStatusBadge imp={imp} />
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }}
+        />
+      </Card>
+    </>
+  );
+}
+
+function MethodBadge({ method }: { method: 'plaid' | 'manual' }) {
+  return method === 'plaid'
+    ? <Badge variant="teal">Plaid</Badge>
+    : <Badge variant="neutral">Manual ACH</Badge>;
+}
+
+function BankStatusBadge({ status }: { status: BankAccount['status'] }) {
+  if (status === 'active')               return <Badge variant="success">Active</Badge>;
+  if (status === 'pending_verification') return <Badge variant="warning">Pending verification</Badge>;
+  return <Badge variant="neutral">Inactive</Badge>;
+}
+
+function BankAccountCard({ account, onVerify, onUpdate, onDeactivate }: {
+  account: BankAccount;
+  onVerify: (a: BankAccount) => void;
+  onUpdate: (a: BankAccount) => void;
+  onDeactivate: (a: BankAccount) => void;
+}) {
+  const isInactive = account.status === 'inactive';
+  const isPending = account.status === 'pending_verification';
+  return (
+    <Card variant="default" padding="md" style={{ opacity: isInactive ? 0.65 : 1, borderColor: isPending ? 'var(--rf-color-warning-border)' : undefined }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+            <span style={{ font: 'var(--rf-text-body-md-strong)' }}>{account.bankName}</span>
+            <MethodBadge method={account.method} />
+            <BankStatusBadge status={account.status} />
+          </div>
+          <DataGrid
+            gap="md"
+            items={[
+              { label: 'Account name', value: account.accountName },
+              { label: 'Account', value: account.accountNumber },
+              { label: 'Routing', value: account.routingNumber },
+              { label: 'Type', value: account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1) },
+              { label: 'Added', value: fmtIsoDate(account.addedOn) },
+            ]}
+          />
+        </div>
+        {!isInactive && (
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            {isPending && (
+              <Button size="sm" icon={<CheckCircle size={12} />} onClick={() => onVerify(account)}>
+                Verify deposits
+              </Button>
+            )}
+            {account.status === 'active' && (
+              <Button variant="secondary" size="sm" icon={<PencilSimple size={12} />} onClick={() => onUpdate(account)}>
+                Update
+              </Button>
+            )}
+            <Button variant="secondary" size="sm" onClick={() => onDeactivate(account)}>
+              Deactivate
+            </Button>
+          </div>
+        )}
+      </div>
+      {isPending && (
+        <div style={{ marginTop: 14 }}>
+          <Callout variant="warning">
+            Micro deposits were sent on {account.microDepositsSentOn ? fmtIsoDate(account.microDepositsSentOn) : 'recently'}. Check the bank statement and click "Verify deposits" to confirm the amounts and activate this account.
+          </Callout>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function EmployeeDDRow({ emp, onSendInvite }: { emp: EmployeeDirectDeposit; onSendInvite: (e: EmployeeDirectDeposit) => void }) {
+  const isDD = emp.paymentMethod === 'Direct Deposit';
+  return (
+    <Card variant="default" padding="sm" style={{ opacity: isDD ? 1 : 0.55 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1fr 1.2fr auto', gap: 16, alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Avatar name={emp.name} size="sm" />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{emp.name}</div>
+            <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>{emp.jobTitle} · {emp.email}</div>
+          </div>
+        </div>
+        <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>{emp.paymentMethod}</span>
+        <div>
+          {!isDD ? (
+            <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)' }}>Check — no link needed</span>
+          ) : emp.linkStatus === 'linked' ? (
+            <div>
+              <MethodBadge method={emp.linkType!} />
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', marginTop: 4, fontVariantNumeric: 'tabular-nums' }}>{emp.linkedAccountNumber}</div>
+            </div>
+          ) : emp.linkStatus === 'pending' ? (
+            <div>
+              <Badge variant="warning">Invite pending</Badge>
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', marginTop: 4 }}>
+                Expires {emp.inviteExpiresAt ? fmtIsoDate(emp.inviteExpiresAt) : ''}
+              </div>
+            </div>
+          ) : (
+            <span style={{ font: 'var(--rf-text-body-sm-strong)', color: 'var(--rf-color-danger-text)' }}>Not linked</span>
+          )}
+        </div>
+        <div>
+          {isDD && (
+            <Button variant="secondary" size="sm" onClick={() => onSendInvite(emp)}>
+              {emp.linkStatus === 'pending' ? 'Resend Plaid link' : emp.linkStatus === 'linked' ? 'Resend link' : 'Send Plaid link'}
+            </Button>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+// ─── Bank account panels ───────────────────────────────────────────────
+
+function ConnectAccountPanel({ open, onClose, companyName, existing, onSubmit }: {
+  open: boolean;
+  onClose: () => void;
+  companyName: string;
+  existing: BankAccount | null;
+  onSubmit: () => void;
+}) {
+  const [method, setMethod] = useState<'plaid' | 'manual'>(existing?.method ?? 'plaid');
+  const [bankName, setBankName] = useState(existing?.bankName ?? '');
+  const [accountName, setAccountName] = useState(existing?.accountName ?? '');
+  const [accountType, setAccountType] = useState<'checking' | 'savings'>(existing?.accountType ?? 'checking');
+  const [routing, setRouting] = useState('');
+  const [acct, setAcct] = useState('');
+  const [acctConfirm, setAcctConfirm] = useState('');
+  const isEdit = !!existing;
+  const accountsMatch = !!acct && acct === acctConfirm;
+  const canSubmit = method === 'plaid' || (bankName && accountName && acct && accountsMatch && routing);
+  return (
+    <SidePanel
+      open={open}
+      onClose={onClose}
+      width="lg"
+      title={isEdit ? 'Update bank account' : 'Connect bank account'}
+      description={companyName}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          {method === 'manual' && (
+            <Button onClick={onSubmit} disabled={!canSubmit}>Save account</Button>
+          )}
+        </>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        {!isEdit && (
+          <Field label="Connection method" required>
+            <RadioGroup value={method} onChange={v => setMethod(v as 'plaid' | 'manual')}>
+              <OptionCard
+                selected={method === 'plaid'}
+                onSelect={() => setMethod('plaid')}
+                title="Plaid"
+                description="Instant verification via bank login. No micro deposits needed."
+                badge="Recommended"
+              />
+              <OptionCard
+                selected={method === 'manual'}
+                onSelect={() => setMethod('manual')}
+                title="Manual ACH"
+                description="Enter routing and account numbers. Verified via two micro deposits."
+              />
+            </RadioGroup>
+          </Field>
+        )}
+
+        {method === 'plaid' && (
+          <Callout variant="info" icon={<Bank size={16} />} title="Connect via Plaid">
+            Plaid Link opens a secure window where {companyName} logs into their bank to authorize the connection. Verification is instant — no account numbers entered manually.
+          </Callout>
+        )}
+
+        {method === 'manual' && (
+          <>
+            <Field label="Account name" required>
+              <Input value={accountName} onChange={e => setAccountName(e.target.value)} placeholder="e.g. Primary payroll, Operating account" />
+            </Field>
+            <Field label="Bank name" required>
+              <Input value={bankName} onChange={e => setBankName(e.target.value)} placeholder="e.g. Chase Bank" />
+            </Field>
+            <Field label="Account type" required>
+              <SegmentedControl
+                value={accountType}
+                onChange={v => setAccountType(v as 'checking' | 'savings')}
+                fullWidth
+                items={[{ value: 'checking', label: 'Checking' }, { value: 'savings', label: 'Savings' }]}
+              />
+            </Field>
+            <Field label="Routing number" required>
+              <Input value={routing} onChange={e => setRouting(e.target.value)} placeholder="9-digit ABA routing number" inputMode="numeric" />
+            </Field>
+            <Field label="Account number" required>
+              <Input value={acct} onChange={e => setAcct(e.target.value)} placeholder="Account number" inputMode="numeric" />
+            </Field>
+            <Field
+              label="Confirm account number"
+              required
+              hint={!acctConfirm ? undefined : accountsMatch ? 'Account numbers match.' : undefined}
+              error={acctConfirm && !accountsMatch ? 'Account numbers do not match.' : undefined}
+            >
+              <Input value={acctConfirm} onChange={e => setAcctConfirm(e.target.value)} placeholder="Re-enter account number" inputMode="numeric" />
+            </Field>
+            <Callout variant="warning" title="Verification via micro deposits">
+              After saving, Rollfi sends two small deposits (under $1 each) to this account. The account holder confirms the exact amounts to complete verification. This takes 1 to 2 business days.
+            </Callout>
+          </>
+        )}
+      </div>
+    </SidePanel>
+  );
+}
+
+function VerifyDepositsPanel({ open, onClose, account, companyName, onVerified }: {
+  open: boolean;
+  onClose: () => void;
+  account: BankAccount | null;
+  companyName: string;
+  onVerified: () => void;
+}) {
+  const [a1, setA1] = useState('');
+  const [a2, setA2] = useState('');
+  const canSubmit = !!a1 && !!a2 && parseFloat(a1) > 0 && parseFloat(a2) > 0;
+  if (!account) return null;
+  return (
+    <SidePanel
+      open={open}
+      onClose={onClose}
+      title="Verify micro deposits"
+      description={`${companyName} · ${account.bankName} ${account.accountNumber}`}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>Cancel</Button>
+          <Button disabled={!canSubmit} onClick={onVerified}>Verify account</Button>
+        </>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Callout variant="info" icon={<Info size={16} />} title="Find the two deposits in your bank statement">
+          Rollfi sent two small deposits to {account.accountNumber} on {account.microDepositsSentOn ? fmtIsoDate(account.microDepositsSentOn) : 'the account\'s registered date'}. Enter the exact amounts below to confirm ownership.
+        </Callout>
+        <Field label="First deposit amount" required>
+          <CurrencyInput value={a1} onChange={e => setA1(e.target.value)} placeholder="0.00" />
+        </Field>
+        <Field label="Second deposit amount" required>
+          <CurrencyInput value={a2} onChange={e => setA2(e.target.value)} placeholder="0.00" />
+        </Field>
+        <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', lineHeight: 1.5 }}>
+          Both amounts must match exactly. If the amounts are incorrect, the verification will fail and new micro deposits will need to be sent.
+        </div>
+      </div>
+    </SidePanel>
+  );
+}
+
+function SendPlaidInvitePanel({ open, onClose, employee, companyName, onSent }: {
+  open: boolean;
+  onClose: () => void;
+  employee: EmployeeDirectDeposit | null;
+  companyName: string;
+  onSent: (e: EmployeeDirectDeposit) => void;
+}) {
+  const [sent, setSent] = useState(false);
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  if (!employee) return null;
+  return (
+    <SidePanel
+      open={open}
+      onClose={() => { setSent(false); onClose(); }}
+      title={sent ? 'Invite sent' : 'Send Plaid link'}
+      description={`${companyName} · ${employee.name}`}
+      footer={
+        <>
+          <Button variant="secondary" onClick={() => { setSent(false); onClose(); }}>{sent ? 'Close' : 'Cancel'}</Button>
+          {!sent && <Button onClick={() => { setSent(true); onSent(employee); }}>Send Plaid link</Button>}
+        </>
+      }
+    >
+      {!sent ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Callout variant="info" icon={<Info size={16} />} title="How this works">
+            Rollfi sends a secure Plaid Link URL to {employee.email}. The employee opens the link, logs into their bank, and authorizes the direct deposit connection. The link expires in 7 days.
+          </Callout>
+          <div>
+            <div style={{ font: 'var(--rf-text-caption-sm)', fontWeight: 700, color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+              Sending to
+            </div>
+            <div style={{ font: 'var(--rf-text-body-md-strong)' }}>{employee.email}</div>
+            <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', marginTop: 4 }}>
+              If this email is incorrect, update it via the employee record before sending.
+            </div>
+          </div>
+          {employee.linkStatus === 'pending' && (
+            <Callout variant="warning" title="Previous invite still active">
+              An invite was already sent to {employee.email} and expires {employee.inviteExpiresAt ? fmtIsoDate(employee.inviteExpiresAt) : 'soon'}. Sending again will invalidate the previous link.
+            </Callout>
+          )}
+        </div>
+      ) : (
+        <EmptyState
+          icon={<CheckCircle size={28} weight="fill" />}
+          title={`Invite sent to ${employee.email}`}
+          description={`The link expires on ${fmtIsoDate(expiresAt)}. Once the employee completes linking, their account will appear as linked here.`}
+        />
+      )}
+    </SidePanel>
+  );
+}
+
+function DeactivateAccountDialog({ open, onClose, account, onConfirm, isLastActive }: {
+  open: boolean;
+  onClose: () => void;
+  account: BankAccount | null;
+  onConfirm: () => void;
+  isLastActive: boolean;
+}) {
+  if (!account) return null;
+  if (isLastActive) {
+    return (
+      <AlertDialog
+        open={open}
+        onClose={onClose}
+        variant="destructive"
+        title="Cannot deactivate the last active account"
+        description="At least one active bank account must remain. Add a replacement account before deactivating this one — otherwise payroll cannot run."
+        confirmLabel="Got it"
+        cancelLabel="Close"
+        onConfirm={onClose}
+      />
+    );
+  }
+  return (
+    <AlertDialog
+      open={open}
+      onClose={onClose}
+      variant="destructive"
+      title={`Deactivate ${account.bankName}?`}
+      description={`${account.accountName} (${account.accountNumber}) will be moved to inactive. Inactive accounts are kept for compliance history but cannot be reactivated.`}
+      confirmLabel="Deactivate"
+      onConfirm={onConfirm}
+    />
+  );
+}
+
+function BankAccountsTab() {
+  const sorted = [...PORTAL_COMPANIES].sort((a, b) => a.name.localeCompare(b.name));
+  const [selectedId, setSelectedId] = useState(sorted[0].id);
+  const [panel, setPanel] = useState<'add' | 'edit' | 'verify' | 'plaid_invite' | null>(null);
+  const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
+  const [verifyingAccount, setVerifyingAccount] = useState<BankAccount | null>(null);
+  const [invitingEmployee, setInvitingEmployee] = useState<EmployeeDirectDeposit | null>(null);
+  const [deactivating, setDeactivating] = useState<BankAccount | null>(null);
+  const { toast } = useToast();
+
+  const selected = PORTAL_COMPANIES.find(c => c.id === selectedId)!;
+  const accounts = MOCK_BANK_ACCOUNTS[selectedId] || [];
+  const activeAccounts = accounts.filter(a => a.status !== 'inactive');
+  const activeCount = accounts.filter(a => a.status === 'active').length;
+  const hasNoAccounts = activeAccounts.length === 0;
+  const employees = MOCK_EMPLOYEE_DDS[selectedId] || [];
+  const ddEmployees = employees.filter(e => e.paymentMethod === 'Direct Deposit');
+  const linkedCount = ddEmployees.filter(e => e.linkStatus === 'linked').length;
+
+  const closeAll = () => { setPanel(null); setEditingAccount(null); setVerifyingAccount(null); setInvitingEmployee(null); };
+  const isDeactivatingLastActive = !!deactivating && deactivating.status === 'active' && activeCount <= 1;
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 20, alignItems: 'start' }}>
+      <div style={{ position: 'sticky', top: 24 }}>
+        <Field label="Company">
+          <Select
+            value={selectedId}
+            onChange={e => { setSelectedId(e.target.value); closeAll(); }}
+            options={sorted.map(c => ({ value: c.id, label: c.name }))}
+          />
+        </Field>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ font: 'var(--rf-text-heading-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>{selected.name}</div>
+            <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginTop: 2 }}>
+              {hasNoAccounts ? 'No bank account connected. Connect one to enable payroll.' : `${activeCount} active account${activeCount === 1 ? '' : 's'}`}
+            </div>
+          </div>
+          <Button size="sm" icon={<Plus size={14} />} onClick={() => { setEditingAccount(null); setPanel('add'); }}>
+            Connect account
+          </Button>
+        </div>
+
+        {hasNoAccounts && (
+          <Callout variant="danger" icon={<Warning size={16} weight="fill" />} title="No bank account connected">
+            Payroll cannot run until a verified bank account is linked. Connect an account via Plaid or manual ACH.
+          </Callout>
+        )}
+
+        {accounts.length === 0 ? (
+          <Card variant="default" padding="lg">
+            <EmptyState
+              icon={<CreditCard size={24} />}
+              title={`No accounts on record for ${selected.name}`}
+              description="Connect a bank account to enable payroll funding for this company."
+              action={<Button size="sm" icon={<Plus size={14} />} onClick={() => { setEditingAccount(null); setPanel('add'); }}>Connect account</Button>}
+            />
+          </Card>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {accounts.map(a => (
+              <BankAccountCard
+                key={a.id}
+                account={a}
+                onVerify={acct => { setVerifyingAccount(acct); setPanel('verify'); }}
+                onUpdate={acct => { setEditingAccount(acct); setPanel('edit'); }}
+                onDeactivate={acct => setDeactivating(acct)}
+              />
+            ))}
+          </div>
+        )}
+
+        {accounts.some(a => a.status === 'inactive') && (
+          <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', padding: '0 4px' }}>
+            Inactive accounts are shown for compliance history. They cannot be reactivated and must be re-added if needed.
+          </div>
+        )}
+
+        {ddEmployees.length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <div style={{
+              display: 'flex', alignItems: 'baseline', justifyContent: 'space-between',
+              borderBottom: '2px solid var(--rf-color-border)',
+              paddingBottom: 8, marginBottom: 12,
+            }}>
+              <span style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)' }}>Employee direct deposit</span>
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>
+                {linkedCount} of {ddEmployees.length} linked
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {employees.map(e => (
+                <EmployeeDDRow
+                  key={e.userId}
+                  emp={e}
+                  onSendInvite={emp => { setInvitingEmployee(emp); setPanel('plaid_invite'); }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Side panels */}
+      <ConnectAccountPanel
+        open={panel === 'add' || panel === 'edit'}
+        onClose={closeAll}
+        companyName={selected.name}
+        existing={panel === 'edit' ? editingAccount : null}
+        onSubmit={() => { toast(panel === 'edit' ? 'Account updated' : 'Account connected', { variant: 'success' }); closeAll(); }}
+      />
+      <VerifyDepositsPanel
+        open={panel === 'verify'}
+        onClose={closeAll}
+        account={verifyingAccount}
+        companyName={selected.name}
+        onVerified={() => { toast('Account verified', { variant: 'success' }); closeAll(); }}
+      />
+      <SendPlaidInvitePanel
+        open={panel === 'plaid_invite'}
+        onClose={closeAll}
+        employee={invitingEmployee}
+        companyName={selected.name}
+        onSent={() => { toast('Plaid invite sent', { variant: 'success' }); }}
+      />
+      <DeactivateAccountDialog
+        open={!!deactivating}
+        onClose={() => setDeactivating(null)}
+        account={deactivating}
+        isLastActive={isDeactivatingLastActive}
+        onConfirm={() => { toast(`${deactivating?.bankName} deactivated`, { variant: 'error' }); setDeactivating(null); }}
+      />
+    </div>
   );
 }
 
@@ -1836,65 +2946,11 @@ function ImplementationsView() {
         </Card>
       )}
 
-      {subTab === 'readiness' && !loading && (
-        <Card variant="outlined" padding="none">
-          <Table
-            columns={[
-              { key: 'name', header: 'Company', sortable: true, render: row => (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <Avatar name={row.name as string} size="sm" />
-                  <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
-                </div>
-              ) },
-              { key: 'onboarding', header: 'Onboarding', render: () => <Badge variant="success">Complete</Badge> },
-              { key: 'bank', header: 'Bank', render: row => (row.tasks as number) > 0 ? <Badge variant="warning">Pending</Badge> : <Badge variant="success">Verified</Badge> },
-              { key: 'history', header: 'Payroll history', render: row => (row.id === '4' ? <Badge variant="danger">Missing</Badge> : <Badge variant="success">Imported</Badge>) },
-              { key: 'status', header: 'Overall', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
-            ]}
-            data={PORTAL_COMPANIES}
-            rowKey={r => r.id as string}
-          />
-        </Card>
-      )}
+      {subTab === 'readiness' && !loading && <ReadinessTab />}
 
-      {subTab === 'history' && (
-        <Card variant="outlined" padding="none">
-          <Table
-            columns={[
-              { key: 'company', header: 'Company' },
-              { key: 'period', header: 'Period' },
-              { key: 'records', header: 'Records', align: 'right' },
-              { key: 'source', header: 'Source' },
-              { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
-            ]}
-            data={[
-              { id: 'i1', company: 'WeWork', period: '2026-01-01 → 2026-04-30', records: '312', source: 'Gusto CSV', status: 'active' },
-              { id: 'i2', company: 'Pets.com', period: '2026-01-01 → 2026-03-31', records: '102', source: 'ADP', status: 'payroll_ready' },
-              { id: 'i3', company: 'Umbrella LLC', period: '2026-02-01 → 2026-04-30', records: '0', source: 'Pending', status: 'action_required' },
-            ]}
-            rowKey={r => r.id as string}
-          />
-        </Card>
-      )}
+      {subTab === 'history' && <PayrollHistoryTab onOpenWizard={() => setWizardOpen(true)} />}
 
-      {subTab === 'bank_accounts' && (
-        <Card variant="outlined" padding="none">
-          <Table
-            columns={[
-              { key: 'company', header: 'Company' },
-              { key: 'account', header: 'Account' },
-              { key: 'method', header: 'Method', render: row => <Badge variant="info">{row.method as string}</Badge> },
-              { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
-            ]}
-            data={[
-              { id: 'b1', company: 'Acme Corp', account: '••• 4521', method: 'Plaid', status: 'active' },
-              { id: 'b2', company: 'Globex Inc', account: '••• 8893', method: 'Micro-deposits', status: 'payroll_ready' },
-              { id: 'b3', company: 'Umbrella LLC', account: 'Not connected', method: 'Plaid', status: 'action_required' },
-            ]}
-            rowKey={r => r.id as string}
-          />
-        </Card>
-      )}
+      {subTab === 'bank_accounts' && <BankAccountsTab />}
 
       <SidePanel
         open={wizardOpen}
@@ -2287,25 +3343,14 @@ function PortalMock({ onExit }: { onExit: () => void }) {
         logo={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 8 }}>
             <Logo size={22} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <button
-                type="button"
-                onClick={() => setNotifOpen(true)}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', position: 'relative', padding: 4 }}
-                aria-label="Notifications"
-              >
-                <Bell size={16} />
-                <span style={{ position: 'absolute', top: 0, right: 0, width: 6, height: 6, borderRadius: '50%', background: 'var(--rf-color-brand)' }} />
-              </button>
-              <button
-                type="button"
-                onClick={onExit}
-                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
-                aria-label="Back to library"
-              >
-                ← Library
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onExit}
+              style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
+              aria-label="Back to library"
+            >
+              ← Library
+            </button>
           </div>
         }
         items={[
@@ -2314,6 +3359,10 @@ function PortalMock({ onExit }: { onExit: () => void }) {
           { id: 'activity', label: 'Payroll activity', icon: <ChartBar size={16} />, badge: <Badge variant="danger">1</Badge> },
           { id: 'billing', label: 'Billing', icon: <CreditCard size={16} /> },
           { id: 'users', label: 'Users', icon: <User size={16} /> },
+        ]}
+        secondaryItems={[
+          { id: 'notifications', label: 'Notifications', icon: <Bell size={16} />, badge: <Badge variant="danger">3</Badge>, onClick: () => setNotifOpen(true) },
+          { id: 'signout', label: 'Sign out', icon: <ArrowLeft size={16} />, onClick: () => {} },
         ]}
         footer={
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 4 }}>
