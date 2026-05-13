@@ -23,9 +23,12 @@ Authoritative usage documentation: [`design-system.md`](./design-system.md).
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
-npm run build        # type-check + production bundle
-npm run typecheck    # tsc -b --noEmit
+npm run dev              # demo app at http://localhost:5173
+npm run storybook        # component catalog at http://localhost:6006
+npm run build            # demo app production bundle (dist/)
+npm run build:lib        # publishable library (dist-lib/)
+npm run build-storybook  # static Storybook site (storybook-static/)
+npm run typecheck        # tsc -b --noEmit
 npm run lint
 ```
 
@@ -172,7 +175,7 @@ The following are known gaps for the receiving engineering team to address:
 
 - [x] Publishable library build (`vite build --lib` + `exports` map, `main`/`module`/`types`, bundled `dist-lib/styles.css`).
 - [ ] Flip `"private": false` and publish to npm (or a private registry).
-- [ ] Storybook (or Ladle) to replace the `App.tsx` gallery with isolated per-component stories.
+- [x] Storybook bootstrap (config, theme decorator, Phosphor icon defaults, 9 reference stories). Client team writes the remaining ~70 stories.
 - [ ] Unit tests (Vitest + Testing Library) — currently none.
 - [ ] Visual regression coverage (Chromatic / Playwright snapshots).
 - [ ] Accessibility audit per component (focus rings, ARIA roles, keyboard nav — especially overlay primitives).

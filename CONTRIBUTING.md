@@ -70,7 +70,7 @@ export { MyComponent } from './MyComponent/MyComponent';
 
 ### 5. Demo it
 
-Add a `<Section title="MyComponent">…</Section>` to the library demo in `src/App.tsx` (above the `DEMO / MOCK CODE BELOW` banner).
+Add a `<Section title="MyComponent">…</Section>` to the library demo in `src/App.tsx` (above the `DEMO / MOCK CODE BELOW` banner), **and** add a Storybook story (see "Adding a story" below).
 
 ### 6. Document it
 
@@ -187,3 +187,78 @@ When a public API is deprecated:
 4. Remove the alias only on a major-version bump.
 
 Current deprecations: see `README.md` § Deprecated aliases.
+
+---
+
+## Adding a story
+
+Stories live colocated with their component:
+
+```
+src/components/MyComponent/
+  MyComponent.tsx
+  MyComponent.css
+  MyComponent.stories.tsx
+```
+
+Use CSF3 (`Meta` + named `Story` exports). The preview decorator already wraps every story in `ThemeProvider`, the Phosphor `IconContext.Provider`, and side-effect-imports `src/tokens/index.css` — story files only need to render the component.
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { MyComponent } from './MyComponent';
+
+const meta = {
+  title: 'Layout / MyComponent',
+  component: MyComponent,
+  tags: ['autodocs'],
+  argTypes: {
+    variant: { control: 'select', options: ['default', 'subtle'] },
+  },
+  args: { variant: 'default', children: 'Hello' },
+} satisfies Meta<typeof MyComponent>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {};
+export const Subtle: Story = { args: { variant: 'subtle' } };
+```
+
+### What to cover
+
+At minimum:
+- A `Default` story (no args overrides).
+- One story per variant.
+- The error / empty / loading state if the component has one.
+- For controlled components (`Tabs`, `Modal`, `Switch`, `DatePicker`, etc.): use a `render` function that owns the state with `useState`.
+
+### Title conventions
+
+Group stories by component family using `/` in the title:
+
+| Family       | Examples                                          |
+| ------------ | ------------------------------------------------- |
+| `Form`       | Button, Input, Textarea, Switch, RadioGroup       |
+| `Layout`     | Card, Separator, Accordion, Tabs                  |
+| `Navigation` | Breadcrumb, Pagination, Stepper                   |
+| `Feedback`   | Toast, Banner, Callout, Alert, Badge, Spinner     |
+| `Overlay`    | Modal, SidePanel, Tooltip, Popover, AlertDialog   |
+| `Display`    | Avatar, StatCard, DetailRow, IconTile             |
+| `Theming`    | ThemeProvider + theming docs                      |
+
+### Verifying
+
+- `npm run storybook` — story shows up in the sidebar, renders correctly in both light and dark via the toolbar paintbrush.
+- Open the **Accessibility** panel — resolve any critical violations from `@storybook/addon-a11y` before merging.
+- `npm run build-storybook` — story is included in the static build.
+
+### Conventions for naming a story export
+
+Story names must not collide with imports in scope. If you import `Warning` from `@phosphor-icons/react`, name the variant story `WarningVariant` and use `name: 'Warning'` to control how it displays in the sidebar:
+
+```tsx
+export const WarningVariant: Story = {
+  name: 'Warning',
+  args: { variant: 'warning', icon: <Warning /> },
+};
+```

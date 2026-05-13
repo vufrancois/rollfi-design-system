@@ -1,0 +1,33 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Theming / Overview" />
+
+# Theming
+
+The Rollfi design system uses **semantic CSS custom properties** scoped by a `data-theme` attribute. Every component reads its colors, spacing, radii, shadows, and type from `--rf-*` variables — never hardcoded values.
+
+## How it works
+
+1. `ThemeProvider` (or the Storybook toolbar) sets `data-theme="light" | "dark"` on `<html>`.
+2. `src/tokens/colors.css` defines two parallel blocks: `:root, [data-theme="light"] { ... }` and `[data-theme="dark"] { ... }`. The browser cascades to whichever matches.
+3. Components reference the semantic token name (e.g. `--rf-color-surface`, `--rf-color-text-secondary`) — never a literal color.
+
+## Adding a theme-aware component
+
+```css
+.rf-my-thing {
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  border: 1px solid var(--rf-color-border);
+}
+```
+
+That's it. The same CSS works in both themes because the variables resolve differently.
+
+## Sidebar exception
+
+The sidebar palette intentionally stays dark in both themes — see `--rf-color-sidebar*` tokens. Anything embedded in a sidebar should pull from those tokens rather than the regular surface/text tokens.
+
+## Verifying both themes
+
+Use the Storybook toolbar **paintbrush icon** (top bar) to flip every story between light and dark. A component that doesn't render correctly in one theme is a bug.
