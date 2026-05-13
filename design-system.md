@@ -754,6 +754,25 @@ Reusable settings / preferences row. Title + description on the left, a control 
 
 **Props:** `title`, `description?`, `control` (right-side ReactNode), `icon?`, `active?`, `onClick?`, `className?`.
 
+### DataGrid
+```tsx
+<DataGrid items={[
+  { label: 'Account name', value: 'Primary payroll' },
+  { label: 'Account',      value: '••• 4491' },
+  { label: 'Routing',      value: '••• 8901' },
+  { label: 'Type',         value: 'Checking' },
+  { label: 'Added',        value: 'Jan 14, 2026' },
+]} />
+
+// With a fixed column count
+<DataGrid columns={3} gap="lg" items={[...]} />
+```
+Horizontal flow of label-above-value pairs. Used inside cards (bank account details, pay stub headers, profile metadata) where a row of related mini-stats reads better than stacked `DetailRow`s or a full `Table`. Values get `font-variant-numeric: tabular-nums` so dates/account numbers/amounts line up.
+
+**Props:** `items` (`{ label, value }[]`), `gap?` (`sm` 16px | `md` 24px default | `lg` 32px), `columns?` (forces an N-column grid; without it items flow with `flex-wrap`), `className?`.
+
+> When to use: `DetailRow` for a vertical stack of label/value rows (review screens). `DataGrid` for a horizontal strip inside a card. `StatCard` for the big-number KPI tiles in a dashboard ladder.
+
 ### IconTile
 ```tsx
 <IconTile variant="danger"><Clock size={16} /></IconTile>
@@ -764,6 +783,38 @@ Colored container for an icon — used in task lists, settings rows, notificatio
 **Variants:** `neutral` (default) | `success` | `danger` | `warning` | `info` | `teal` | `purple` | `orange`
 **Sizes:** `sm` (24px) | `md` (32px, default) | `lg` (40px)
 **Shapes:** `square` (default, `radius-sm`) | `circle`
+
+### StackedBar
+```tsx
+<StackedBar
+  format={n => `$${n.toLocaleString()}`}
+  segments={[
+    { label: 'Direct deposits (ACH)', value: 8250, color: 'var(--rf-color-success)' },
+    { label: 'Check payments',        value: 3120, color: 'var(--rf-color-accent-teal)' },
+    { label: 'Garnishments',          value: 1270, color: 'var(--rf-color-text-tertiary)' },
+  ]}
+/>
+```
+Horizontal stacked bar chart with an optional legend (color swatch + label + formatted value). Each segment's width is proportional to its value relative to the total. Auto-rotates through semantic accent tokens when `color` is omitted, or supply per-segment colors.
+
+**Props:** `segments` (`{ label, value, color? }[]`), `total?` (override the auto-summed total), `format?` (number → string for the legend), `height?` (default 10px), `showLegend?` (default true), `className?`.
+
+> When to use: a few categorical values that sum to a meaningful whole (cash breakdown, revenue-by-product, plan distribution, employee count by department, scenario comparison). For continuous progress toward a single target, use `Progress`; for a multi-step indicator, use `Stepper` or `SegmentedProgress`.
+
+### SaveBar
+```tsx
+<SaveBar
+  dirty={hasUnsavedChanges}
+  onReset={() => resetForm()}
+  onSave={() => saveForm()}
+  saving={isSaving}
+/>
+```
+Footer-style strip with a status message + Reset / Save buttons. Highlights warning-yellow with a "You have unsaved changes." message when `dirty` is true. Buttons auto-disable when there's nothing to save and during in-flight saves.
+
+**Props:** `dirty`, `onSave`, `onReset?`, `cleanLabel?` (default "All changes saved."), `dirtyLabel?` (default "You have unsaved changes."), `saveLabel?` (default "Save changes"), `resetLabel?` (default "Reset to defaults"), `saving?`, `className?`.
+
+Pair with batched-save forms (pricing controls, settings panes, profile editors) so users get an unmistakable affordance that there's pending work and a one-click escape hatch.
 
 ## Patterns
 

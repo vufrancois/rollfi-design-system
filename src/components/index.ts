@@ -81,6 +81,8 @@ export { IconTile } from './IconTile/IconTile';
 export { StatCard } from './StatCard/StatCard';
 export { SettingsRow } from './SettingsRow/SettingsRow';
 export { DataGrid } from './DataGrid/DataGrid';
+export { StackedBar } from './StackedBar/StackedBar';
+export { SaveBar } from './SaveBar/SaveBar';
 
 // Deprecated alias — `ProgressBar` is the legacy name for `SegmentedProgress`.
 /** @deprecated Use `SegmentedProgress` instead. */

@@ -29,7 +29,7 @@ import {
   Calendar, DatePicker, TimePicker,
   AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
-  IconTile, StatCard, SettingsRow, DataGrid,
+  IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
 } from './components';
 import './tokens/index.css';
 
@@ -1900,6 +1900,271 @@ const MOCK_EMPLOYEE_DDS: Record<string, EmployeeDirectDeposit[]> = {
   ],
 };
 
+// ─── Payroll Activity mocks ────────────────────────────────────────────
+type PayPeriodType = 'Regular' | 'Off-Cycle' | 'Missing' | 'Dismissal';
+type TxStatus = 'processed' | 'inProcess' | 'submitted' | 'failed' | 'returned' | 'cancelled';
+type LinkType = 'Plaid' | 'Manual' | 'CustomProvider';
+
+interface PayPeriod {
+  payPeriodId: string;
+  payDate: string;
+  payBeginDate: string;
+  payEndDate: string;
+  payPeriodType: PayPeriodType;
+}
+
+interface PayrollTransaction {
+  requestReferenceId: string;
+  transactionName: 'AchDebit' | 'AchCredit' | 'Check';
+  source: 'EmployerBankAccount' | 'RollfiClearing';
+  destination: 'EmployeeBankAccount' | 'CheckPayment' | 'TaxAgency';
+  sourceAccount?: string;
+  destinationAccount?: string;
+  transferAmount: number;
+  status: TxStatus;
+  employeeName?: string;
+  linkType?: LinkType;
+}
+
+interface CashRequirementsReport {
+  totalElectronicFundsTransfer: number;
+  totalDirectDeposits: number;
+  cashRequiredForCheckPayments: number;
+  garnishments: number;
+}
+
+interface PeriodData {
+  payrollTransaction: PayrollTransaction[];
+  cashRequirementsReport: CashRequirementsReport;
+}
+
+interface PayStubLine { label: string; current: number; ytd?: number; }
+interface PayStub {
+  userId: string;
+  employeeName: string;
+  jobTitle: string;
+  payPeriod: string;
+  paymentMethod: 'Direct Deposit' | 'Check';
+  paymentStatus: 'Paid' | 'Pending' | 'Failed';
+  earnings: PayStubLine[];
+  deductions: PayStubLine[];
+  taxes: PayStubLine[];
+  grossTotal: number;
+  netTotal: number;
+  ytdGrossTotal: number;
+}
+
+const MOCK_PAY_PERIODS: Record<string, PayPeriod[]> = {
+  'a1b2c3d4-0001': [
+    { payPeriodId: 'pp-acme-3', payDate: '2026-04-30', payBeginDate: '2026-04-16', payEndDate: '2026-04-30', payPeriodType: 'Regular' },
+    { payPeriodId: 'pp-acme-2', payDate: '2026-04-15', payBeginDate: '2026-04-01', payEndDate: '2026-04-15', payPeriodType: 'Regular' },
+    { payPeriodId: 'pp-acme-1', payDate: '2026-03-31', payBeginDate: '2026-03-16', payEndDate: '2026-03-31', payPeriodType: 'Regular' },
+    { payPeriodId: 'pp-acme-oc', payDate: '2026-04-10', payBeginDate: '2026-04-10', payEndDate: '2026-04-10', payPeriodType: 'Off-Cycle' },
+  ],
+  'a1b2c3d4-0002': [
+    { payPeriodId: 'pp-gbx-1', payDate: '2026-04-30', payBeginDate: '2026-04-01', payEndDate: '2026-04-30', payPeriodType: 'Regular' },
+  ],
+  'a1b2c3d4-0003': [
+    { payPeriodId: 'pp-init-1', payDate: '2026-04-30', payBeginDate: '2026-04-16', payEndDate: '2026-04-30', payPeriodType: 'Regular' },
+  ],
+};
+
+const MOCK_PERIOD_DATA: Record<string, PeriodData> = {
+  'pp-acme-2': {
+    payrollTransaction: [
+      { requestReferenceId: 'RF-29481', transactionName: 'AchDebit', source: 'EmployerBankAccount', destination: 'TaxAgency', sourceAccount: '4491', transferAmount: 12640.50, status: 'processed' },
+      { requestReferenceId: 'RF-29482', transactionName: 'AchCredit', source: 'RollfiClearing', destination: 'EmployeeBankAccount', destinationAccount: '4521', transferAmount: 2450.00, status: 'processed', employeeName: 'Pam Beesly', linkType: 'Plaid' },
+      { requestReferenceId: 'RF-29483', transactionName: 'AchCredit', source: 'RollfiClearing', destination: 'EmployeeBankAccount', destinationAccount: '7782', transferAmount: 2860.00, status: 'processed', employeeName: 'Jim Halpert', linkType: 'Plaid' },
+      { requestReferenceId: 'RF-29484', transactionName: 'Check', source: 'RollfiClearing', destination: 'CheckPayment', transferAmount: 3120.00, status: 'inProcess', employeeName: 'Dwight Schrute' },
+      { requestReferenceId: 'RF-29485', transactionName: 'AchCredit', source: 'RollfiClearing', destination: 'EmployeeBankAccount', destinationAccount: '1199', transferAmount: 2940.00, status: 'failed', employeeName: 'Stanley Hudson', linkType: 'Manual' },
+    ],
+    cashRequirementsReport: {
+      totalElectronicFundsTransfer: 12640.50,
+      totalDirectDeposits: 8250.00,
+      cashRequiredForCheckPayments: 3120.00,
+      garnishments: 1270.50,
+    },
+  },
+  'pp-acme-3': {
+    payrollTransaction: [
+      { requestReferenceId: 'RF-29501', transactionName: 'AchDebit', source: 'EmployerBankAccount', destination: 'TaxAgency', sourceAccount: '4491', transferAmount: 13420.00, status: 'inProcess' },
+      { requestReferenceId: 'RF-29502', transactionName: 'AchCredit', source: 'RollfiClearing', destination: 'EmployeeBankAccount', destinationAccount: '4521', transferAmount: 2450.00, status: 'submitted', employeeName: 'Pam Beesly', linkType: 'Plaid' },
+      { requestReferenceId: 'RF-29503', transactionName: 'AchCredit', source: 'RollfiClearing', destination: 'EmployeeBankAccount', destinationAccount: '7782', transferAmount: 2860.00, status: 'submitted', employeeName: 'Jim Halpert', linkType: 'Plaid' },
+    ],
+    cashRequirementsReport: {
+      totalElectronicFundsTransfer: 13420.00,
+      totalDirectDeposits: 5310.00,
+      cashRequiredForCheckPayments: 0,
+      garnishments: 0,
+    },
+  },
+};
+
+const MOCK_PAY_STUBS: Record<string, PayStub[]> = {
+  'pp-acme-2': [
+    {
+      userId: 'e1', employeeName: 'Pam Beesly', jobTitle: 'Receptionist', payPeriod: 'Apr 1 – Apr 15, 2026',
+      paymentMethod: 'Direct Deposit', paymentStatus: 'Paid',
+      earnings: [
+        { label: 'Regular pay', current: 2800.00, ytd: 16800.00 },
+        { label: 'Bonus', current: 250.00, ytd: 500.00 },
+      ],
+      deductions: [{ label: 'Medical premium', current: 142.00, ytd: 852.00 }],
+      taxes: [
+        { label: 'Federal income tax', current: 312.50, ytd: 1875.00 },
+        { label: 'State income tax (NY)', current: 145.50, ytd: 873.00 },
+      ],
+      grossTotal: 3050.00, netTotal: 2450.00, ytdGrossTotal: 17300.00,
+    },
+    {
+      userId: 'e2', employeeName: 'Jim Halpert', jobTitle: 'Sales', payPeriod: 'Apr 1 – Apr 15, 2026',
+      paymentMethod: 'Direct Deposit', paymentStatus: 'Paid',
+      earnings: [{ label: 'Regular pay', current: 3500.00, ytd: 21000.00 }],
+      deductions: [{ label: 'Medical premium', current: 142.00, ytd: 852.00 }],
+      taxes: [
+        { label: 'Federal income tax', current: 358.00, ytd: 2148.00 },
+        { label: 'State income tax (NY)', current: 140.00, ytd: 840.00 },
+      ],
+      grossTotal: 3500.00, netTotal: 2860.00, ytdGrossTotal: 21000.00,
+    },
+    {
+      userId: 'e3', employeeName: 'Dwight Schrute', jobTitle: 'Asst. to the RM', payPeriod: 'Apr 1 – Apr 15, 2026',
+      paymentMethod: 'Check', paymentStatus: 'Pending',
+      earnings: [{ label: 'Regular pay', current: 3700.00, ytd: 22200.00 }],
+      deductions: [],
+      taxes: [
+        { label: 'Federal income tax', current: 425.00, ytd: 2550.00 },
+        { label: 'State income tax (NY)', current: 155.00, ytd: 930.00 },
+      ],
+      grossTotal: 3700.00, netTotal: 3120.00, ytdGrossTotal: 22200.00,
+    },
+    {
+      userId: 'e4', employeeName: 'Stanley Hudson', jobTitle: 'Sales', payPeriod: 'Apr 1 – Apr 15, 2026',
+      paymentMethod: 'Direct Deposit', paymentStatus: 'Failed',
+      earnings: [{ label: 'Regular pay', current: 3600.00, ytd: 21600.00 }],
+      deductions: [{ label: 'Medical premium', current: 142.00, ytd: 852.00 }],
+      taxes: [
+        { label: 'Federal income tax', current: 368.00, ytd: 2208.00 },
+        { label: 'State income tax (NY)', current: 150.00, ytd: 900.00 },
+      ],
+      grossTotal: 3600.00, netTotal: 2940.00, ytdGrossTotal: 21600.00,
+    },
+  ],
+};
+
+// ─── Tax filings mocks ─────────────────────────────────────────────────
+type DocCategory = 'Quarterly filings' | 'Annual filings' | 'Employee tax forms' | 'Contractor forms';
+
+interface TaxDoc {
+  documentId: string;
+  documentType: string;
+  fileName: string;
+  description: string;
+  category: DocCategory;
+  period: string;
+  generatedOn: string | null;
+  status: 'available' | 'pending';
+}
+
+const TAX_CATEGORY_ORDER: DocCategory[] = ['Quarterly filings', 'Annual filings', 'Employee tax forms', 'Contractor forms'];
+const TAX_CATEGORY_BADGE: Record<DocCategory, 'teal' | 'info' | 'purple' | 'orange'> = {
+  'Quarterly filings': 'teal',
+  'Annual filings': 'info',
+  'Employee tax forms': 'purple',
+  'Contractor forms': 'orange',
+};
+
+const MOCK_TAX_DOCS: Record<string, TaxDoc[]> = {
+  'a1b2c3d4-0001': [
+    { documentId: 'd1', documentType: '941', fileName: 'Form 941 Q1 2026.pdf', description: 'Quarterly federal payroll tax return', category: 'Quarterly filings', period: 'Q1 2026', generatedOn: '2026-04-15', status: 'available' },
+    { documentId: 'd2', documentType: '940', fileName: 'Form 940 2025.pdf', description: 'Annual federal unemployment tax', category: 'Annual filings', period: '2025', generatedOn: '2026-01-31', status: 'available' },
+    { documentId: 'd3', documentType: 'W-2', fileName: 'W-2 batch 2025.zip', description: 'Employee wage and tax statements', category: 'Employee tax forms', period: '2025', generatedOn: '2026-01-31', status: 'available' },
+    { documentId: 'd4', documentType: 'NY State Quarterly', fileName: 'NY-45 Q1 2026.pdf', description: 'New York state quarterly return', category: 'Quarterly filings', period: 'Q1 2026', generatedOn: '2026-04-30', status: 'available' },
+    { documentId: 'd5', documentType: '1099-NEC', fileName: '1099-NEC 2025.zip', description: 'Contractor non-employee compensation', category: 'Contractor forms', period: '2025', generatedOn: '2026-01-31', status: 'available' },
+    { documentId: 'd6', documentType: '941', fileName: 'Form 941 Q2 2026.pdf', description: 'Quarterly federal payroll tax return', category: 'Quarterly filings', period: 'Q2 2026', generatedOn: null, status: 'pending' },
+  ],
+  'a1b2c3d4-0002': [
+    { documentId: 'd7', documentType: '941', fileName: 'Form 941 Q1 2026.pdf', description: 'Quarterly federal payroll tax return', category: 'Quarterly filings', period: 'Q1 2026', generatedOn: '2026-04-15', status: 'available' },
+  ],
+};
+
+// ─── Billing mocks ─────────────────────────────────────────────────────
+interface BillingRow {
+  companyId: string;
+  company: string;
+  zenithCompanyId: string;
+  totalActiveUsers: number;
+  totalPaidUsers: number;
+  W2Filings: number;
+  k1099Filings: number;
+  quarterlyTaxPackage: number;
+  achReturns: number;
+  oneDayPayrollEnabled: boolean;
+  EINs: number;
+  bankMethod: 'plaid' | 'manual';
+  [key: string]: unknown;
+}
+
+const MOCK_BILLING: BillingRow[] = [
+  { companyId: 'a1b2c3d4-0001', company: 'Acme Corp',          zenithCompanyId: 'ZN-29481', totalActiveUsers: 124, totalPaidUsers: 119, W2Filings: 110, k1099Filings: 9,  quarterlyTaxPackage: 1, achReturns: 0, oneDayPayrollEnabled: true,  EINs: 1, bankMethod: 'plaid' },
+  { companyId: 'a1b2c3d4-0002', company: 'Globex Inc',         zenithCompanyId: 'ZN-29482', totalActiveUsers: 38,  totalPaidUsers: 36,  W2Filings: 34,  k1099Filings: 2,  quarterlyTaxPackage: 1, achReturns: 1, oneDayPayrollEnabled: false, EINs: 1, bankMethod: 'manual' },
+  { companyId: 'a1b2c3d4-0003', company: 'Initech Industries', zenithCompanyId: 'ZN-29483', totalActiveUsers: 412, totalPaidUsers: 401, W2Filings: 388, k1099Filings: 13, quarterlyTaxPackage: 2, achReturns: 0, oneDayPayrollEnabled: true,  EINs: 2, bankMethod: 'plaid' },
+  { companyId: 'a1b2c3d4-0004', company: 'Umbrella LLC',       zenithCompanyId: 'ZN-29484', totalActiveUsers: 22,  totalPaidUsers: 20,  W2Filings: 18,  k1099Filings: 2,  quarterlyTaxPackage: 1, achReturns: 3, oneDayPayrollEnabled: false, EINs: 1, bankMethod: 'plaid' },
+  { companyId: 'a1b2c3d4-0005', company: 'Stark Enterprises',  zenithCompanyId: 'ZN-29485', totalActiveUsers: 86,  totalPaidUsers: 84,  W2Filings: 80,  k1099Filings: 4,  quarterlyTaxPackage: 1, achReturns: 0, oneDayPayrollEnabled: false, EINs: 1, bankMethod: 'manual' },
+  { companyId: 'a1b2c3d4-0006', company: 'WeWork',             zenithCompanyId: 'ZN-29486', totalActiveUsers: 64,  totalPaidUsers: 60,  W2Filings: 56,  k1099Filings: 4,  quarterlyTaxPackage: 1, achReturns: 0, oneDayPayrollEnabled: true,  EINs: 1, bankMethod: 'plaid' },
+];
+
+const BILLING_MONTHS = [
+  { key: '2026-05', label: 'May 2026',   startDate: '2026-05-01', endDate: '2026-05-31', current: true  },
+  { key: '2026-04', label: 'April 2026', startDate: '2026-04-01', endDate: '2026-04-30', current: false },
+  { key: '2026-03', label: 'March 2026', startDate: '2026-03-01', endDate: '2026-03-31', current: false },
+  { key: '2026-02', label: 'February 2026', startDate: '2026-02-01', endDate: '2026-02-28', current: false },
+];
+
+interface PricingRate { type: 'flat' | 'tiered'; value: number; }
+const DEFAULT_PRICING: Record<string, PricingRate> = {
+  perActiveEmployee:        { type: 'flat', value: 6.00 },
+  perEinMonthly:            { type: 'flat', value: 8.00 },
+  perQuarterlyPackage:      { type: 'flat', value: 50.00 },
+  oneDayPayrollMonthly:     { type: 'flat', value: 25.00 },
+  timeTrackingPerEmployee:  { type: 'flat', value: 4.00 },
+  ptoPerEin:                { type: 'flat', value: 10.00 },
+  ptoPerEmployee:           { type: 'flat', value: 2.00 },
+};
+const DEFAULT_FEES = {
+  newCompanyOnboarding: 250.00,
+  expeditedFiling: 75.00,
+  manualCorrection: 50.00,
+};
+
+const RATE_FIELDS = [
+  { key: 'perActiveEmployee',     label: 'Per active employee',     helper: 'Charged monthly per employee with an active payroll profile' },
+  { key: 'perEinMonthly',         label: 'Per EIN, monthly',        helper: 'Charged monthly for each tax-filing EIN' },
+  { key: 'perQuarterlyPackage',   label: 'Per quarterly package',   helper: 'Quarterly tax filing package fee' },
+  { key: 'oneDayPayrollMonthly',  label: '1-Day Payroll subscription', helper: 'Monthly add-on for guaranteed same-day payroll' },
+];
+
+interface PayoutAccount {
+  bankName: string;
+  accountName: string;
+  accountType: 'checking' | 'savings';
+  accountNumber: string;
+  method: 'plaid' | 'manual';
+  status: 'active' | 'pending_verification';
+  addedOn: string;
+  microDepositsSentOn?: string;
+}
+
+const MOCK_PAYOUT_ACCOUNT: PayoutAccount = {
+  bankName: 'JPMorgan Chase',
+  accountName: 'Rollfi Partner Revenue',
+  accountType: 'checking',
+  accountNumber: '••• 9920',
+  method: 'plaid',
+  status: 'active',
+  addedOn: '2025-09-15',
+};
+
 const statusVariant = (s: string) =>
   s === 'active' ? 'success' :
   s === 'payroll_ready' ? 'teal' :
@@ -3022,15 +3287,484 @@ function ImplementationsView() {
   );
 }
 
+// ─── Payroll Activity helpers ───
+const fmtUsd = (n: number) =>
+  '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+function TxStatusBadge({ status }: { status: TxStatus }) {
+  const map: Record<TxStatus, { label: string; variant: 'success' | 'info' | 'danger' | 'neutral' | 'warning' }> = {
+    processed:  { label: 'Processed',  variant: 'success' },
+    inProcess:  { label: 'Processing', variant: 'info' },
+    submitted:  { label: 'Submitted',  variant: 'info' },
+    failed:     { label: 'Failed',     variant: 'danger' },
+    returned:   { label: 'Returned',   variant: 'danger' },
+    cancelled:  { label: 'Cancelled',  variant: 'neutral' },
+  };
+  const cfg = map[status] ?? { label: status, variant: 'neutral' };
+  return <Badge variant={cfg.variant}>{cfg.label}</Badge>;
+}
+
+function PayPeriodTypeBadge({ type }: { type: PayPeriodType }) {
+  const map: Record<PayPeriodType, 'neutral' | 'purple' | 'danger' | 'warning'> = {
+    'Regular': 'neutral',
+    'Off-Cycle': 'purple',
+    'Missing': 'danger',
+    'Dismissal': 'warning',
+  };
+  return <Badge variant={map[type]}>{type}</Badge>;
+}
+
+function BankLinkBadge({ link }: { link?: LinkType }) {
+  if (!link) return <span style={{ color: 'var(--rf-color-text-tertiary)' }}>—</span>;
+  if (link === 'Plaid')          return <Badge variant="teal">Plaid</Badge>;
+  if (link === 'Manual')         return <Badge variant="neutral">Manual ACH</Badge>;
+  if (link === 'CustomProvider') return <Badge variant="purple">Custom</Badge>;
+  return null;
+}
+
+// ─── PayStubPanel (portal-specific composition) ───
+function PayStubSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section>
+      <div style={{
+        font: 'var(--rf-text-caption-sm)',
+        fontWeight: 700,
+        color: 'var(--rf-color-text-tertiary)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em',
+        marginBottom: 6,
+        paddingBottom: 8,
+        borderBottom: '1px solid var(--rf-color-border)',
+      }}>
+        {title}
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+function PayStubPanel({ stub, open, onClose }: { stub: PayStub | null; open: boolean; onClose: () => void }) {
+  if (!stub) return null;
+  const totalTaxes = stub.taxes.reduce((s, t) => s + t.current, 0);
+  const totalDeductions = stub.deductions.reduce((s, d) => s + d.current, 0);
+  const paymentBadge =
+    stub.paymentStatus === 'Paid' ? <Badge variant="success">Paid</Badge>
+      : stub.paymentStatus === 'Pending' ? <Badge variant="warning">Pending</Badge>
+      : <Badge variant="danger">Failed</Badge>;
+
+  return (
+    <SidePanel
+      open={open}
+      onClose={onClose}
+      width="lg"
+      title={stub.employeeName}
+      description={`${stub.jobTitle} · ${stub.payPeriod}`}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose}>Close</Button>
+          <Button icon={<Download size={14} />}>Download stub</Button>
+        </>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <Card variant="default" padding="md">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16 }}>
+            <div>
+              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Net pay</div>
+              <div style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)', color: 'var(--rf-color-success-text)', fontVariantNumeric: 'tabular-nums' }}>
+                {fmtUsd(stub.netTotal)}
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+              {paymentBadge}
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)' }}>{stub.paymentMethod}</span>
+            </div>
+          </div>
+        </Card>
+
+        <PayStubSection title="Earnings">
+          {stub.earnings.map(e => (
+            <DetailRow key={e.label} label={e.label} value={
+              <span style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {fmtUsd(e.current)}
+                {e.ytd !== undefined && <span style={{ color: 'var(--rf-color-text-tertiary)', marginLeft: 8 }}>{fmtUsd(e.ytd)} YTD</span>}
+              </span>
+            } />
+          ))}
+          <DetailRow label={<strong>Gross pay</strong>} value={<strong style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtUsd(stub.grossTotal)}</strong>} />
+        </PayStubSection>
+
+        <PayStubSection title="Tax withholding">
+          {stub.taxes.map(t => (
+            <DetailRow key={t.label} label={t.label} value={
+              <span style={{ color: 'var(--rf-color-danger-text)', fontVariantNumeric: 'tabular-nums' }}>−{fmtUsd(t.current)}</span>
+            } />
+          ))}
+          <DetailRow label={<strong>Total tax withheld</strong>} value={<strong style={{ color: 'var(--rf-color-danger-text)', fontVariantNumeric: 'tabular-nums' }}>−{fmtUsd(totalTaxes)}</strong>} />
+        </PayStubSection>
+
+        {stub.deductions.length > 0 && (
+          <PayStubSection title="Deductions">
+            {stub.deductions.map(d => (
+              <DetailRow key={d.label} label={d.label} value={
+                <span style={{ color: 'var(--rf-color-danger-text)', fontVariantNumeric: 'tabular-nums' }}>−{fmtUsd(d.current)}</span>
+              } />
+            ))}
+            <DetailRow label={<strong>Total deductions</strong>} value={<strong style={{ color: 'var(--rf-color-danger-text)', fontVariantNumeric: 'tabular-nums' }}>−{fmtUsd(totalDeductions)}</strong>} />
+          </PayStubSection>
+        )}
+
+        <PayStubSection title="YTD summary">
+          <div style={{ paddingTop: 4 }}>
+            <DataGrid items={[
+              { label: 'Gross YTD', value: fmtUsd(stub.ytdGrossTotal) },
+              { label: 'Net YTD', value: fmtUsd(stub.ytdGrossTotal - stub.taxes.reduce((s, t) => s + (t.ytd ?? 0), 0)) },
+            ]} />
+          </div>
+        </PayStubSection>
+      </div>
+    </SidePanel>
+  );
+}
+
+// ─── Payments tab ───
+function PaymentsTab() {
+  const sorted = [...PORTAL_COMPANIES].sort((a, b) => a.name.localeCompare(b.name));
+  const [companyId, setCompanyId] = useState(sorted[0].id);
+  const [periodId, setPeriodId] = useState<string | null>('pp-acme-2');
+  const [stub, setStub] = useState<PayStub | null>(null);
+
+  const company = PORTAL_COMPANIES.find(c => c.id === companyId)!;
+  const periods = MOCK_PAY_PERIODS[companyId] || [];
+  const period = periods.find(p => p.payPeriodId === periodId) ?? null;
+  const data = periodId ? MOCK_PERIOD_DATA[periodId] ?? null : null;
+  const stubs = periodId ? MOCK_PAY_STUBS[periodId] ?? [] : [];
+  const txs = (data?.payrollTransaction ?? []).filter(t => t.destination === 'EmployeeBankAccount' || t.destination === 'CheckPayment');
+  const hasFailed = txs.some(t => t.status === 'failed');
+  const hasPending = txs.some(t => t.status === 'inProcess');
+  const debit = data?.payrollTransaction?.find(tx => tx.transactionName === 'AchDebit' && tx.source === 'EmployerBankAccount');
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 20, alignItems: 'start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'sticky', top: 24 }}>
+        <Field label="Company">
+          <Select
+            value={companyId}
+            onChange={e => { setCompanyId(e.target.value); setPeriodId(null); setStub(null); }}
+            options={sorted.map(c => ({ value: c.id, label: c.name }))}
+          />
+        </Field>
+
+        {periods.length > 0 ? (
+          <Card variant="default" padding="none">
+            <div style={{ padding: '12px 16px', background: 'var(--rf-color-surface-elevated)', borderBottom: '1px solid var(--rf-color-border)', font: 'var(--rf-text-caption-sm)', fontWeight: 700, color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Pay periods
+            </div>
+            {periods.map((p, i) => {
+              const active = p.payPeriodId === periodId;
+              const periodHasFailed = MOCK_PERIOD_DATA[p.payPeriodId]?.payrollTransaction?.some(t => t.status === 'failed');
+              return (
+                <button
+                  key={p.payPeriodId}
+                  type="button"
+                  onClick={() => { setPeriodId(p.payPeriodId); setStub(null); }}
+                  style={{
+                    width: '100%', textAlign: 'left',
+                    padding: '11px 16px',
+                    border: 'none',
+                    borderBottom: i < periods.length - 1 ? '1px solid var(--rf-color-border-subtle)' : 'none',
+                    borderLeft: active ? '3px solid var(--rf-color-primary)' : '3px solid transparent',
+                    background: active ? 'var(--rf-color-surface-elevated)' : 'transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>Pay {fmtIsoDate(p.payDate)}</span>
+                    <PayPeriodTypeBadge type={p.payPeriodType} />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>
+                      {fmtIsoDate(p.payBeginDate)} to {fmtIsoDate(p.payEndDate)}
+                    </span>
+                    {periodHasFailed && <StatusDot variant="danger" pulse />}
+                  </div>
+                </button>
+              );
+            })}
+          </Card>
+        ) : (
+          <Card variant="default" padding="md">
+            <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)' }}>
+              No processed pay periods for {company.name}.
+            </span>
+          </Card>
+        )}
+      </div>
+
+      {!period ? (
+        <Card variant="default" padding="lg">
+          <EmptyState
+            icon={<ChartBar size={24} />}
+            title="Select a pay period"
+            description="Choose a pay period from the list to see transaction details and employee pay stubs."
+          />
+        </Card>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div>
+            <div style={{ font: 'var(--rf-text-heading-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>
+              {company.name} · {fmtIsoDate(period.payBeginDate)} to {fmtIsoDate(period.payEndDate)}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>Pay date {fmtIsoDate(period.payDate)}</span>
+              <PayPeriodTypeBadge type={period.payPeriodType} />
+            </div>
+          </div>
+
+          {hasFailed && (
+            <Callout variant="danger" icon={<Warning size={16} weight="fill" />}>
+              One or more transactions failed. Review the transaction table below.
+            </Callout>
+          )}
+          {hasPending && !hasFailed && (
+            <Callout variant="info" icon={<Clock size={16} />}>
+              Some transactions are still processing.
+            </Callout>
+          )}
+
+          {debit && (
+            <Card variant="default" padding="none" style={{ borderColor: debit.status === 'processed' ? 'var(--rf-color-success-border)' : debit.status === 'failed' ? 'var(--rf-color-danger-border)' : 'var(--rf-color-warning-border)' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '14px 20px',
+                background: debit.status === 'processed' ? 'var(--rf-color-success-bg)' : debit.status === 'failed' ? 'var(--rf-color-danger-bg)' : 'var(--rf-color-warning-bg)',
+                borderBottom: `1px solid ${debit.status === 'processed' ? 'var(--rf-color-success-border)' : debit.status === 'failed' ? 'var(--rf-color-danger-border)' : 'var(--rf-color-warning-border)'}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>Employer ACH debit</span>
+                  <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Funds pulled from company account to fund payroll</span>
+                </div>
+                <TxStatusBadge status={debit.status} />
+              </div>
+              <div style={{ padding: '16px 20px' }}>
+                <DataGrid columns={4} gap="md" items={[
+                  { label: 'Account debited', value: `••• ${debit.sourceAccount}` },
+                  { label: 'Total amount', value: <strong style={{ font: 'var(--rf-text-heading-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>{fmtUsd(debit.transferAmount)}</strong> },
+                  { label: 'Trace number', value: <span style={{ font: 'var(--rf-text-code)' }}>#{debit.requestReferenceId}</span> },
+                  { label: 'Transaction type', value: 'ACH Debit' },
+                ]} />
+              </div>
+              {data?.cashRequirementsReport && (
+                <div style={{ padding: '14px 20px', borderTop: '1px solid var(--rf-color-border)', background: 'var(--rf-color-surface-elevated)' }}>
+                  <StackedBar
+                    format={fmtUsd}
+                    segments={[
+                      { label: 'Direct deposits (ACH)', value: data.cashRequirementsReport.totalDirectDeposits, color: 'var(--rf-color-success)' },
+                      { label: 'Check payments',        value: data.cashRequirementsReport.cashRequiredForCheckPayments, color: 'var(--rf-color-accent-teal)' },
+                      { label: 'Garnishments',          value: data.cashRequirementsReport.garnishments, color: 'var(--rf-color-text-tertiary)' },
+                    ]}
+                  />
+                </div>
+              )}
+            </Card>
+          )}
+
+          <Card variant="default" padding="none">
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--rf-color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)' }}>Employee payments</span>
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>{txs.length} transaction{txs.length === 1 ? '' : 's'}</span>
+            </div>
+            <Table
+              columns={[
+                { key: 'trace', header: 'Trace #', render: row => <span style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text-tertiary)' }}>#{row.requestReferenceId as string}</span> },
+                { key: 'employee', header: 'Employee', render: row => {
+                  const name = (row.employeeName as string) || (row.destination === 'CheckPayment' ? 'Check payment' : 'Direct deposit');
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <Avatar name={name} size="sm" />
+                      <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{name}</span>
+                    </div>
+                  );
+                } },
+                { key: 'link', header: 'Bank link', render: row => row.destination === 'CheckPayment' ? <span style={{ color: 'var(--rf-color-text-tertiary)' }}>—</span> : <BankLinkBadge link={row.linkType as LinkType | undefined} /> },
+                { key: 'account', header: 'Account', render: row => (
+                  <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+                    {row.destination === 'CheckPayment' ? 'Check' : `••• ${row.destinationAccount}`}
+                  </span>
+                ) },
+                { key: 'amount', header: 'Amount', align: 'right', render: row => (
+                  <span style={{ font: 'var(--rf-text-body-sm-strong)', color: row.destination === 'CheckPayment' ? 'var(--rf-color-text-secondary)' : 'var(--rf-color-success-text)', fontVariantNumeric: 'tabular-nums' }}>
+                    {fmtUsd(row.transferAmount as number)}
+                  </span>
+                ) },
+                { key: 'status', header: 'Status', render: row => <TxStatusBadge status={row.status as TxStatus} /> },
+              ]}
+              data={txs.map(tx => ({ ...tx, id: tx.requestReferenceId }))}
+              rowKey={r => r.id as string}
+              onRowClick={row => {
+                const found = stubs.find(s => s.employeeName === (row.employeeName as string));
+                if (found) setStub(found);
+              }}
+            />
+          </Card>
+
+          {stubs.length > 0 && (
+            <Card variant="default" padding="none">
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--rf-color-border)' }}>
+                <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)' }}>Employee pay stubs</div>
+                <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)', marginTop: 2 }}>Click any row to view the full pay stub breakdown.</div>
+              </div>
+              <Table
+                columns={[
+                  { key: 'employeeName', header: 'Employee', render: row => (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <Avatar name={row.employeeName as string} size="sm" />
+                      <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.employeeName as string}</span>
+                    </div>
+                  ) },
+                  { key: 'grossTotal', header: 'Gross', align: 'right', render: row => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{fmtUsd(row.grossTotal as number)}</span> },
+                  { key: 'netTotal', header: 'Net', align: 'right', render: row => <span style={{ font: 'var(--rf-text-body-sm-strong)', color: 'var(--rf-color-success-text)', fontVariantNumeric: 'tabular-nums' }}>{fmtUsd(row.netTotal as number)}</span> },
+                  { key: 'taxes', header: 'Taxes', align: 'right', render: row => <span style={{ color: 'var(--rf-color-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>{fmtUsd((row.taxes as PayStubLine[]).reduce((s, t) => s + t.current, 0))}</span> },
+                  { key: 'ytdGrossTotal', header: 'YTD Gross', align: 'right', render: row => <span style={{ color: 'var(--rf-color-text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>{fmtUsd(row.ytdGrossTotal as number)}</span> },
+                ]}
+                data={stubs.map(s => ({ ...s, id: s.userId }))}
+                rowKey={r => r.id as string}
+                onRowClick={row => setStub(stubs.find(s => s.userId === row.userId) ?? null)}
+              />
+            </Card>
+          )}
+        </div>
+      )}
+
+      <PayStubPanel stub={stub} open={!!stub} onClose={() => setStub(null)} />
+    </div>
+  );
+}
+
+// ─── Tax filings tab ───
+function TaxFilingsTab() {
+  const sorted = [...PORTAL_COMPANIES].sort((a, b) => a.name.localeCompare(b.name));
+  const [companyId, setCompanyId] = useState(sorted[0].id);
+  const [category, setCategory] = useState<'All' | DocCategory>('All');
+  const { toast } = useToast();
+
+  const company = PORTAL_COMPANIES.find(c => c.id === companyId)!;
+  const docs = MOCK_TAX_DOCS[companyId] || [];
+  const availableCategories: ('All' | DocCategory)[] = [
+    'All',
+    ...TAX_CATEGORY_ORDER.filter(c => docs.some(d => d.category === c)),
+  ];
+  const filtered = docs.filter(d => category === 'All' || d.category === category);
+  const grouped = TAX_CATEGORY_ORDER.reduce<Record<string, TaxDoc[]>>((acc, cat) => {
+    const items = filtered.filter(d => d.category === cat);
+    if (items.length) acc[cat] = items;
+    return acc;
+  }, {});
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 20, alignItems: 'start' }}>
+      <div style={{ position: 'sticky', top: 24 }}>
+        <Field label="Company">
+          <Select
+            value={companyId}
+            onChange={e => { setCompanyId(e.target.value); setCategory('All'); }}
+            options={sorted.map(c => ({ value: c.id, label: c.name }))}
+          />
+        </Field>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+          <div>
+            <div style={{ font: 'var(--rf-text-heading-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>{company.name}</div>
+            <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginTop: 2 }}>
+              {docs.length} document{docs.length === 1 ? '' : 's'} available
+            </div>
+          </div>
+          {availableCategories.length > 1 && (
+            <SegmentedControl
+              size="sm"
+              value={category}
+              onChange={v => setCategory(v as 'All' | DocCategory)}
+              items={availableCategories.map(c => ({ value: c, label: c === 'All' ? 'All' : c.replace(/ filings| forms/, '') }))}
+            />
+          )}
+        </div>
+
+        {docs.length === 0 ? (
+          <Card variant="default" padding="lg">
+            <EmptyState
+              icon={<FileText size={24} />}
+              title={`No tax filing packages for ${company.name} yet`}
+              description="Documents will appear here once Rollfi generates a filing or W-2 / 1099 batch for this company."
+            />
+          </Card>
+        ) : Object.keys(grouped).length === 0 ? (
+          <Card variant="default" padding="lg">
+            <EmptyState
+              icon={<FileText size={24} />}
+              title="No documents in this category"
+              description="Try selecting a different filter above."
+            />
+          </Card>
+        ) : Object.entries(grouped).map(([cat, items]) => {
+          const variant = TAX_CATEGORY_BADGE[cat as DocCategory];
+          return (
+            <Card key={cat} variant="default" padding="none">
+              <div style={{
+                padding: '12px 20px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'var(--rf-color-surface-elevated)',
+                borderBottom: '1px solid var(--rf-color-border)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Badge variant={variant}>{cat}</Badge>
+                </div>
+                <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>
+                  {items.length} document{items.length === 1 ? '' : 's'}
+                </span>
+              </div>
+              <Table
+                columns={[
+                  { key: 'fileName', header: 'Document', render: row => (
+                    <div>
+                      <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.fileName as string}</div>
+                      <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', marginTop: 2 }}>{row.description as string}</div>
+                    </div>
+                  ) },
+                  { key: 'documentType', header: 'Type', render: row => <Badge variant={variant}>{row.documentType as string}</Badge> },
+                  { key: 'period', header: 'Period', render: row => <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--rf-color-text-secondary)' }}>{row.period as string}</span> },
+                  { key: 'generatedOn', header: 'Generated', render: row => row.generatedOn
+                    ? <span style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--rf-color-text-secondary)' }}>{fmtIsoDate(row.generatedOn as string)}</span>
+                    : <span style={{ color: 'var(--rf-color-text-tertiary)' }}>Pending</span> },
+                  { key: 'status', header: 'Status', render: row => row.status === 'available'
+                    ? <Badge variant="success">Available</Badge>
+                    : <Badge variant="neutral">Pending</Badge> },
+                  { key: 'actions', header: '', align: 'right', render: row => (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      icon={<Download size={12} />}
+                      disabled={row.status !== 'available'}
+                      onClick={() => toast(`Downloading ${row.fileName as string}`)}
+                    >
+                      Download
+                    </Button>
+                  ) },
+                ]}
+                data={items.map(d => ({ ...d, id: d.documentId }))}
+                rowKey={r => r.id as string}
+              />
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ActivityView() {
   const [subTab, setSubTab] = useState('payments');
-  const [companyId, setCompanyId] = useState('1');
-  const [periodId, setPeriodId] = useState('p2');
-  const periods = [
-    { id: 'p1', label: 'Apr 16 – Apr 30, 2026', status: 'active' },
-    { id: 'p2', label: 'Apr 1 – Apr 15, 2026', status: 'payroll_ready' },
-    { id: 'p3', label: 'Mar 16 – Mar 31, 2026', status: 'active' },
-  ];
   return (
     <>
       <PageHeader title="Payroll activity" subtitle="Money movement and tax filing packages" />
@@ -3044,109 +3778,449 @@ function ActivityView() {
           onChange={setSubTab}
         />
       </div>
+      {subTab === 'payments' && <PaymentsTab />}
+      {subTab === 'tax_filings' && <TaxFilingsTab />}
+    </>
+  );
+}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 20, alignItems: 'start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <Field label="Company">
-            <Select value={companyId} onChange={e => setCompanyId(e.target.value)} options={PORTAL_COMPANIES.map(c => ({ value: c.id, label: c.name }))} />
-          </Field>
-          {subTab === 'payments' && (
-            <div>
-              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Pay periods</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {periods.map(p => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => setPeriodId(p.id)}
-                    style={{
-                      textAlign: 'left',
-                      padding: '10px 12px',
-                      borderRadius: 8,
-                      border: '1px solid ' + (periodId === p.id ? 'var(--rf-color-primary)' : 'var(--rf-color-border)'),
-                      background: periodId === p.id ? 'var(--rf-color-surface-elevated)' : 'var(--rf-color-surface)',
-                      cursor: 'pointer',
-                      font: 'var(--rf-text-body-sm)',
-                      color: 'var(--rf-color-text)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                      <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{p.label}</span>
-                      <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
-                    </div>
-                  </button>
-                ))}
+// ─── Billing helpers ───
+function PayrollSpeedBadge({ row }: { row: BillingRow }) {
+  if (row.oneDayPayrollEnabled) return <Badge variant="success">1-Day</Badge>;
+  if (row.bankMethod === 'plaid') return <Badge variant="teal">2-Day</Badge>;
+  return <Badge variant="purple">4-Day</Badge>;
+}
+
+function BillingReportTab() {
+  const [periodKey, setPeriodKey] = useState(BILLING_MONTHS[1].key);
+  const [detailed, setDetailed] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const period = BILLING_MONTHS.find(m => m.key === periodKey) ?? BILLING_MONTHS[1];
+  const isCurrent = period.current;
+  const filtered = MOCK_BILLING.filter(c =>
+    c.company.toLowerCase().includes(search.toLowerCase()) ||
+    c.zenithCompanyId.toLowerCase().includes(search.toLowerCase())
+  );
+  const totals = MOCK_BILLING.reduce(
+    (acc, c) => ({ companies: acc.companies + 1, active: acc.active + c.totalActiveUsers, paid: acc.paid + c.totalPaidUsers }),
+    { companies: 0, active: 0, paid: 0 }
+  );
+
+  return (
+    <>
+      <Card variant="default" padding="md" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 24 }}>
+          <div style={{ flex: 1, maxWidth: 320 }}>
+            <Field label="Billing period" hint={`${fmtIsoDate(period.startDate)} to ${fmtIsoDate(period.endDate)}`}>
+              <Select
+                value={periodKey}
+                onChange={e => setPeriodKey(e.target.value)}
+                options={BILLING_MONTHS.map(m => ({ value: m.key, label: m.label + (m.current ? ' (current)' : '') }))}
+              />
+            </Field>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {isCurrent && (
+              <div style={{
+                padding: '8px 14px',
+                background: 'var(--rf-color-warning-bg)',
+                border: '1px solid var(--rf-color-warning-border)',
+                borderRadius: 'var(--rf-radius-sm)',
+                font: 'var(--rf-text-caption)',
+                color: 'var(--rf-color-warning-text)',
+              }}>
+                Current month — figures update as payroll runs.
               </div>
-            </div>
-          )}
+            )}
+            <Switch checked={detailed} onChange={setDetailed} label="Detailed" />
+            <Button size="sm" icon={<Download size={14} />}>Export</Button>
+          </div>
         </div>
+      </Card>
 
-        <Card variant="outlined" padding="none">
-          {subTab === 'payments' ? (
-            <Table
-              columns={[
-                { key: 'employee', header: 'Employee', render: row => (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Avatar name={row.employee as string} size="sm" />
-                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.employee as string}</span>
-                  </div>
-                ) },
-                { key: 'destination', header: 'Destination', render: row => (
-                  <Tooltip content={`Full account: ${(row.destination as string).replace('•••', '5678-9012-3456')}`} side="top">
-                    <span style={{ borderBottom: '1px dotted var(--rf-color-text-tertiary)', cursor: 'help' }}>{row.destination as string}</span>
-                  </Tooltip>
-                ) },
-                { key: 'amount', header: 'Amount', align: 'right' },
-                { key: 'status', header: 'Status', render: row => {
-                  const s = row.status as string;
-                  return (
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <StatusDot variant={s === 'failed' ? 'danger' : s === 'inProcess' ? 'warning' : 'success'} pulse={s === 'inProcess'} />
-                      <Badge variant={s === 'failed' ? 'danger' : s === 'inProcess' ? 'warning' : 'success'}>{s === 'failed' ? 'Failed' : s === 'inProcess' ? 'In process' : 'Settled'}</Badge>
-                    </div>
-                  );
-                } },
-              ]}
-              data={[
-                { id: 't1', employee: 'Pam Beesly', destination: '••• 4521 · Direct deposit', amount: '$2,450.00', status: 'settled' },
-                { id: 't2', employee: 'Jim Halpert', destination: '••• 7782 · Direct deposit', amount: '$2,860.00', status: 'settled' },
-                { id: 't3', employee: 'Dwight Schrute', destination: 'Check #4421', amount: '$3,120.00', status: 'inProcess' },
-                { id: 't4', employee: 'Stanley Hudson', destination: '••• 1199 · Direct deposit', amount: '$2,940.00', status: 'failed' },
-              ]}
-              rowKey={r => r.id as string}
-              onRowClick={() => {}}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+        <StatCard label="Companies billed" value={totals.companies} />
+        <StatCard label="Active employees" value={totals.active} />
+        <StatCard label="Paid employees" value={totals.paid} />
+      </div>
+
+      <Card variant="default" padding="none">
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--rf-color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
+          <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+            {filtered.length} compan{filtered.length === 1 ? 'y' : 'ies'} · {period.label}
+          </span>
+          <div style={{ maxWidth: 280, width: '100%' }}>
+            <Input
+              icon={<MagnifyingGlass size={14} />}
+              placeholder="Search companies"
+              inputSize="sm"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
             />
-          ) : (
-            <Table
-              columns={[
-                { key: 'period', header: 'Period' },
-                { key: 'forms', header: 'Forms', render: () => <Badge variant="info">W-2 · 941 · 940</Badge> },
-                { key: 'deadline', header: 'Deadline' },
-                { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
-              ]}
-              data={[
-                { id: 'q1', period: 'Q1 2026', forms: '', deadline: 'Apr 30, 2026', status: 'active' },
-                { id: 'q4', period: 'Q4 2025', forms: '', deadline: 'Jan 31, 2026', status: 'active' },
-              ]}
-              rowKey={r => r.id as string}
-            />
-          )}
+          </div>
+        </div>
+        <Table
+          columns={[
+            { key: 'company', header: 'Company', sortable: true, render: row => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                <Avatar name={row.company as string} size="sm" />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.company as string}</div>
+                  <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', fontFamily: 'var(--rf-font-mono)' }}>{row.zenithCompanyId as string}</div>
+                </div>
+              </div>
+            ) },
+            { key: 'totalActiveUsers', header: 'Active', align: 'right', sortable: true, render: row => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{row.totalActiveUsers as number}</span> },
+            { key: 'totalPaidUsers', header: 'Paid', align: 'right', sortable: true, render: row => <span style={{ fontVariantNumeric: 'tabular-nums' }}>{row.totalPaidUsers as number}</span> },
+            { key: 'filings', header: 'Tax filings', render: row => (
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                W-2 <strong style={{ color: 'var(--rf-color-text)' }}>{row.W2Filings as number}</strong> · 1099 <strong style={{ color: 'var(--rf-color-text)' }}>{row.k1099Filings as number}</strong> · Q <strong style={{ color: 'var(--rf-color-text)' }}>{row.quarterlyTaxPackage as number}</strong>
+              </span>
+            ) },
+            { key: 'achReturns', header: 'Returns', align: 'right', sortable: true, render: row => {
+              const n = row.achReturns as number;
+              return n > 0
+                ? <span style={{ font: 'var(--rf-text-body-sm-strong)', color: 'var(--rf-color-danger-text)', fontVariantNumeric: 'tabular-nums' }}>{n}</span>
+                : <span style={{ color: 'var(--rf-color-text-tertiary)' }}>—</span>;
+            } },
+            { key: 'speed', header: 'Payroll speed', render: row => <PayrollSpeedBadge row={row as BillingRow} /> },
+          ]}
+          data={filtered}
+          rowKey={r => r.zenithCompanyId as string}
+          emptyMessage="No companies match your search."
+          expandable={detailed ? (row => (
+            <div style={{ padding: '14px 24px 18px' }}>
+              <div style={{ font: 'var(--rf-text-caption-sm)', fontWeight: 700, color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Per-EIN paychecks
+              </div>
+              <DataGrid columns={4} items={[
+                { label: 'EINs', value: row.EINs as number },
+                { label: 'W-2 filings', value: row.W2Filings as number },
+                { label: '1099 filings', value: row.k1099Filings as number },
+                { label: 'Quarterly packages', value: row.quarterlyTaxPackage as number },
+              ]} />
+            </div>
+          )) : undefined}
+        />
+      </Card>
+    </>
+  );
+}
+
+function PricingControlsTab() {
+  const [pricing, setPricing] = useState<Record<string, PricingRate>>(DEFAULT_PRICING);
+  const [fees, setFees] = useState(DEFAULT_FEES);
+  const [tt, setTT] = useState(true);
+  const [pto, setPto] = useState(true);
+  const [dirty, setDirty] = useState(false);
+  const { toast } = useToast();
+
+  const setRate = (key: string, val: number) => { setPricing({ ...pricing, [key]: { ...pricing[key], value: val } }); setDirty(true); };
+  const setFee = (key: keyof typeof DEFAULT_FEES, val: number) => { setFees({ ...fees, [key]: val }); setDirty(true); };
+  const reset = () => { setPricing(DEFAULT_PRICING); setFees(DEFAULT_FEES); setTT(true); setPto(true); setDirty(false); };
+  const save = () => { setDirty(false); toast('Pricing saved', { variant: 'success' }); };
+
+  // Compute total revenue from MOCK_BILLING
+  const revenue = MOCK_BILLING.reduce((acc, c) => {
+    const r = (k: string) => pricing[k]?.value ?? 0;
+    let gross =
+      r('perActiveEmployee') * c.totalActiveUsers +
+      r('perEinMonthly') * c.EINs +
+      r('perQuarterlyPackage') * c.quarterlyTaxPackage +
+      (c.oneDayPayrollEnabled ? r('oneDayPayrollMonthly') : 0);
+    if (tt) gross += r('timeTrackingPerEmployee') * c.totalActiveUsers;
+    if (pto) gross += r('ptoPerEin') * c.EINs + r('ptoPerEmployee') * c.totalActiveUsers;
+    return acc + gross;
+  }, 0);
+  const tieredCount = Object.values(pricing).filter(v => v.type === 'tiered').length;
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Card variant="default" padding="md">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+            <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)' }}>Recurring rates</div>
+            <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)' }}>{tieredCount} of {RATE_FIELDS.length} tiered</span>
+          </div>
+          <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginBottom: 16, lineHeight: 1.5 }}>
+            Recurring per-unit charges billed against <code style={{ background: 'var(--rf-color-surface-elevated)', padding: '1px 6px', borderRadius: 4, font: 'var(--rf-text-code)' }}>generateZenithBillingReport</code>. Toggle a rate to tiered for volume-based brackets.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {RATE_FIELDS.map(f => (
+              <Field key={f.key} label={f.label} hint={f.helper}>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <Input prefix="$" value={String(pricing[f.key]?.value ?? 0)} onChange={e => setRate(f.key, parseFloat(e.target.value) || 0)} />
+                  <Switch
+                    checked={pricing[f.key]?.type === 'tiered'}
+                    onChange={v => { setPricing({ ...pricing, [f.key]: { ...pricing[f.key], type: v ? 'tiered' : 'flat' } }); setDirty(true); }}
+                    label="Tiered"
+                  />
+                </div>
+              </Field>
+            ))}
+          </div>
+        </Card>
+
+        <Card variant="default" padding="md">
+          <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)', marginBottom: 4 }}>One-time fees</div>
+          <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginBottom: 16 }}>
+            Charged once at the event. Use for setup, expedited work, or out-of-band corrections.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Field label="New company onboarding"><Input prefix="$" value={String(fees.newCompanyOnboarding)} onChange={e => setFee('newCompanyOnboarding', parseFloat(e.target.value) || 0)} /></Field>
+            <Field label="Expedited filing"><Input prefix="$" value={String(fees.expeditedFiling)} onChange={e => setFee('expeditedFiling', parseFloat(e.target.value) || 0)} /></Field>
+            <Field label="Manual correction"><Input prefix="$" value={String(fees.manualCorrection)} onChange={e => setFee('manualCorrection', parseFloat(e.target.value) || 0)} /></Field>
+          </div>
+        </Card>
+
+        <Card variant="default" padding="md">
+          <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)', marginBottom: 4 }}>Add-on products</div>
+          <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginBottom: 16 }}>
+            Charged only for companies with the feature enabled per-company in Implementations.
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: -4 }}>
+              <span style={{ font: 'var(--rf-text-body-md-strong)' }}>Time Tracking</span>
+              <Badge variant="teal">Feature flagged</Badge>
+            </div>
+            <Field label="Per employee, monthly"><Input prefix="$" value={String(pricing.timeTrackingPerEmployee.value)} onChange={e => setRate('timeTrackingPerEmployee', parseFloat(e.target.value) || 0)} /></Field>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, marginBottom: -4 }}>
+              <span style={{ font: 'var(--rf-text-body-md-strong)' }}>PTO</span>
+              <Badge variant="teal">Feature flagged</Badge>
+            </div>
+            <Field label="Per EIN, monthly"><Input prefix="$" value={String(pricing.ptoPerEin.value)} onChange={e => setRate('ptoPerEin', parseFloat(e.target.value) || 0)} /></Field>
+            <Field label="Per employee, monthly"><Input prefix="$" value={String(pricing.ptoPerEmployee.value)} onChange={e => setRate('ptoPerEmployee', parseFloat(e.target.value) || 0)} /></Field>
+          </div>
+        </Card>
+
+        <SaveBar dirty={dirty} onReset={reset} onSave={save} />
+      </div>
+
+      <div style={{ position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <StatCard
+          label="Total revenue (current period)"
+          value={<span style={{ fontVariantNumeric: 'tabular-nums' }}>${revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>}
+        />
+        <Card variant="default" padding="md">
+          <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Rate breakdown</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <DetailRow label="Per active employee" value={<span style={{ fontVariantNumeric: 'tabular-nums' }}>${pricing.perActiveEmployee.value.toFixed(2)}</span>} />
+            <DetailRow label="Per EIN" value={<span style={{ fontVariantNumeric: 'tabular-nums' }}>${pricing.perEinMonthly.value.toFixed(2)}</span>} />
+            <DetailRow label="Per quarterly package" value={<span style={{ fontVariantNumeric: 'tabular-nums' }}>${pricing.perQuarterlyPackage.value.toFixed(2)}</span>} />
+            <DetailRow label="1-Day Payroll add-on" value={<span style={{ fontVariantNumeric: 'tabular-nums' }}>${pricing.oneDayPayrollMonthly.value.toFixed(2)}</span>} />
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>Counts</div>
+          <DetailRow label="Companies billed" value={MOCK_BILLING.length} />
+          <DetailRow label="Tiered rates" value={tieredCount} />
+          <DetailRow label="Active add-on companies" value={(tt ? MOCK_BILLING.length : 0) + (pto ? MOCK_BILLING.length : 0)} />
         </Card>
       </div>
+    </div>
+  );
+}
+
+interface Scenario {
+  id: string;
+  name: string;
+  companies: number;
+  avgEmployees: number;
+  payFreq: 'weekly' | 'biweekly' | 'semimonthly' | 'monthly';
+  einPerCompany: number;
+  oneDayPct: number;
+}
+
+const DEFAULT_SCENARIO: Omit<Scenario, 'id'> = {
+  name: 'Base case', companies: 25, avgEmployees: 40, payFreq: 'biweekly', einPerCompany: 1, oneDayPct: 20,
+};
+
+function simulateRevenue(s: Scenario, p: Record<string, PricingRate>) {
+  const totalEmps = s.companies * s.avgEmployees;
+  const totalEins = s.companies * s.einPerCompany;
+  const monthly =
+    (p.perActiveEmployee.value * totalEmps) +
+    (p.perEinMonthly.value * totalEins) +
+    (p.perQuarterlyPackage.value * (totalEins / 3)) +
+    (p.oneDayPayrollMonthly.value * s.companies * (s.oneDayPct / 100));
+  return { monthly, annual: monthly * 12, totalEmps };
+}
+
+function SimulationTab() {
+  const [scenarios, setScenarios] = useState<Scenario[]>([{ ...DEFAULT_SCENARIO, id: 's1' }]);
+  const results = scenarios.map(s => simulateRevenue(s, DEFAULT_PRICING));
+  const maxAnnual = Math.max(...results.map(r => r.annual), 1);
+  const names = ['Base case', 'Growth case', 'Stretch case'];
+  const update = (id: string, patch: Partial<Scenario>) =>
+    setScenarios(scenarios.map(s => s.id === id ? { ...s, ...patch } : s));
+  const add = () => {
+    if (scenarios.length >= 3) return;
+    setScenarios([...scenarios, {
+      ...DEFAULT_SCENARIO,
+      id: 's' + Math.random().toString(36).slice(2, 6),
+      name: names[scenarios.length] || `Scenario ${scenarios.length + 1}`,
+      companies: DEFAULT_SCENARIO.companies * (scenarios.length + 1),
+      avgEmployees: DEFAULT_SCENARIO.avgEmployees + scenarios.length * 10,
+    }]);
+  };
+  const remove = (id: string) => setScenarios(scenarios.filter(s => s.id !== id));
+
+  return (
+    <>
+      <Callout variant="warning" icon={<Lightning size={16} weight="fill" />} title="Model your revenue potential">
+        Dial in your expected portfolio size and mix to see what your payroll product generates. Rates pull from your current price book. Add up to 3 scenarios to compare a base, growth, and stretch case side by side.
+      </Callout>
+
+      {scenarios.length > 1 && (
+        <Card variant="default" padding="md" style={{ marginTop: 16 }}>
+          <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)', marginBottom: 12 }}>Side-by-side comparison</div>
+          <StackedBar
+            format={n => `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+            segments={scenarios.map((s, i) => ({
+              label: s.name,
+              value: results[i].annual,
+              color: ['var(--rf-color-success)', 'var(--rf-color-accent-teal)', 'var(--rf-color-accent-purple)'][i],
+            }))}
+          />
+        </Card>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${scenarios.length}, 1fr)`, gap: 16, marginTop: 16 }}>
+        {scenarios.map((s, i) => {
+          const r = results[i];
+          return (
+            <Card key={s.id} variant="default" padding="md">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                <div>
+                  <div style={{ font: 'var(--rf-text-heading-sm)', letterSpacing: 'var(--rf-tracking-tight)' }}>{s.name}</div>
+                  <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)' }}>{r.totalEmps.toLocaleString()} employees served</div>
+                </div>
+                {scenarios.length > 1 && (
+                  <Button variant="ghost" size="sm" onClick={() => remove(s.id)}>Remove</Button>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 16 }}>
+                <NumberStepper label="Companies" value={s.companies} min={1} max={500} step={5} onChange={v => update(s.id, { companies: v })} />
+                <NumberStepper label="Avg employees per company" value={s.avgEmployees} min={1} max={500} step={5} onChange={v => update(s.id, { avgEmployees: v })} />
+                <Field label="Pay frequency">
+                  <Select
+                    value={s.payFreq}
+                    onChange={e => update(s.id, { payFreq: e.target.value as Scenario['payFreq'] })}
+                    options={[
+                      { value: 'weekly', label: 'Weekly' },
+                      { value: 'biweekly', label: 'Bi-weekly' },
+                      { value: 'semimonthly', label: 'Semi-monthly' },
+                      { value: 'monthly', label: 'Monthly' },
+                    ]}
+                  />
+                </Field>
+                <Slider label="1-Day Payroll adoption" value={s.oneDayPct} min={0} max={100} step={5} format={v => `${v}%`} onChange={v => update(s.id, { oneDayPct: v })} hint="Companies on the 1-Day Payroll plan" />
+              </div>
+
+              <div style={{ paddingTop: 12, borderTop: '1px solid var(--rf-color-border-subtle)' }}>
+                <DataGrid columns={2} items={[
+                  { label: 'Monthly revenue', value: <span style={{ fontVariantNumeric: 'tabular-nums' }}>${r.monthly.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span> },
+                  { label: 'Annual revenue', value: <span style={{ font: 'var(--rf-text-heading-sm)', color: 'var(--rf-color-success-text)', fontVariantNumeric: 'tabular-nums' }}>${r.annual.toLocaleString('en-US', { maximumFractionDigits: 0 })}</span> },
+                ]} />
+              </div>
+
+              {scenarios.length > 1 && (
+                <Progress
+                  className="rf-mt-3"
+                  label="Share of total"
+                  value={r.annual}
+                  max={maxAnnual}
+                  variant="success"
+                  showValue
+                  format={v => `${Math.round((v / maxAnnual) * 100)}%`}
+                />
+              )}
+            </Card>
+          );
+        })}
+      </div>
+
+      {scenarios.length < 3 && (
+        <div style={{ marginTop: 16 }}>
+          <Button variant="secondary" size="sm" icon={<Plus size={14} />} onClick={add}>Add scenario</Button>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PayoutAccountTab() {
+  const [account, setAccount] = useState<PayoutAccount | null>(MOCK_PAYOUT_ACCOUNT);
+  const [removing, setRemoving] = useState(false);
+  const { toast } = useToast();
+
+  return (
+    <>
+      <Callout variant="info" icon={<CreditCard size={16} />} title="Partner payout account">
+        This is the account Rollfi uses to send your share of payroll revenue. Only one account is supported. Connect via Plaid for instant verification, or enter your routing and account number manually.
+      </Callout>
+
+      {!account ? (
+        <Card variant="default" padding="lg" style={{ marginTop: 16 }}>
+          <EmptyState
+            icon={<CreditCard size={24} />}
+            title="No payout account connected"
+            description="Connect a bank account to receive payroll revenue payouts. Payouts are held until a verified account is on file."
+            action={<Button icon={<Plus size={14} />} onClick={() => { setAccount(MOCK_PAYOUT_ACCOUNT); toast('Payout account connected', { variant: 'success' }); }}>Connect payout account</Button>}
+          />
+        </Card>
+      ) : (
+        <Card variant="default" padding="none" style={{ marginTop: 16, borderColor: account.status === 'pending_verification' ? 'var(--rf-color-warning-border)' : 'var(--rf-color-success-border)' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '14px 20px',
+            background: account.status === 'pending_verification' ? 'var(--rf-color-warning-bg)' : 'var(--rf-color-success-bg)',
+            borderBottom: `1px solid ${account.status === 'pending_verification' ? 'var(--rf-color-warning-border)' : 'var(--rf-color-success-border)'}`,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>Payout account</span>
+              <MethodBadge method={account.method} />
+              {account.status === 'active' ? <Badge variant="success">Active</Badge> : <Badge variant="warning">Pending verification</Badge>}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {account.status === 'pending_verification' && (
+                <Button size="sm" icon={<CheckCircle size={12} />}>Verify deposits</Button>
+              )}
+              <Button variant="secondary" size="sm" onClick={() => setRemoving(true)}>Remove</Button>
+            </div>
+          </div>
+          <div style={{ padding: '20px' }}>
+            <DataGrid columns={4} items={[
+              { label: 'Bank', value: account.bankName },
+              { label: 'Account name', value: account.accountName },
+              { label: 'Account', value: account.accountNumber },
+              { label: 'Type', value: account.accountType.charAt(0).toUpperCase() + account.accountType.slice(1) },
+            ]} />
+          </div>
+        </Card>
+      )}
+
+      <AlertDialog
+        open={removing}
+        onClose={() => setRemoving(false)}
+        variant="destructive"
+        title="Remove payout account?"
+        description="Rollfi will hold all future payouts until a new verified account is connected. Existing scheduled payouts are unaffected."
+        confirmLabel="Remove"
+        onConfirm={() => { setAccount(null); setRemoving(false); toast('Payout account removed', { variant: 'error' }); }}
+      />
     </>
   );
 }
 
 function BillingView() {
   const [subTab, setSubTab] = useState('report');
-  const [perEmployee, setPerEmployee] = useState(8);
-  const [employees, setEmployees] = useState(120);
   return (
     <>
-      <PageHeader
-        title="Billing"
-        action={subTab === 'report' ? <Button variant="secondary" size="sm" icon={<Download size={14} />}>Export CSV</Button> : undefined}
-      />
+      <PageHeader title="Billing" />
       <div style={{ marginBottom: 20 }}>
         <Tabs
           tabs={[
@@ -3159,83 +4233,10 @@ function BillingView() {
           onChange={setSubTab}
         />
       </div>
-
-      {subTab === 'report' && (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-            <StatCard label="MRR" value="$21,800" />
-            <StatCard label="Companies" value="6" />
-            <StatCard label="People billed" value="746" />
-            <StatCard label="Per-employee rate" value="$8.00" />
-          </div>
-          <Card variant="outlined" padding="none">
-            <Table
-              columns={[
-                { key: 'name', header: 'Company', sortable: true, render: row => (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <Avatar name={row.name as string} size="sm" />
-                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
-                  </div>
-                ) },
-                { key: 'plan', header: 'Plan', sortable: true },
-                { key: 'employees', header: 'Employees', align: 'right', sortable: true },
-                { key: 'mrr', header: 'MRR', align: 'right', sortable: true, render: row => `$${(row.mrr as number).toLocaleString()}` },
-              ]}
-              data={PORTAL_COMPANIES}
-              rowKey={r => r.id as string}
-            />
-          </Card>
-        </>
-      )}
-
-      {subTab === 'pricing' && (
-        <Card variant="outlined" padding="md">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 480 }}>
-            <Field label="Base monthly fee" hint="Charged per company"><Input prefix="$" placeholder="49" /></Field>
-            <Field label="Per-employee rate"><Input prefix="$" suffix="/ employee" placeholder="8" /></Field>
-            <Field label="Success fee" hint="Percent of payroll processed"><Input suffix="%" placeholder="0.5" /></Field>
-            <Switch checked={true} onChange={() => {}} label="Charge for off-cycle runs" />
-            <Switch checked={false} onChange={() => {}} label="Apply tiered pricing" />
-          </div>
-        </Card>
-      )}
-
-      {subTab === 'simulation' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <Card variant="outlined" padding="md">
-            <CardHeader title="Scenario A" description="Base case" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-              <Slider label="Employees" value={employees} min={10} max={500} step={10} onChange={setEmployees} showMinMax format={v => `${v}`} />
-              <Slider label="Per-employee rate" value={perEmployee} min={4} max={20} step={0.5} onChange={setPerEmployee} format={v => `$${v.toFixed(2)}`} />
-            </div>
-          </Card>
-          <Card variant="outlined" padding="md">
-            <CardHeader title="Projected revenue" />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
-              <DetailRow label="Base fee" value="$49.00" />
-              <DetailRow label="Per-employee" value={`$${(employees * perEmployee).toFixed(2)}`} />
-              <DetailRow label="Success fee" value="$120.00" />
-              <DetailRow label="Total MRR" value={<strong style={{ font: 'var(--rf-text-body-md-strong)' }}>${(49 + employees * perEmployee + 120).toFixed(2)}</strong>} />
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {subTab === 'payout' && (
-        <Card variant="outlined" padding="md" style={{ maxWidth: 560 }}>
-          <CardHeader title="Payout account" description="Where Rollfi sends your monthly settlement" />
-          <div style={{ marginTop: 16 }}>
-            <DetailRow label="Bank" value="Chase Business" />
-            <DetailRow label="Account" value="••• 4521" />
-            <DetailRow label="Routing" value="••• 5910" />
-            <DetailRow label="Status" value={<Badge variant="success">Connected</Badge>} />
-          </div>
-          <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-            <Button variant="secondary" size="sm">Change account</Button>
-            <Button variant="ghost" size="sm">View transfer history</Button>
-          </div>
-        </Card>
-      )}
+      {subTab === 'report' && <BillingReportTab />}
+      {subTab === 'pricing' && <PricingControlsTab />}
+      {subTab === 'simulation' && <SimulationTab />}
+      {subTab === 'payout' && <PayoutAccountTab />}
     </>
   );
 }

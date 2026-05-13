@@ -1,7 +1,9 @@
 .rf-num-stepper-wrap {
   display: inline-flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 6px;
+  align-self: flex-start;
 }
 
 .rf-num-stepper__label {

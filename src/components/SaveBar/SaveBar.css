@@ -1,0 +1,67 @@
+.rf-save-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  background: var(--rf-color-surface-elevated);
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-save-bar--dirty {
+  background: var(--rf-color-warning-bg);
+  border-color: var(--rf-color-warning-border);
+}
+
+.rf-save-bar__status {
+  flex: 1;
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-save-bar--dirty .rf-save-bar__status {
+  color: var(--rf-color-warning-text);
+  font-weight: 500;
+}
+
+.rf-save-bar__actions {
+  display: inline-flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.rf-save-bar__btn {
+  appearance: none;
+  border: 1px solid transparent;
+  padding: 7px 14px;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-button-sm);
+  cursor: pointer;
+  transition: opacity var(--rf-transition-fast), background var(--rf-transition-fast);
+}
+
+.rf-save-bar__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rf-save-bar__btn--secondary {
+  background: var(--rf-color-surface);
+  border-color: var(--rf-color-border);
+  color: var(--rf-color-text);
+}
+
+.rf-save-bar__btn--secondary:hover:not(:disabled) {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-save-bar__btn--primary {
+  background: var(--rf-color-primary);
+  color: var(--rf-color-on-primary);
+}
+
+.rf-save-bar__btn--primary:hover:not(:disabled) {
+  background: var(--rf-color-primary-hover);
+}
