@@ -2165,16 +2165,6 @@ const MOCK_PAYOUT_ACCOUNT: PayoutAccount = {
   addedOn: '2025-09-15',
 };
 
-const statusVariant = (s: string) =>
-  s === 'active' ? 'success' :
-  s === 'payroll_ready' ? 'teal' :
-  s === 'action_required' ? 'danger' : 'neutral';
-
-const statusLabel = (s: string) =>
-  s === 'active' ? 'Active' :
-  s === 'payroll_ready' ? 'Payroll ready' :
-  s === 'action_required' ? 'Action required' : s;
-
 // Onboarding readiness derived from tasks
 const companyReadiness = (tasks: CompanyTask[]): 'complete' | 'payroll_ready' | 'action_required' => {
   if (!tasks || tasks.length === 0) return 'complete';

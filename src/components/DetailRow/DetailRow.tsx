@@ -2,7 +2,7 @@ import { type ReactNode } from 'react';
 import './DetailRow.css';
 
 interface DetailRowProps {
-  label: string;
+  label: ReactNode;
   value: ReactNode;
   masked?: boolean;
 }
