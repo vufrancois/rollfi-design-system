@@ -1264,6 +1264,20 @@ function Row({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+//
+//   ▼ DEMO / MOCK CODE BELOW — NOT PART OF THE DESIGN SYSTEM LIBRARY ▼
+//
+//   Everything below this line (OnboardingMock + the Portal mock views,
+//   their mock data, and their helper components) exists ONLY to demo and
+//   exercise the design system. Do NOT consume these from a downstream app.
+//   The library surface is exported from `src/components/index.ts`.
+//
+//   When splitting this repo into a publishable library vs a demo app,
+//   everything below this banner should move out of the library build.
+//
+// ═══════════════════════════════════════════════════════════════════════════
+
 function OnboardingMock({ onExit }: { onExit: () => void }) {
   const [step, setStep] = useState(0);
   const [agreed, setAgreed] = useState(false);
