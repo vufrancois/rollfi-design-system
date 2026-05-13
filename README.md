@@ -35,17 +35,30 @@ Node 20+ recommended.
 
 ## Consuming the library
 
-> ⚠️ This package is currently `"private": true` and ships as **source**, not as a published npm package. A library build target (`vite build --lib` + `exports` map) is a planned follow-up. Until then, the recommended consumption pattern is:
-> - Vendor `src/components/`, `src/tokens/`, `src/styles/`, and the font assets into your app, **or**
-> - Install this repo as a git dependency and import from `src/components`.
+The library ships a publishable build under `dist-lib/` via:
+
+```bash
+npm run build:lib
+```
+
+This produces:
+- `dist-lib/index.mjs` (ESM) + `dist-lib/index.cjs` (CJS)
+- `dist-lib/styles.css` — tokens + every component's CSS concatenated into one file
+- `dist-lib/src/lib.d.ts` (type entry, with full per-component `.d.ts` tree)
+
+> ⚠️ The package is still `"private": true`. Consumers can either install from a git URL or, once the team is ready, flip `private` to `false` and `npm publish`.
+
+### Install (git dependency)
+
+```bash
+npm install github:vufrancois/rollfi-design-system
+```
 
 ### Imports
 
 ```tsx
-import { Button, Card, Input, ThemeProvider } from 'rollfi-design-system/src/components';
-import 'rollfi-design-system/src/tokens/colors.css';
-import 'rollfi-design-system/src/tokens/typography.css';
-import 'rollfi-design-system/src/styles/global.css';
+import { Button, Card, Input, ThemeProvider } from 'rollfi-design-system';
+import 'rollfi-design-system/styles.css';
 
 export function App() {
   return (
@@ -58,6 +71,8 @@ export function App() {
   );
 }
 ```
+
+The `styles.css` import is required exactly once at the root of your app and includes both the design tokens and every component's CSS. Tree-shaking still works on the JS bundle (the package declares `"sideEffects": ["**/*.css"]`).
 
 ### Theming
 
@@ -155,7 +170,8 @@ Modern evergreen browsers (Chrome, Safari, Firefox, Edge — last 2 major versio
 
 The following are known gaps for the receiving engineering team to address:
 
-- [ ] Publishable library build (`vite build --lib` + proper `exports` map, `main`/`module`/`types` fields, bundled `dist/styles.css`).
+- [x] Publishable library build (`vite build --lib` + `exports` map, `main`/`module`/`types`, bundled `dist-lib/styles.css`).
+- [ ] Flip `"private": false` and publish to npm (or a private registry).
 - [ ] Storybook (or Ladle) to replace the `App.tsx` gallery with isolated per-component stories.
 - [ ] Unit tests (Vitest + Testing Library) — currently none.
 - [ ] Visual regression coverage (Chromatic / Playwright snapshots).

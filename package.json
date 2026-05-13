@@ -3,9 +3,33 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "description": "Rollfi's React design system — tokenized components, light/dark themes, hand-authored CSS.",
+  "license": "UNLICENSED",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "main": "./dist-lib/index.cjs",
+  "module": "./dist-lib/index.mjs",
+  "types": "./dist-lib/src/lib.d.ts",
+  "files": [
+    "dist-lib",
+    "README.md",
+    "CONTRIBUTING.md",
+    "design-system.md"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist-lib/src/lib.d.ts",
+      "import": "./dist-lib/index.mjs",
+      "require": "./dist-lib/index.cjs"
+    },
+    "./styles.css": "./dist-lib/styles.css",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit"
@@ -34,6 +58,7 @@
     "react-dom": "^19.2.6",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vite-plugin-dts": "^5.0.0"
   }
 }
