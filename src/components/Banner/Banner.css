@@ -1,0 +1,72 @@
+.rf-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border: 1px solid;
+  border-radius: var(--rf-radius-md);
+  font: var(--rf-text-body-sm);
+  width: 100%;
+}
+
+.rf-banner__icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.rf-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.rf-banner__action {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.rf-banner__dismiss {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: var(--rf-radius-xs);
+  opacity: 0.7;
+}
+
+.rf-banner__dismiss:hover { opacity: 1; }
+
+.rf-banner--neutral {
+  background: var(--rf-color-surface-elevated);
+  border-color: var(--rf-color-border);
+  color: var(--rf-color-text);
+}
+
+.rf-banner--info {
+  background: var(--rf-color-info-bg);
+  border-color: var(--rf-color-info-border);
+  color: var(--rf-color-info-text);
+}
+
+.rf-banner--success {
+  background: var(--rf-color-success-bg);
+  border-color: var(--rf-color-success-border);
+  color: var(--rf-color-success-text);
+}
+
+.rf-banner--warning {
+  background: var(--rf-color-warning-bg);
+  border-color: var(--rf-color-warning-border);
+  color: var(--rf-color-warning-text);
+}
+
+.rf-banner--danger {
+  background: var(--rf-color-danger-bg);
+  border-color: var(--rf-color-danger-border);
+  color: var(--rf-color-danger-text);
+}

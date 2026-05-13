@@ -1,0 +1,72 @@
+.rf-carousel {
+  position: relative;
+}
+
+.rf-carousel__track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 8px 4px 16px;
+  margin: -8px -4px -16px;
+}
+
+.rf-carousel__track::-webkit-scrollbar { display: none; }
+
+.rf-carousel__track > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.rf-carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  appearance: none;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rf-radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--rf-shadow-md);
+  transition: opacity var(--rf-transition-fast);
+}
+
+.rf-carousel__btn:hover:not(:disabled) {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-carousel__btn:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rf-carousel__btn--prev { left: -10px; }
+.rf-carousel__btn--next { right: -10px; }
+
+.rf-carousel__dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.rf-carousel__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-border-strong);
+  transition: background var(--rf-transition-fast), width var(--rf-transition-fast);
+}
+
+.rf-carousel__dot--active {
+  background: var(--rf-color-primary);
+  width: 18px;
+  border-radius: var(--rf-radius-full);
+}

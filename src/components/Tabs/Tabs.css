@@ -1,0 +1,36 @@
+.rf-tabs {
+  display: inline-flex;
+  padding: 4px;
+  background: var(--rf-color-surface-elevated);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  gap: 2px;
+}
+
+.rf-tabs__tab {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text-secondary);
+  cursor: pointer;
+  transition: color var(--rf-transition-fast), background var(--rf-transition-fast);
+  white-space: nowrap;
+}
+
+.rf-tabs__tab:hover:not(.rf-tabs__tab--active) {
+  color: var(--rf-color-text);
+}
+
+.rf-tabs__tab--active {
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  box-shadow: var(--rf-shadow-xs);
+}
+
+.rf-tabs__tab:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 1px;
+}

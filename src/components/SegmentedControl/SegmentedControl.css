@@ -1,0 +1,48 @@
+.rf-segmented {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--rf-color-surface-elevated);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  gap: 2px;
+}
+
+.rf-segmented--full { display: flex; width: 100%; }
+
+.rf-segmented__item {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background var(--rf-transition-fast), color var(--rf-transition-fast);
+  flex: 1;
+  justify-content: center;
+}
+
+.rf-segmented--sm .rf-segmented__item {
+  padding: 4px 10px;
+  font: var(--rf-text-caption);
+}
+
+.rf-segmented__item:hover:not(.rf-segmented__item--active) {
+  color: var(--rf-color-text);
+}
+
+.rf-segmented__item--active {
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  box-shadow: var(--rf-shadow-xs);
+}
+
+.rf-segmented__icon {
+  display: inline-flex;
+  align-items: center;
+}

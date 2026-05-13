@@ -1,0 +1,126 @@
+.rf-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.rf-table {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--rf-text-body-sm);
+  font-feature-settings: var(--rf-font-feature);
+}
+
+.rf-table__th {
+  font: var(--rf-text-body-sm-strong);
+  font-feature-settings: var(--rf-font-feature);
+  color: var(--rf-color-text-secondary);
+  padding: var(--rf-space-4) var(--rf-space-5);
+  border-bottom: 1px solid var(--rf-color-border);
+  background-color: var(--rf-color-surface-elevated);
+  white-space: nowrap;
+}
+
+.rf-table__td {
+  padding: var(--rf-space-4) var(--rf-space-5);
+  color: var(--rf-color-text);
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+  background-color: var(--rf-color-surface);
+}
+
+.rf-table__row:last-child .rf-table__td {
+  border-bottom: none;
+}
+
+.rf-table--clickable .rf-table__row {
+  cursor: pointer;
+  transition: background-color var(--rf-duration-fast) var(--rf-ease-default);
+}
+
+.rf-table--clickable .rf-table__row:hover .rf-table__td {
+  background-color: var(--rf-color-surface-elevated);
+}
+
+.rf-table__empty {
+  padding: var(--rf-space-10) var(--rf-space-5);
+  text-align: center;
+  color: var(--rf-color-text-tertiary);
+  background-color: var(--rf-color-surface);
+}
+
+.rf-table__th--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.rf-table__th--sortable:hover {
+  color: var(--rf-color-text);
+}
+
+.rf-table__th-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rf-table__sort-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-table__th--sortable:hover .rf-table__sort-icon {
+  color: var(--rf-color-text);
+}
+
+.rf-table__th--checkbox,
+.rf-table__td--checkbox {
+  width: 44px;
+  padding-right: 0;
+}
+
+.rf-table__th--expand,
+.rf-table__td--expand {
+  width: 36px;
+  padding-right: 0;
+}
+
+.rf-table__checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--rf-color-primary);
+}
+
+.rf-table__row--selected .rf-table__td {
+  background-color: var(--rf-color-surface-elevated);
+}
+
+.rf-table__expand-btn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--rf-color-text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: var(--rf-radius-xs);
+  transition: transform var(--rf-duration-fast) var(--rf-ease-default);
+}
+
+.rf-table__expand-btn:hover {
+  color: var(--rf-color-text);
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-table__expand-btn--open {
+  transform: rotate(90deg);
+}
+
+.rf-table__expanded-row .rf-table__expanded-cell {
+  padding: 0;
+  background: var(--rf-color-surface-elevated);
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}

@@ -1,0 +1,30 @@
+@import './colors.css';
+@import './typography.css';
+@import './spacing.css';
+
+/* ─────────────────────────────────────────────
+   Rollfi — Global Reset & Base Styles
+   ───────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font: var(--rf-text-body-md);
+  font-feature-settings: var(--rf-font-feature);
+  color: var(--rf-color-text);
+  background-color: var(--rf-color-canvas);
+  transition: background-color var(--rf-duration-normal) var(--rf-ease-default),
+              color var(--rf-duration-normal) var(--rf-ease-default);
+}

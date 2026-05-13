@@ -1,0 +1,32 @@
+.rf-status-dot {
+  display: inline-block;
+  border-radius: var(--rf-radius-full);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.rf-status-dot--sm { width: 6px; height: 6px; }
+.rf-status-dot--md { width: 8px; height: 8px; }
+
+.rf-status-dot--neutral { background: var(--rf-color-text-tertiary); }
+.rf-status-dot--success { background: var(--rf-color-success); }
+.rf-status-dot--danger  { background: var(--rf-color-danger); }
+.rf-status-dot--warning { background: var(--rf-color-warning); }
+.rf-status-dot--info    { background: var(--rf-color-info); }
+.rf-status-dot--teal    { background: var(--rf-color-accent-teal); }
+.rf-status-dot--purple  { background: var(--rf-color-accent-purple); }
+.rf-status-dot--orange  { background: var(--rf-color-accent-orange); }
+
+.rf-status-dot--pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: rf-dot-pulse 1.6s ease-out infinite;
+}
+
+@keyframes rf-dot-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}

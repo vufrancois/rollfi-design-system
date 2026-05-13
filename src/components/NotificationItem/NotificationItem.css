@@ -1,0 +1,58 @@
+.rf-notif {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+  background: var(--rf-color-surface);
+}
+
+.rf-notif:last-child { border-bottom: none; }
+
+.rf-notif--clickable { cursor: pointer; transition: background var(--rf-transition-fast); }
+.rf-notif--clickable:hover { background: var(--rf-color-surface-elevated); }
+
+.rf-notif__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+  flex-shrink: 0;
+}
+
+.rf-notif--info .rf-notif__icon { color: var(--rf-color-info-text); background: var(--rf-color-info-soft); }
+.rf-notif--success .rf-notif__icon { color: var(--rf-color-success-text); background: var(--rf-color-success-soft); }
+.rf-notif--warning .rf-notif__icon { color: var(--rf-color-warning-text); background: var(--rf-color-warning-soft); }
+.rf-notif--danger .rf-notif__icon { color: var(--rf-color-danger-text); background: var(--rf-color-danger-soft); }
+
+.rf-notif__body { flex: 1; min-width: 0; }
+
+.rf-notif__title {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+}
+
+.rf-notif__description {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-secondary);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+.rf-notif__timestamp {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+  margin-top: 4px;
+  display: block;
+}
+
+.rf-notif__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}

@@ -1,0 +1,56 @@
+.rf-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rf-switch--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rf-switch__track {
+  appearance: none;
+  border: none;
+  width: 36px;
+  height: 20px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-border-strong);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  transition: background var(--rf-transition-fast);
+  flex-shrink: 0;
+}
+
+.rf-switch__track--on {
+  background: var(--rf-color-primary);
+}
+
+.rf-switch__track:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
+
+.rf-switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-surface);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: transform var(--rf-transition-fast);
+}
+
+.rf-switch__track--on .rf-switch__thumb {
+  transform: translateX(16px);
+}
+
+.rf-switch__label {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+}

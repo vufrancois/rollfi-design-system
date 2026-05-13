@@ -1,0 +1,70 @@
+.rf-stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.rf-stepper__step {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  gap: 10px;
+}
+
+.rf-stepper__step:last-child {
+  flex: 0;
+}
+
+.rf-stepper__circle {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--rf-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--rf-text-caption);
+  font-weight: 600;
+  flex-shrink: 0;
+  border: 1.5px solid var(--rf-color-border-strong);
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text-tertiary);
+  transition: all var(--rf-transition-fast);
+}
+
+.rf-stepper__step--active .rf-stepper__circle {
+  border-color: var(--rf-color-primary);
+  background: var(--rf-color-primary);
+  color: var(--rf-color-on-primary);
+}
+
+.rf-stepper__step--done .rf-stepper__circle {
+  border-color: var(--rf-color-primary);
+  background: var(--rf-color-primary);
+  color: var(--rf-color-on-primary);
+}
+
+.rf-stepper__label {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text-tertiary);
+  white-space: nowrap;
+}
+
+.rf-stepper__step--active .rf-stepper__label,
+.rf-stepper__step--done .rf-stepper__label {
+  color: var(--rf-color-text);
+}
+
+.rf-stepper__line {
+  flex: 1;
+  height: 1.5px;
+  background: var(--rf-color-border);
+  margin: 0 12px;
+}
+
+.rf-stepper__step--done .rf-stepper__line {
+  background: var(--rf-color-primary);
+}

@@ -1,0 +1,93 @@
+.rf-file-upload-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rf-file-upload__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+}
+
+.rf-file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 32px 24px;
+  border: 1.5px dashed var(--rf-color-border-strong);
+  border-radius: var(--rf-radius-lg);
+  background: var(--rf-color-surface);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-file-upload:hover { background: var(--rf-color-surface-elevated); }
+
+.rf-file-upload--drag {
+  border-color: var(--rf-color-primary);
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-file-upload--error { border-color: var(--rf-color-danger); }
+
+.rf-file-upload__hint-icon { color: var(--rf-color-text-tertiary); }
+.rf-file-upload__primary {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+}
+.rf-file-upload__secondary {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-file-upload__input { display: none; }
+
+.rf-file-upload__preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  background: var(--rf-color-surface);
+}
+
+.rf-file-upload__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+}
+
+.rf-file-upload__meta { flex: 1; min-width: 0; }
+.rf-file-upload__name { font: var(--rf-text-body-sm-strong); color: var(--rf-color-text); display: block; }
+.rf-file-upload__size { font: var(--rf-text-caption); color: var(--rf-color-text-tertiary); }
+
+.rf-file-upload__remove {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--rf-color-text-tertiary);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rf-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rf-file-upload__remove:hover {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text);
+}
+
+.rf-file-upload__error { font: var(--rf-text-caption); color: var(--rf-color-danger-text); }
+.rf-file-upload__hintText { font: var(--rf-text-caption); color: var(--rf-color-text-tertiary); }

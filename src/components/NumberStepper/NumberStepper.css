@@ -1,0 +1,68 @@
+.rf-num-stepper-wrap {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-num-stepper__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+}
+
+.rf-num-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  overflow: hidden;
+  background: var(--rf-color-surface);
+}
+
+.rf-num-stepper__btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rf-color-text);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-num-stepper__btn:hover:not(:disabled) {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-num-stepper__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rf-num-stepper__input {
+  appearance: none;
+  -moz-appearance: textfield;
+  border: none;
+  background: transparent;
+  width: 80px;
+  text-align: center;
+  font: var(--rf-text-body-sm);
+  font-feature-settings: var(--rf-font-feature);
+  color: var(--rf-color-text);
+  border-left: 1px solid var(--rf-color-border);
+  border-right: 1px solid var(--rf-color-border);
+  outline: none;
+  padding: 0 8px;
+}
+
+.rf-num-stepper__input::-webkit-outer-spin-button,
+.rf-num-stepper__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rf-num-stepper__hint {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}

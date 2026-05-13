@@ -1,0 +1,87 @@
+.rf-phone-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-phone-input__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+}
+
+.rf-phone-input__container {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  background: var(--rf-color-surface);
+  overflow: hidden;
+  transition: border-color var(--rf-transition-fast);
+}
+
+.rf-phone-input__container:focus-within {
+  border-color: var(--rf-color-border-focus);
+}
+
+.rf-phone-input--error .rf-phone-input__container {
+  border-color: var(--rf-color-danger);
+}
+
+.rf-phone-input__code {
+  appearance: none;
+  border: none;
+  background: var(--rf-color-surface-elevated);
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  padding: 10px 12px;
+  cursor: pointer;
+  min-width: 90px;
+}
+
+.rf-phone-input__code:focus {
+  outline: none;
+}
+
+.rf-phone-input__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--rf-color-border);
+  flex-shrink: 0;
+}
+
+.rf-phone-input__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  padding: 10px 14px;
+  min-width: 0;
+}
+
+.rf-phone-input__input::placeholder {
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-phone-input__input:focus {
+  outline: none;
+}
+
+.rf-phone-input__hint {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-phone-input__hint--error {
+  color: var(--rf-color-danger-text);
+}
+
+.rf-phone-input--disabled .rf-phone-input__container {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rf-phone-input--disabled .rf-phone-input__code,
+.rf-phone-input--disabled .rf-phone-input__input {
+  cursor: not-allowed;
+}

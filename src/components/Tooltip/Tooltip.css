@@ -1,0 +1,24 @@
+.rf-tooltip {
+  position: absolute;
+  z-index: 500;
+  max-width: 240px;
+  padding: 6px 10px;
+  background: #0a0a0b;
+  color: #f4f4f6;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-caption);
+  line-height: 1.4;
+  box-shadow: var(--rf-shadow-md);
+  pointer-events: none;
+  animation: rf-tooltip-in 120ms ease-out;
+}
+
+[data-theme="dark"] .rf-tooltip {
+  background: #f4f4f6;
+  color: #0a0a0b;
+}
+
+@keyframes rf-tooltip-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

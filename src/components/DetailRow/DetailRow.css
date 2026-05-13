@@ -1,0 +1,22 @@
+.rf-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-detail-row:last-child {
+  border-bottom: none;
+}
+
+.rf-detail-row__label {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-detail-row__value {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+  text-align: right;
+}

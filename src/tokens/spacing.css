@@ -1,0 +1,63 @@
+/* ─────────────────────────────────────────────
+   Rollfi — Spacing, Radius, Shadow Tokens
+   ───────────────────────────────────────────── */
+
+:root {
+  /* ── Spacing (8px base) ── */
+  --rf-space-0: 0px;
+  --rf-space-1: 2px;
+  --rf-space-2: 4px;
+  --rf-space-3: 8px;
+  --rf-space-4: 12px;
+  --rf-space-5: 16px;
+  --rf-space-6: 20px;
+  --rf-space-7: 24px;
+  --rf-space-8: 32px;
+  --rf-space-9: 40px;
+  --rf-space-10: 48px;
+  --rf-space-12: 64px;
+  --rf-space-14: 80px;
+  --rf-space-16: 96px;
+
+  /* ── Border Radius ── */
+  --rf-radius-none: 0px;
+  --rf-radius-xs: 4px;
+  --rf-radius-sm: 6px;
+  --rf-radius-md: 8px;
+  --rf-radius-lg: 12px;
+  --rf-radius-xl: 16px;
+  --rf-radius-2xl: 20px;
+  --rf-radius-full: 9999px;
+
+  /* ── Shadows (light theme) ── */
+  --rf-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --rf-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --rf-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --rf-shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --rf-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.06);
+  --rf-shadow-focus: 0 0 0 2px var(--rf-color-canvas), 0 0 0 4px var(--rf-color-border-focus);
+
+  /* ── Transitions ── */
+  --rf-duration-fast: 120ms;
+  --rf-duration-normal: 200ms;
+  --rf-duration-slow: 300ms;
+  --rf-ease-default: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --rf-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --rf-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── Z-index ── */
+  --rf-z-base: 0;
+  --rf-z-dropdown: 100;
+  --rf-z-sticky: 200;
+  --rf-z-modal: 300;
+  --rf-z-toast: 400;
+  --rf-z-tooltip: 500;
+}
+
+[data-theme="dark"] {
+  --rf-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --rf-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --rf-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+  --rf-shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2);
+  --rf-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5), 0 8px 16px rgba(0, 0, 0, 0.3);
+}

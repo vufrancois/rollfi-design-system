@@ -1,0 +1,52 @@
+/* ─────────────────────────────────────────────
+   Rollfi — Typography Tokens
+   Funnel Display (display, headings, captions)
+   Funnel Sans (body, UI)
+   ───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+:root {
+  /* ── Font Family ── */
+  --rf-font-display: 'Funnel Display', system-ui, -apple-system, sans-serif;
+  --rf-font-sans: 'Funnel Sans', system-ui, -apple-system, sans-serif;
+  --rf-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --rf-font-feature: "calt", "kern", "liga";
+
+  /* ── Display (Funnel Display) ── */
+  --rf-text-display-xl: 600 64px/1.1 var(--rf-font-display);
+  --rf-text-display-lg: 600 48px/1.15 var(--rf-font-display);
+  --rf-text-display-md: 600 36px/1.2 var(--rf-font-display);
+
+  /* ── Heading (Funnel Display for xl/lg, Funnel Sans for md/sm) ── */
+  --rf-text-heading-xl: 600 28px/1.3 var(--rf-font-display);
+  --rf-text-heading-lg: 600 24px/1.35 var(--rf-font-display);
+  --rf-text-heading-md: 500 20px/1.4 var(--rf-font-sans);
+  --rf-text-heading-sm: 500 18px/1.4 var(--rf-font-sans);
+
+  /* ── Body (Funnel Sans) ── */
+  --rf-text-body-lg: 400 18px/1.6 var(--rf-font-sans);
+  --rf-text-body-md: 400 16px/1.6 var(--rf-font-sans);
+  --rf-text-body-sm: 400 14px/1.6 var(--rf-font-sans);
+  --rf-text-body-xs: 400 12px/1.5 var(--rf-font-sans);
+
+  /* ── Emphasis variants (Funnel Sans) ── */
+  --rf-text-body-md-strong: 500 16px/1.5 var(--rf-font-sans);
+  --rf-text-body-sm-strong: 500 14px/1.5 var(--rf-font-sans);
+
+  /* ── Caption / Label (Funnel Display) ── */
+  --rf-text-caption: 400 13px/1.4 var(--rf-font-display);
+  --rf-text-caption-sm: 400 11px/1.4 var(--rf-font-display);
+  --rf-text-label: 500 14px/1.4 var(--rf-font-display);
+
+  /* ── UI (Funnel Sans) ── */
+  --rf-text-button: 500 14px/1 var(--rf-font-sans);
+  --rf-text-button-sm: 500 13px/1 var(--rf-font-sans);
+  --rf-text-code: 400 13px/1.5 var(--rf-font-mono);
+
+  /* ── Letter Spacing ── */
+  --rf-tracking-tight: -0.01em;
+  --rf-tracking-normal: 0;
+  --rf-tracking-wide: 0.01em;
+  --rf-tracking-wider: 0.02em;
+}

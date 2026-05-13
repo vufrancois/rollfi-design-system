@@ -1,0 +1,35 @@
+.rf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-field__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rf-field__required {
+  color: var(--rf-color-danger-text);
+}
+
+.rf-field__control {
+  display: flex;
+}
+
+.rf-field__control > * {
+  flex: 1;
+}
+
+.rf-field__hint {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-field__error {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-danger-text);
+}

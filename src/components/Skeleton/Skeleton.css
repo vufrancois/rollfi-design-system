@@ -1,0 +1,19 @@
+.rf-skeleton {
+  display: inline-block;
+  width: 100%;
+  height: 1em;
+  border-radius: var(--rf-radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--rf-color-surface-elevated) 0%,
+    var(--rf-color-border) 50%,
+    var(--rf-color-surface-elevated) 100%
+  );
+  background-size: 200% 100%;
+  animation: rf-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes rf-skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

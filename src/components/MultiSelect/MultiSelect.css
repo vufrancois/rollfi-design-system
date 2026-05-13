@@ -1,0 +1,139 @@
+.rf-multiselect-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rf-multiselect__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+}
+
+.rf-multiselect {
+  position: relative;
+}
+
+.rf-multiselect__control {
+  appearance: none;
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+  border-radius: var(--rf-radius-md);
+  padding: 4px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--rf-color-text);
+  transition: border-color var(--rf-transition-fast);
+}
+
+.rf-multiselect__control:hover {
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-multiselect__control:focus-visible {
+  outline: none;
+  border-color: var(--rf-color-border-focus);
+}
+
+.rf-multiselect__values {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.rf-multiselect__placeholder {
+  color: var(--rf-color-text-tertiary);
+  font: var(--rf-text-body-sm);
+}
+
+.rf-multiselect__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--rf-color-surface-elevated);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-sm);
+  padding: 2px 4px 2px 8px;
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text);
+}
+
+.rf-multiselect__chip-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--rf-radius-xs);
+  cursor: pointer;
+  color: var(--rf-color-text-tertiary);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.rf-multiselect__chip-x:hover {
+  background: var(--rf-color-border);
+  color: var(--rf-color-text);
+}
+
+.rf-multiselect__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  box-shadow: var(--rf-shadow-lg);
+  padding: 4px;
+  z-index: 100;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.rf-multiselect__option {
+  appearance: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.rf-multiselect__option:hover {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-multiselect__check {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--rf-color-border-strong);
+  border-radius: var(--rf-radius-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rf-color-on-primary);
+  flex-shrink: 0;
+}
+
+.rf-multiselect__option--selected .rf-multiselect__check {
+  background: var(--rf-color-primary);
+  border-color: var(--rf-color-primary);
+}
+
+.rf-multiselect__hint {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}

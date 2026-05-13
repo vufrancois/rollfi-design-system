@@ -1,0 +1,11 @@
+.rf-label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rf-label__required {
+  color: var(--rf-color-danger-text);
+}

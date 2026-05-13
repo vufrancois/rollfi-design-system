@@ -1,0 +1,32 @@
+.rf-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.rf-page-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.rf-page-header__title {
+  font: var(--rf-text-heading-xl);
+  letter-spacing: var(--rf-tracking-tight);
+  color: var(--rf-color-text);
+  margin: 0;
+}
+
+.rf-page-header__subtitle {
+  font: var(--rf-text-body-md);
+  color: var(--rf-color-text-secondary);
+  margin: 8px 0 0;
+}
+
+.rf-page-header__action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

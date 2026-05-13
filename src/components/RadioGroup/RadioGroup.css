@@ -1,0 +1,61 @@
+.rf-radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.rf-radio-group--vertical   { flex-direction: column; }
+.rf-radio-group--horizontal { flex-direction: row; flex-wrap: wrap; }
+
+.rf-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rf-radio--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rf-radio__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rf-radio__circle {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--rf-radius-full);
+  border: 1.5px solid var(--rf-color-border-strong);
+  background: var(--rf-color-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color var(--rf-transition-fast);
+}
+
+.rf-radio__input:focus-visible + .rf-radio__circle {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
+
+.rf-radio__circle--checked {
+  border-color: var(--rf-color-primary);
+}
+
+.rf-radio__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-primary);
+}
+
+.rf-radio__label {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+}

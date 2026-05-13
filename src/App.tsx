@@ -1,0 +1,2372 @@
+import { useState } from 'react';
+import {
+  IconContext, Info, Warning, CheckCircle, XCircle, MagnifyingGlass, Envelope, ArrowRight,
+  House, User, Gear, Bell, CreditCard, ChartBar, Calendar as CalendarIcon, FileText, Lock, Trash,
+  Plus, PencilSimple, Download, Upload, Cloud, Heart, Star, Globe, Lightning, Briefcase,
+  UserCircle, Eye, EyeSlash, Bank, ArrowLeft, CheckCircle as CheckCircleIcon,
+} from '@phosphor-icons/react';
+import {
+  ThemeProvider, useTheme,
+  ToastProvider, useToast,
+  Button, Input, Select, Modal,
+  Card, CardHeader,
+  Table,
+  Checkbox, OptionCard, Alert,
+  SegmentedProgress, DetailRow, PageHeader,
+  PhoneInput,
+  Sidebar, Tabs, Badge, SidePanel, Stepper, Switch,
+  Avatar, DropdownMenu, MultiSelect, Field, EmptyState, Slider,
+  Logo, Docs,
+  Textarea, Label, Separator,
+  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+  Collapsible, CollapsibleTrigger, CollapsibleContent,
+  Breadcrumb, Pagination,
+  Banner, Callout, Progress, Spinner, Skeleton,
+  StatusDot, Kbd, Tooltip, Popover,
+  RadioGroup, Radio, ButtonGroup, SegmentedControl, Toggle, ToggleGroup, ToggleGroupItem,
+  PasswordInput, NumberStepper, CurrencyInput, MaskedInput, TagInput, InputOTP, FileUpload, Combobox,
+  Calendar, DatePicker, TimePicker,
+  AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
+  Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
+} from './components';
+import './tokens/index.css';
+
+const sampleData = [
+  { id: '1', name: 'Acme Corp', plan: 'Pro', mrr: '$2,400', status: 'Active' },
+  { id: '2', name: 'Globex Inc', plan: 'Starter', mrr: '$600', status: 'Active' },
+  { id: '3', name: 'Initech', plan: 'Enterprise', mrr: '$12,000', status: 'Trialing' },
+  { id: '4', name: 'Umbrella LLC', plan: 'Pro', mrr: '$2,400', status: 'Churned' },
+];
+
+const columns = [
+  { key: 'name', header: 'Company' },
+  { key: 'plan', header: 'Plan' },
+  { key: 'mrr', header: 'MRR', align: 'right' as const },
+  {
+    key: 'status',
+    header: 'Status',
+    render: (row: typeof sampleData[0]) => (
+      <span className={`status-badge status-badge--${row.status.toLowerCase()}`}>
+        {row.status}
+      </span>
+    ),
+  },
+];
+
+function Demo() {
+  const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [checked1, setChecked1] = useState(false);
+  const [checked2, setChecked2] = useState(true);
+  const [selectedOption, setSelectedOption] = useState('option1');
+  const [step, setStep] = useState(3);
+  const [phone, setPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+1');
+  const [view, setView] = useState<'library' | 'portal' | 'onboarding' | 'docs'>('library');
+  const [tabValue, setTabValue] = useState('overview');
+  const [toggleOn, setToggleOn] = useState(true);
+  const [multi, setMulti] = useState<string[]>(['acme']);
+  const [sliderVal, setSliderVal] = useState(150);
+  const [wizardStep, setWizardStep] = useState(1);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+
+  if (view === 'portal') {
+    return <PortalMock onExit={() => setView('library')} />;
+  }
+  if (view === 'onboarding') {
+    return <OnboardingMock onExit={() => setView('library')} />;
+  }
+  if (view === 'docs') {
+    return <Docs onExit={() => setView('library')} />;
+  }
+
+  return (
+    <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 64 }}>
+        <div>
+          <Logo size={40} />
+          <p style={{ font: 'var(--rf-text-body-md)', color: 'var(--rf-color-text-secondary)', marginTop: 8 }}>
+            Design System
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="secondary" onClick={() => setView('docs')}>View Docs</Button>
+          <Button variant="secondary" onClick={() => setView('onboarding')}>View Onboarding Mock</Button>
+          <Button variant="secondary" onClick={() => setView('portal')}>View Portal Mock</Button>
+          <Button variant="secondary" onClick={toggleTheme}>
+            {theme === 'light' ? 'Dark' : 'Light'} mode
+          </Button>
+        </div>
+      </header>
+
+      <Section title="Buttons">
+        <Row>
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="tertiary">Tertiary</Button>
+          <Button variant="danger">Danger</Button>
+          <Button variant="ghost">Ghost</Button>
+        </Row>
+        <Row>
+          <Button size="sm">Small</Button>
+          <Button size="md">Medium</Button>
+          <Button size="lg">Large</Button>
+          <Button loading>Loading</Button>
+          <Button disabled>Disabled</Button>
+        </Row>
+        <Row>
+          <Button icon={<ArrowRight size={16} />}>Continue</Button>
+          <Button variant="secondary" icon={<Envelope size={16} />}>Email</Button>
+        </Row>
+        <div style={{ maxWidth: 320 }}>
+          <Button fullWidth>Full Width</Button>
+        </div>
+      </Section>
+
+      <Section title="Inputs">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <Input label="Email" placeholder="you@rollfi.com" icon={<Envelope size={16} />} hint="We'll never share your email" />
+          <Input label="Password" type="password" placeholder="Enter password" />
+          <Input label="Search" placeholder="Search anything..." icon={<MagnifyingGlass size={16} />} />
+          <Input label="Disabled" placeholder="Can't touch this" disabled />
+        </div>
+        <h3 style={{ font: 'var(--rf-text-heading-sm)', margin: '24px 0 12px' }}>Input Sizes</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <Input label="Small" placeholder="sm" inputSize="sm" />
+          <Input label="Medium" placeholder="md (default)" inputSize="md" />
+          <Input label="Large" placeholder="lg" inputSize="lg" />
+        </div>
+      </Section>
+
+      <Section title="Select">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <Select
+            label="Plan"
+            placeholder="Choose a plan"
+            options={[
+              { value: 'starter', label: 'Starter — $49/mo' },
+              { value: 'pro', label: 'Pro — $199/mo' },
+              { value: 'enterprise', label: 'Enterprise — Custom' },
+            ]}
+          />
+          <Select
+            label="Region"
+            options={[
+              { value: 'us', label: 'United States' },
+              { value: 'eu', label: 'Europe' },
+              { value: 'ap', label: 'Asia Pacific' },
+            ]}
+            hint="Select your primary region"
+          />
+        </div>
+      </Section>
+
+      <Section title="Checkbox">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Checkbox checked={checked1} onChange={() => setChecked1(!checked1)}>
+            I agree to the terms and conditions
+          </Checkbox>
+          <Checkbox checked={checked2} onChange={() => setChecked2(!checked2)}>
+            Subscribe to newsletter
+          </Checkbox>
+          <Checkbox checked={false} onChange={() => {}} disabled>
+            Disabled option
+          </Checkbox>
+        </div>
+      </Section>
+
+      <Section title="Option Card">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <OptionCard
+            selected={selectedOption === 'option1'}
+            onSelect={() => setSelectedOption('option1')}
+            title="Direct Deposit"
+            description="Receive payments directly to your bank account"
+            badge="Recommended"
+          />
+          <OptionCard
+            selected={selectedOption === 'option2'}
+            onSelect={() => setSelectedOption('option2')}
+            title="Paper Check"
+            description="Receive a physical check by mail"
+          />
+        </div>
+      </Section>
+
+      <Section title="Alert">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Alert variant="info" icon={<Info size={18} weight="fill" />}>Your account verification is pending review.</Alert>
+          <Alert variant="warning" icon={<Warning size={18} weight="fill" />}>Inaccurate information may delay processing.</Alert>
+          <Alert variant="success" icon={<CheckCircle size={18} weight="fill" />}>Your information has been verified successfully.</Alert>
+          <Alert variant="danger" icon={<XCircle size={18} weight="fill" />}>Please correct the errors before continuing.</Alert>
+        </div>
+      </Section>
+
+      <Section title="Segmented Progress">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <div>
+            <p style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)', marginBottom: 8 }}>Step {step} of 6</p>
+            <SegmentedProgress current={step} total={6} />
+          </div>
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => setStep(Math.max(1, step - 1))}>Back</Button>
+            <Button size="sm" onClick={() => setStep(Math.min(6, step + 1))}>Next</Button>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Detail Row">
+        <Card variant="outlined" padding="md">
+          <DetailRow label="Full Name" value="John Doe" />
+          <DetailRow label="Email" value="john@rollfi.com" />
+          <DetailRow label="SSN" value="123-45-6789" masked />
+          <DetailRow label="Department" value="Engineering" />
+        </Card>
+      </Section>
+
+      <Section title="Page Header">
+        <Card variant="outlined" padding="md">
+          <PageHeader title="Personal Information" subtitle="Please provide your legal name and contact details" />
+          <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)' }}>
+            (Form content would go here)
+          </p>
+        </Card>
+      </Section>
+
+      <Section title="Phone Input">
+        <div style={{ maxWidth: 400 }}>
+          <PhoneInput
+            label="Phone Number"
+            value={phone}
+            onChange={setPhone}
+            countryCode={countryCode}
+            onCountryChange={setCountryCode}
+            hint="We'll use this for two-factor authentication"
+          />
+        </div>
+      </Section>
+
+      <Section title="Cards">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+          <Card variant="default">
+            <CardHeader title="Default" description="Standard surface card" />
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+              Uses the surface background with a hairline border.
+            </p>
+          </Card>
+          <Card variant="elevated">
+            <CardHeader title="Elevated" description="Shadow-lifted card" />
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+              Adds a shadow for depth on light theme.
+            </p>
+          </Card>
+          <Card variant="interactive" onClick={() => toast('Card clicked!', { variant: 'info' })}>
+            <CardHeader title="Interactive" description="Clickable with hover state" />
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+              Click me to trigger a toast.
+            </p>
+          </Card>
+        </div>
+      </Section>
+
+      <Section title="Table">
+        <Card variant="outlined" padding="none">
+          <Table
+            columns={columns}
+            data={sampleData}
+            rowKey={row => row.id}
+            onRowClick={row => toast(`Clicked ${row.name}`)}
+          />
+        </Card>
+      </Section>
+
+      <Section title="Modal">
+        <Button onClick={() => setModalOpen(true)}>Open Modal</Button>
+        <Modal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title="Confirm Action"
+          description="This will update your billing plan. You can change it anytime."
+          footer={
+            <>
+              <Button variant="secondary" onClick={() => setModalOpen(false)}>Cancel</Button>
+              <Button onClick={() => { setModalOpen(false); toast('Plan updated!', { variant: 'success' }); }}>
+                Confirm
+              </Button>
+            </>
+          }
+        >
+          <Card variant="outlined" padding="sm">
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+              You're upgrading from <strong>Starter</strong> to <strong>Pro</strong>.
+              Your next invoice will be prorated.
+            </p>
+          </Card>
+        </Modal>
+      </Section>
+
+      <Section title="Toasts">
+        <Row>
+          <Button variant="secondary" onClick={() => toast('Something happened')}>Default</Button>
+          <Button variant="secondary" onClick={() => toast('Changes saved', { variant: 'success' })}>Success</Button>
+          <Button variant="secondary" onClick={() => toast('Something went wrong', { variant: 'error' })}>Error</Button>
+          <Button variant="secondary" onClick={() => toast('Check your input', { variant: 'warning' })}>Warning</Button>
+          <Button variant="secondary" onClick={() => toast('New version available', { variant: 'info' })}>Info</Button>
+        </Row>
+      </Section>
+
+      <Section title="Tabs">
+        <Tabs
+          tabs={[
+            { key: 'overview', label: 'Overview' },
+            { key: 'billing', label: 'Billing' },
+            { key: 'team', label: 'Team' },
+            { key: 'integrations', label: 'Integrations' },
+          ]}
+          value={tabValue}
+          onChange={setTabValue}
+        />
+        <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginTop: 16 }}>
+          Selected: <strong>{tabValue}</strong>
+        </p>
+      </Section>
+
+      <Section title="Badge">
+        <Row>
+          <Badge variant="neutral">Neutral</Badge>
+          <Badge variant="success">Active</Badge>
+          <Badge variant="danger">Failed</Badge>
+          <Badge variant="warning">Pending</Badge>
+          <Badge variant="info">New</Badge>
+          <Badge variant="teal">Payroll Ready</Badge>
+          <Badge variant="purple">Beta</Badge>
+          <Badge variant="orange">Trial</Badge>
+        </Row>
+      </Section>
+
+      <Section title="Switch">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Switch checked={toggleOn} onChange={setToggleOn} label="Enable notifications" />
+          <Switch checked={false} onChange={() => {}} label="Two-factor authentication" />
+          <Switch checked={true} onChange={() => {}} label="Disabled (on)" disabled />
+        </div>
+      </Section>
+
+      <Section title="Stepper">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Stepper
+            steps={[
+              { label: 'Company' },
+              { label: 'Configure' },
+              { label: 'Upload' },
+              { label: 'Map' },
+              { label: 'Review' },
+            ]}
+            currentIdx={wizardStep}
+          />
+          <Row>
+            <Button size="sm" variant="secondary" onClick={() => setWizardStep(Math.max(0, wizardStep - 1))}>Back</Button>
+            <Button size="sm" onClick={() => setWizardStep(Math.min(4, wizardStep + 1))}>Next</Button>
+          </Row>
+        </div>
+      </Section>
+
+      <Section title="Avatar">
+        <Row>
+          <Avatar name="Vu Francois" size="sm" />
+          <Avatar name="Vu Francois" size="md" />
+          <Avatar name="Vu Francois" size="lg" />
+          <Avatar name="Acme Corp" />
+          <Avatar name="Globex Inc" />
+          <Avatar name="Initech Industries" />
+        </Row>
+      </Section>
+
+      <Section title="Dropdown Menu">
+        <DropdownMenu
+          trigger={<Button variant="secondary" size="sm">Actions ▾</Button>}
+          items={[
+            { label: 'Edit', icon: <PencilSimple size={14} />, onClick: () => toast('Edit clicked') },
+            { label: 'Download', icon: <Download size={14} />, onClick: () => toast('Download clicked') },
+            { label: 'Delete', icon: <Trash size={14} />, onClick: () => toast('Delete clicked', { variant: 'error' }), danger: true },
+          ]}
+        />
+      </Section>
+
+      <Section title="MultiSelect">
+        <div style={{ maxWidth: 400 }}>
+          <MultiSelect
+            label="Assigned Companies"
+            placeholder="Select companies..."
+            values={multi}
+            onChange={setMulti}
+            options={[
+              { value: 'acme', label: 'Acme Corp' },
+              { value: 'globex', label: 'Globex Inc' },
+              { value: 'initech', label: 'Initech' },
+              { value: 'umbrella', label: 'Umbrella LLC' },
+            ]}
+            hint="Account Manager will only see these companies"
+          />
+        </div>
+      </Section>
+
+      <Section title="Field">
+        <div style={{ maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Field label="Email" required hint="We'll never share this">
+            <Input placeholder="you@rollfi.com" />
+          </Field>
+          <Field label="Company" required>
+            <Select placeholder="Choose..." options={[{ value: 'a', label: 'Acme' }]} />
+          </Field>
+        </div>
+      </Section>
+
+      <Section title="Empty State">
+        <Card variant="outlined" padding="none">
+          <EmptyState
+            icon={<Bell size={24} />}
+            title="No notifications"
+            description="When you have new activity, it'll show up here."
+            action={<Button size="sm" variant="secondary">Refresh</Button>}
+          />
+        </Card>
+      </Section>
+
+      <Section title="Slider">
+        <div style={{ maxWidth: 400 }}>
+          <Slider
+            label="Employee count"
+            value={sliderVal}
+            min={0}
+            max={500}
+            step={10}
+            onChange={setSliderVal}
+            format={v => `${v} employees`}
+            showMinMax
+            hint="Estimate your monthly billing volume"
+          />
+        </div>
+      </Section>
+
+      <Section title="Side Panel">
+        <Button onClick={() => setSidePanelOpen(true)}>Open Side Panel</Button>
+        <SidePanel
+          open={sidePanelOpen}
+          onClose={() => setSidePanelOpen(false)}
+          title="Add User"
+          description="Invite a new team member to your partner portal."
+          footer={
+            <>
+              <Button variant="secondary" onClick={() => setSidePanelOpen(false)}>Cancel</Button>
+              <Button onClick={() => { setSidePanelOpen(false); toast('User invited', { variant: 'success' }); }}>Send invite</Button>
+            </>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Field label="Full name" required>
+              <Input placeholder="Jane Smith" />
+            </Field>
+            <Field label="Email" required>
+              <Input placeholder="jane@partner.com" />
+            </Field>
+            <Field label="Role" required>
+              <Select placeholder="Select role..." options={[
+                { value: 'admin', label: 'Partner Admin' },
+                { value: 'manager', label: 'Account Manager' },
+              ]} />
+            </Field>
+          </div>
+        </SidePanel>
+      </Section>
+
+      <Section title="Textarea">
+        <div style={{ maxWidth: 480 }}>
+          <Textarea label="Approval notes" placeholder="Flag reimbursements above $1,000..." hint="Shown to reviewers before release" />
+        </div>
+      </Section>
+
+      <Section title="Label">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 320 }}>
+          <Label>Plain label</Label>
+          <Label required>Required label</Label>
+        </div>
+      </Section>
+
+      <Section title="Separator">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 480 }}>
+          <span style={{ font: 'var(--rf-text-body-sm)' }}>Above</span>
+          <Separator />
+          <span style={{ font: 'var(--rf-text-body-sm)' }}>Below</span>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', height: 24 }}>
+            <span>Left</span>
+            <Separator orientation="vertical" />
+            <span>Middle</span>
+            <Separator orientation="vertical" />
+            <span>Right</span>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Accordion">
+        <div style={{ maxWidth: 480 }}>
+          <Accordion type="single" defaultValue="a">
+            <AccordionItem value="a">
+              <AccordionTrigger>Compliance checks</AccordionTrigger>
+              <AccordionContent>Validate tax setup, employee status, and bank connectivity before release.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="b">
+              <AccordionTrigger>Funding confirmation</AccordionTrigger>
+              <AccordionContent>Treasury account balance is confirmed before each payroll run.</AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="c">
+              <AccordionTrigger>Scheduled submission</AccordionTrigger>
+              <AccordionContent>Release once all checks are green.</AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </Section>
+
+      <Section title="Collapsible">
+        <div style={{ maxWidth: 480 }}>
+          <Collapsible>
+            <CollapsibleTrigger>
+              <Button variant="secondary" size="sm">Toggle details</Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <Card variant="outlined" padding="md" style={{ marginTop: 12 }}>
+                <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', margin: 0 }}>
+                  Hidden by default. Collapsible is the single-section sibling to Accordion.
+                </p>
+              </Card>
+            </CollapsibleContent>
+          </Collapsible>
+        </div>
+      </Section>
+
+      <Section title="Breadcrumb">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Breadcrumb items={[
+            { label: 'Admin' },
+            { label: 'Payroll' },
+            { label: 'March review' },
+          ]} />
+          <Breadcrumb items={[
+            { label: 'Workspace' },
+            { label: 'Companies' },
+            { label: 'Acme Corp' },
+            { label: 'Benefits' },
+            { label: 'Medical enrollment' },
+          ]} />
+        </div>
+      </Section>
+
+      <Section title="Pagination">
+        <PaginationDemo />
+      </Section>
+
+      <Section title="Banner">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Banner variant="info" icon={<Info size={16} />}>Scheduled maintenance tonight from 11:00 PM to 11:30 PM UTC.</Banner>
+          <Banner variant="success" icon={<CheckCircle size={16} weight="fill" />}>Payroll draft locked. 42 employees are ready for approval.</Banner>
+          <Banner variant="warning" icon={<Warning size={16} weight="fill" />} dismissible onDismiss={() => toast('Dismissed')}>
+            Some accounts still need micro-deposit verification.
+          </Banner>
+          <Banner variant="danger" icon={<XCircle size={16} weight="fill" />} action={<Button size="sm" variant="danger">Retry</Button>}>
+            Tax filing submission failed.
+          </Banner>
+        </div>
+      </Section>
+
+      <Section title="Callout">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 640 }}>
+          <Callout variant="info" icon={<Info size={16} />} title="Rollfi recommendation">
+            Keep approval windows short so payroll changes are visible to reviewers before the submission deadline.
+          </Callout>
+          <Callout variant="warning" icon={<Warning size={16} />} title="Review before publish">
+            Publishing this template will update onboarding defaults for future employees.
+          </Callout>
+          <Callout title="Imported from your bank feed">
+            Accounts are refreshed hourly and can be re-linked without leaving this flow.
+          </Callout>
+        </div>
+      </Section>
+
+      <Section title="Progress">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 480 }}>
+          <Progress label="Payroll draft validation" value={68} showValue />
+          <Progress label="Benefits enrollment sync" value={42} variant="info" showValue />
+          <Progress label="Onboarding checklist" value={3} max={5} variant="success" showValue format={(v, m) => `${v} / ${m} steps`} />
+          <Progress label="Compliance review" value={84} variant="warning" showValue format={() => 'At risk'} />
+          <Progress value={50} size="sm" />
+          <Progress value={50} size="md" />
+          <Progress value={50} size="lg" />
+        </div>
+      </Section>
+
+      <Section title="Spinner">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <Spinner size="sm" />
+          <Spinner size="md" />
+          <Spinner size="lg" />
+          <Spinner size="xl" />
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--rf-color-text-secondary)' }}>
+            <Spinner size="md" /> Loading…
+          </span>
+        </div>
+      </Section>
+
+      <Section title="Skeleton">
+        <Card variant="outlined" padding="md" style={{ maxWidth: 480 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <Skeleton circle width={32} height={32} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <Skeleton width="40%" height={12} />
+              <Skeleton width="60%" height={10} />
+            </div>
+          </div>
+          <Skeleton height={12} />
+          <div style={{ height: 8 }} />
+          <Skeleton height={12} width="85%" />
+          <div style={{ height: 8 }} />
+          <Skeleton height={12} width="70%" />
+        </Card>
+      </Section>
+
+      <Section title="StatusDot">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StatusDot variant="success" /> Active</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StatusDot variant="warning" /> Pending</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StatusDot variant="danger" pulse /> Action required</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StatusDot variant="teal" /> Payroll ready</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><StatusDot variant="neutral" /> Archived</span>
+        </div>
+      </Section>
+
+      <Section title="Kbd">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, font: 'var(--rf-text-body-sm)' }}>
+          <span>Open command palette: <Kbd>⌘</Kbd> <Kbd>K</Kbd></span>
+          <span>Save: <Kbd>⌘</Kbd> <Kbd>S</Kbd></span>
+          <span>Escape: <Kbd>Esc</Kbd></span>
+        </div>
+      </Section>
+
+      <Section title="Tooltip">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Tooltip content="Tooltip on top" side="top"><Button variant="secondary" size="sm">Top</Button></Tooltip>
+          <Tooltip content="Tooltip on right" side="right"><Button variant="secondary" size="sm">Right</Button></Tooltip>
+          <Tooltip content="Tooltip on bottom" side="bottom"><Button variant="secondary" size="sm">Bottom</Button></Tooltip>
+          <Tooltip content="Tooltip on left" side="left"><Button variant="secondary" size="sm">Left</Button></Tooltip>
+        </div>
+      </Section>
+
+      <Section title="Popover">
+        <Popover
+          trigger={<Button variant="secondary" size="sm">Open popover</Button>}
+          side="bottom"
+          align="start"
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 240 }}>
+            <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Quick settings</div>
+            <Switch checked={true} onChange={() => {}} label="Email notifications" />
+            <Switch checked={false} onChange={() => {}} label="Slack notifications" />
+            <Separator />
+            <Button size="sm" variant="ghost">Open full settings</Button>
+          </div>
+        </Popover>
+      </Section>
+
+      <Section title="RadioGroup">
+        <Tier2Radios />
+      </Section>
+
+      <Section title="ButtonGroup">
+        <ButtonGroup>
+          <Button variant="secondary" size="sm">Draft</Button>
+          <Button variant="secondary" size="sm">Preview</Button>
+          <Button size="sm">Publish</Button>
+        </ButtonGroup>
+      </Section>
+
+      <Section title="SegmentedControl">
+        <Tier2Segmented />
+      </Section>
+
+      <Section title="Toggle (icon-button)">
+        <Tier2Toggle />
+      </Section>
+
+      <Section title="ToggleGroup">
+        <Tier2ToggleGroup />
+      </Section>
+
+      <Section title="PasswordInput">
+        <div style={{ maxWidth: 320 }}>
+          <PasswordInput label="Password" placeholder="Enter password" hint="Click the eye to reveal" />
+        </div>
+      </Section>
+
+      <Section title="NumberStepper">
+        <Tier2NumStepper />
+      </Section>
+
+      <Section title="CurrencyInput">
+        <div style={{ maxWidth: 280 }}>
+          <CurrencyInput label="Amount" placeholder="0.00" />
+        </div>
+      </Section>
+
+      <Section title="MaskedInput">
+        <Tier2Masked />
+      </Section>
+
+      <Section title="TagInput">
+        <Tier2Tags />
+      </Section>
+
+      <Section title="InputOTP">
+        <Tier2OTP />
+      </Section>
+
+      <Section title="FileUpload">
+        <Tier2File />
+      </Section>
+
+      <Section title="Combobox">
+        <Tier2Combo />
+      </Section>
+
+      <Section title="Calendar">
+        <Tier2CalendarDemo />
+      </Section>
+
+      <Section title="DatePicker">
+        <Tier2DatePickerDemo />
+      </Section>
+
+      <Section title="TimePicker">
+        <Tier2TimePickerDemo />
+      </Section>
+
+      <Section title="AlertDialog & ConfirmationDialog">
+        <Tier2Dialogs />
+      </Section>
+
+      <Section title="ContextMenu">
+        <ContextMenu items={[
+          { label: 'Copy', onClick: () => toast('Copied') },
+          { label: 'Edit', onClick: () => toast('Edit') },
+          { label: 'Delete', onClick: () => toast('Deleted', { variant: 'error' }), danger: true },
+        ]}>
+          <Card variant="outlined" padding="md" style={{ maxWidth: 360, textAlign: 'center', cursor: 'context-menu' }}>
+            Right-click anywhere in this card
+          </Card>
+        </ContextMenu>
+      </Section>
+
+      <Section title="HoverCard">
+        <div style={{ display: 'inline-block' }}>
+          <HoverCard
+            trigger={<Button variant="secondary" size="sm">Hover @michael.scott</Button>}
+            side="bottom"
+          >
+            <div style={{ display: 'flex', gap: 12 }}>
+              <Avatar name="Michael Scott" size="md" />
+              <div>
+                <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Michael Scott</div>
+                <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', marginBottom: 6 }}>Partner Admin</div>
+                <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+                  Manages 4 companies and processes payroll twice a month.
+                </div>
+              </div>
+            </div>
+          </HoverCard>
+        </div>
+      </Section>
+
+      <Section title="Drawer">
+        <Tier2DrawerDemo />
+      </Section>
+
+      <Section title="Command (Cmd+K)">
+        <Tier2CommandDemo />
+      </Section>
+
+      <Section title="Pill">
+        <Row>
+          <Pill icon={<Heart size={12} weight="fill" />}>Benefits</Pill>
+          <Pill tone="dark" icon={<Star size={12} weight="fill" />}>Features</Pill>
+          <Pill tone="outline" icon={<Lightning size={12} weight="fill" />}>Impact</Pill>
+          <Pill size="sm" tone="brand">Product</Pill>
+          <Pill size="sm" tone="dark">Testimonial</Pill>
+          <Pill size="sm" tone="outline">Coming soon</Pill>
+        </Row>
+      </Section>
+
+      <Section title="AvatarGroup">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <AvatarGroup items={[
+            { name: 'Michael Scott' },
+            { name: 'Pam Beesly' },
+            { name: 'Jim Halpert' },
+            { name: 'Dwight Schrute' },
+            { name: 'Stanley Hudson' },
+            { name: 'Kelly Kapoor' },
+            { name: 'Oscar Martinez' },
+          ]} />
+          <AvatarGroup size="sm" items={[
+            { name: 'Acme Corp' },
+            { name: 'Globex Inc' },
+            { name: 'Initech Industries' },
+          ]} />
+        </div>
+      </Section>
+
+      <Section title="Timeline">
+        <Timeline items={[
+          { id: 't1', title: 'Employee changes synced', description: 'Two salary adjustments and one address update were applied to the draft.', timestamp: '9:08 AM', variant: 'success' },
+          { id: 't2', title: 'Funding review required', description: 'Treasury account balance dropped below the same-day debit threshold.', timestamp: '10:12 AM', variant: 'warning' },
+          { id: 't3', title: 'Final reminder sent', description: 'Approval owners were notified before the 2:00 PM payroll cut-off.', timestamp: '12:40 PM', variant: 'info' },
+        ]} />
+      </Section>
+
+      <Section title="ActivityFeed">
+        <ActivityFeed
+          title="Recent workspace activity"
+          action={<Badge variant="success">Live</Badge>}
+          items={[
+            { id: 'a1', actorName: 'Kurtik', message: 'published Q2 payroll policy', timestamp: '4 minutes ago' },
+            { id: 'a2', actorName: 'Diane', message: 'commented on benefits enrollment defaults', timestamp: '21 minutes ago' },
+            { id: 'a3', actorName: 'Mia', message: 'merged funding account updates', timestamp: '42 minutes ago' },
+          ]}
+        />
+      </Section>
+
+      <Section title="Item">
+        <Card variant="outlined" padding="none">
+          <Item icon={<FileText size={18} />} title="Payroll summary packet" description="Consolidated review package with tax totals, reimbursements, and funding notes." action={<Badge variant="success">Ready</Badge>} onClick={() => toast('Opening packet')} />
+          <Item icon={<CreditCard size={18} />} title="Treasury funding account" description="Primary settlement account ending in 2481." action={<Badge variant="success">Verified</Badge>} />
+          <Item icon={<CheckCircle size={18} />} title="Review queue" description="Three payroll drafts need final owner sign-off." action={<Badge variant="warning">3 pending</Badge>} onClick={() => toast('Opening queue')} />
+        </Card>
+      </Section>
+
+      <Section title="NotificationItem">
+        <Card variant="outlined" padding="none">
+          <NotificationItem
+            variant="danger"
+            icon={<Warning size={14} weight="fill" />}
+            title="Failed transaction · Umbrella LLC"
+            description="Stanley Hudson's direct deposit was rejected."
+            timestamp="5 minutes ago"
+            actions={<Button size="sm" variant="secondary">Review</Button>}
+          />
+          <NotificationItem
+            variant="warning"
+            icon={<Bell size={14} />}
+            title="Bank verification pending · Globex Inc"
+            description="Micro-deposits sent 2 days ago. Verify by Apr 18."
+            timestamp="2 hours ago"
+            read
+          />
+          <NotificationItem
+            variant="info"
+            icon={<Info size={14} />}
+            title="New user invited"
+            description="Jim Halpert accepted the invitation as Account Manager."
+            timestamp="Yesterday"
+            read
+          />
+        </Card>
+      </Section>
+
+      <Section title="Carousel">
+        <Carousel showControls showDots>
+          {['Payroll summary', 'Benefits sync', 'Release readiness', 'Compliance review'].map((label, i) => (
+            <Card key={label} variant="elevated" padding="md" style={{ width: 240 }}>
+              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                Step {i + 1}
+              </div>
+              <div style={{ font: 'var(--rf-text-heading-sm)', marginBottom: 4 }}>{label}</div>
+              <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+                Click a card to drill into the details for this step.
+              </div>
+            </Card>
+          ))}
+        </Carousel>
+      </Section>
+
+      <Section title="Typography">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <p style={{ font: 'var(--rf-text-display-xl)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display XL</p>
+          <p style={{ font: 'var(--rf-text-display-lg)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display LG</p>
+          <p style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display MD</p>
+          <p style={{ font: 'var(--rf-text-heading-xl)' }}>Heading XL</p>
+          <p style={{ font: 'var(--rf-text-heading-lg)' }}>Heading LG</p>
+          <p style={{ font: 'var(--rf-text-heading-md)' }}>Heading MD</p>
+          <p style={{ font: 'var(--rf-text-heading-sm)' }}>Heading SM</p>
+          <p style={{ font: 'var(--rf-text-body-lg)' }}>Body LG — The quick brown fox jumps over the lazy dog</p>
+          <p style={{ font: 'var(--rf-text-body-md)' }}>Body MD — The quick brown fox jumps over the lazy dog</p>
+          <p style={{ font: 'var(--rf-text-body-sm)' }}>Body SM — The quick brown fox jumps over the lazy dog</p>
+          <p style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Caption — Metadata and secondary information</p>
+        </div>
+      </Section>
+
+      <Section title="Icons">
+        <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginBottom: 20 }}>
+          Phosphor Icons at regular weight. Browse the full set at{' '}
+          <a href="https://phosphoricons.com" target="_blank" rel="noreferrer" style={{ color: 'var(--rf-color-text)' }}>phosphoricons.com</a>.
+        </p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+          gap: 4,
+          border: '1px solid var(--rf-color-border)',
+          borderRadius: 12,
+          padding: 8,
+          background: 'var(--rf-color-surface)',
+        }}>
+          {[
+            ['House', House], ['User', User], ['Gear', Gear], ['Bell', Bell],
+            ['Envelope', Envelope], ['Calendar', CalendarIcon], ['FileText', FileText], ['CreditCard', CreditCard],
+            ['ChartBar', ChartBar], ['Briefcase', Briefcase], ['Globe', Globe], ['Cloud', Cloud],
+            ['Lock', Lock], ['MagnifyingGlass', MagnifyingGlass], ['Plus', Plus], ['PencilSimple', PencilSimple],
+            ['Trash', Trash], ['Download', Download], ['Upload', Upload], ['ArrowRight', ArrowRight],
+            ['Heart', Heart], ['Star', Star], ['Lightning', Lightning], ['CheckCircle', CheckCircle],
+          ].map(([name, Icon]) => {
+            const Component = Icon as React.ComponentType<{ size?: number }>;
+            return (
+              <div key={name as string} style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 8,
+                padding: '16px 8px',
+                borderRadius: 8,
+                color: 'var(--rf-color-text)',
+                transition: 'background var(--rf-transition-fast)',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'var(--rf-color-surface-elevated)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Component size={22} />
+                <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>
+                  {name as string}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <h3 style={{ font: 'var(--rf-text-heading-sm)', margin: '24px 0 12px' }}>Sizes</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, color: 'var(--rf-color-text)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <Lightning size={16} />
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>16px</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <Lightning size={18} />
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>18px</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <Lightning size={20} />
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>20px</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <Lightning size={24} />
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>24px</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <Lightning size={32} />
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>32px</span>
+          </div>
+        </div>
+        <h3 style={{ font: 'var(--rf-text-heading-sm)', margin: '24px 0 12px' }}>Weights</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, color: 'var(--rf-color-text)' }}>
+          {(['thin', 'light', 'regular', 'bold', 'fill', 'duotone'] as const).map(w => (
+            <div key={w} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+              <Heart size={24} weight={w} />
+              <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)' }}>{w}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Colors">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12 }}>
+          {[
+            ['Primary', 'var(--rf-color-primary)'],
+            ['Brand', 'var(--rf-color-brand)'],
+            ['Surface', 'var(--rf-color-surface)'],
+            ['Elevated', 'var(--rf-color-surface-elevated)'],
+            ['Info', 'var(--rf-color-info)'],
+            ['Success', 'var(--rf-color-success)'],
+            ['Warning', 'var(--rf-color-warning)'],
+            ['Danger', 'var(--rf-color-danger)'],
+            ['Lime', 'var(--rf-color-accent-lime)'],
+            ['Orange', 'var(--rf-color-accent-orange)'],
+            ['Purple', 'var(--rf-color-accent-purple)'],
+            ['Teal', 'var(--rf-color-accent-teal)'],
+            ['Sidebar', 'var(--rf-color-sidebar)'],
+          ].map(([label, color]) => (
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{
+                width: '100%', height: 48,
+                backgroundColor: color,
+                border: '1px solid var(--rf-color-border)',
+                borderRadius: 8,
+              }} />
+              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </Section>
+    </div>
+  );
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section style={{ marginBottom: 64 }}>
+      <h2 style={{
+        font: 'var(--rf-text-heading-lg)',
+        marginBottom: 24,
+        paddingBottom: 12,
+        borderBottom: '1px solid var(--rf-color-border)',
+      }}>
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function PaginationDemo() {
+  const [page, setPage] = useState(1);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <Pagination current={page} total={12} onChange={setPage} />
+      <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)' }}>Current page: {page}</span>
+    </div>
+  );
+}
+
+// ── Tier 2 demo helpers ──
+
+function Tier2Radios() {
+  const [val, setVal] = useState('weekly');
+  return (
+    <RadioGroup value={val} onChange={setVal}>
+      <Radio value="weekly">Weekly payroll cadence</Radio>
+      <Radio value="biweekly">Bi-weekly payroll cadence</Radio>
+      <Radio value="monthly">Monthly payroll cadence</Radio>
+      <Radio value="hold" disabled>Hold (disabled)</Radio>
+    </RadioGroup>
+  );
+}
+
+function Tier2Segmented() {
+  const [v, setV] = useState('list');
+  return (
+    <SegmentedControl
+      value={v}
+      onChange={setV}
+      items={[
+        { value: 'list', label: 'List' },
+        { value: 'grid', label: 'Grid' },
+        { value: 'board', label: 'Board' },
+      ]}
+    />
+  );
+}
+
+function Tier2Toggle() {
+  const [bold, setBold] = useState(true);
+  return (
+    <Row>
+      <Toggle pressed={bold} onPressedChange={setBold}><strong>B</strong></Toggle>
+      <Toggle pressed={false} onPressedChange={() => {}}><em>I</em></Toggle>
+      <Toggle pressed={false} onPressedChange={() => {}}><span style={{ textDecoration: 'underline' }}>U</span></Toggle>
+    </Row>
+  );
+}
+
+function Tier2ToggleGroup() {
+  const [view, setView] = useState('grid');
+  return (
+    <ToggleGroup value={view} onChange={setView}>
+      <ToggleGroupItem value="list">≡</ToggleGroupItem>
+      <ToggleGroupItem value="grid">▦</ToggleGroupItem>
+      <ToggleGroupItem value="map">◎</ToggleGroupItem>
+    </ToggleGroup>
+  );
+}
+
+function Tier2NumStepper() {
+  const [n, setN] = useState(8);
+  return <NumberStepper label="Per-employee rate" value={n} onChange={setN} min={0} max={50} hint={`Current: $${n}`} />;
+}
+
+function Tier2Masked() {
+  const [ssn, setSsn] = useState('');
+  const [phone, setPhone] = useState('');
+  return (
+    <div style={{ maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <MaskedInput label="SSN" mask="###-##-####" value={ssn} onChange={setSsn} />
+      <MaskedInput label="Phone" mask="(###) ###-####" value={phone} onChange={setPhone} />
+    </div>
+  );
+}
+
+function Tier2Tags() {
+  const [tags, setTags] = useState<string[]>(['operations', 'payroll']);
+  return <div style={{ maxWidth: 400 }}><TagInput label="Tags" value={tags} onChange={setTags} placeholder="Add tag and press Enter" /></div>;
+}
+
+function Tier2OTP() {
+  const [code, setCode] = useState('');
+  return (
+    <div>
+      <InputOTP label="Verification code" value={code} onChange={setCode} length={6} hint="Sent to ••• 4521" />
+    </div>
+  );
+}
+
+function Tier2File() {
+  const [file, setFile] = useState<File | null>(null);
+  return <div style={{ maxWidth: 480 }}><FileUpload label="Payroll CSV" value={file} onChange={setFile} accept=".csv,.xlsx" maxSize={5 * 1024 * 1024} hint="Drop a CSV or XLSX from your prior provider" /></div>;
+}
+
+function Tier2Combo() {
+  const [v, setV] = useState('');
+  return (
+    <div style={{ maxWidth: 320 }}>
+      <Combobox
+        label="Department"
+        value={v}
+        onChange={setV}
+        placeholder="Pick a department..."
+        options={[
+          { value: 'eng', label: 'Engineering' },
+          { value: 'fin', label: 'Finance' },
+          { value: 'hr', label: 'People & HR' },
+          { value: 'ops', label: 'Operations' },
+          { value: 'sales', label: 'Sales' },
+          { value: 'support', label: 'Support' },
+        ]}
+      />
+    </div>
+  );
+}
+
+function Tier2CalendarDemo() {
+  const [d, setD] = useState<Date | null>(new Date());
+  return <Calendar value={d} onChange={setD} />;
+}
+
+function Tier2DatePickerDemo() {
+  const [d, setD] = useState<Date | null>(null);
+  return <DatePicker label="Payroll cut-off" value={d} onChange={setD} hint="Pick the final day for adjustments" />;
+}
+
+function Tier2TimePickerDemo() {
+  const [t, setT] = useState('09:30');
+  return <TimePicker label="Release time" value={t} onChange={setT} hint="When the payroll auto-releases" />;
+}
+
+function Tier2Dialogs() {
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [destructiveOpen, setDestructiveOpen] = useState(false);
+  const { toast } = useToast();
+  return (
+    <Row>
+      <Button variant="secondary" onClick={() => setConfirmOpen(true)}>Confirm action</Button>
+      <Button variant="danger" onClick={() => setDestructiveOpen(true)}>Destructive action</Button>
+      <ConfirmationDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Save changes?"
+        description="Your edits will be applied to the current payroll draft."
+        confirmLabel="Save"
+        onConfirm={() => { setConfirmOpen(false); toast('Saved', { variant: 'success' }); }}
+      />
+      <AlertDialog
+        open={destructiveOpen}
+        onClose={() => setDestructiveOpen(false)}
+        variant="destructive"
+        title="Delete this company?"
+        description="This will permanently remove the company and all associated records. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => { setDestructiveOpen(false); toast('Deleted', { variant: 'error' }); }}
+      />
+    </Row>
+  );
+}
+
+function Tier2DrawerDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>Open drawer</Button>
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Quick add"
+        description="Bottom-anchored drawer for mobile-first surfaces."
+        footer={<Button onClick={() => setOpen(false)}>Done</Button>}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Field label="Name"><Input placeholder="Acme Corp" /></Field>
+          <Field label="Tax ID"><MaskedInput mask="##-#######" value="" onChange={() => {}} /></Field>
+        </div>
+      </Drawer>
+    </>
+  );
+}
+
+function Tier2CommandDemo() {
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Open command palette <Kbd>⌘</Kbd><Kbd>K</Kbd>
+      </Button>
+      <Command
+        open={open}
+        onOpenChange={setOpen}
+        items={[
+          { id: 'cal', label: 'Calendar', group: 'Suggestions', icon: <CalendarIcon size={14} />, onSelect: () => toast('Calendar'), shortcut: <><Kbd>G</Kbd><Kbd>C</Kbd></> },
+          { id: 'search', label: 'Global search', group: 'Suggestions', icon: <MagnifyingGlass size={14} />, onSelect: () => toast('Search'), shortcut: <><Kbd>⌘</Kbd><Kbd>K</Kbd></> },
+          { id: 'profile', label: 'Profile', group: 'Workspace', icon: <User size={14} />, onSelect: () => toast('Profile') },
+          { id: 'billing', label: 'Billing', group: 'Workspace', icon: <CreditCard size={14} />, onSelect: () => toast('Billing') },
+          { id: 'settings', label: 'Settings', group: 'Workspace', icon: <Gear size={14} />, onSelect: () => toast('Settings') },
+        ]}
+      />
+    </>
+  );
+}
+
+function Row({ children }: { children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+      {children}
+    </div>
+  );
+}
+
+function OnboardingMock({ onExit }: { onExit: () => void }) {
+  const [step, setStep] = useState(0);
+  const [agreed, setAgreed] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirmPw, setConfirmPw] = useState('');
+  const [showSsn, setShowSsn] = useState(false);
+  const [data, setData] = useState({
+    firstName: 'Angel',
+    lastName: 'Orizi',
+    middleName: '',
+    phone: '(386) 847-0006',
+    phoneCountry: '+1',
+    email: 'angelorizi@mailsac.com',
+    jobTitle: 'Sales',
+    workLocation: 'Main',
+    ssn: '',
+    dob: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    zip: '',
+    fedFilingStatus: '',
+    fedMultipleJobs: '',
+    fedDepsUnder17: '',
+    fedDepsOther: '',
+    fedExtraWithholding: '',
+    stateFilingStatus: '',
+    stateAllowance: '',
+    stateAdditional: '',
+    bankMethod: 'plaid',
+    routingNumber: '',
+    accountNumber: '',
+    confirmAccountNumber: '',
+    accountHolderName: '',
+    accountType: '',
+  });
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [addressChoice, setAddressChoice] = useState<'suggested' | 'entered'>('suggested');
+
+  const stepKeys = ['welcome', 'password', 'about', 'personal', 'federal', 'state', 'bank', 'confirm', 'done'];
+  const current = stepKeys[step];
+  const totalProgress = stepKeys.length - 2;
+  const currentProgress = Math.max(0, Math.min(step, totalProgress));
+
+  const pwRules = [
+    { label: 'At least 8 characters', test: (v: string) => v.length >= 8 },
+    { label: 'Lowercase letter', test: (v: string) => /[a-z]/.test(v) },
+    { label: 'Uppercase letter', test: (v: string) => /[A-Z]/.test(v) },
+    { label: 'Special character (!@#$%*)', test: (v: string) => /[!@#$%*&^()_+\-=]/.test(v) },
+    { label: 'A number', test: (v: string) => /\d/.test(v) },
+  ];
+  const pwValid = pwRules.every(r => r.test(password)) && password === confirmPw && confirmPw.length > 0;
+
+  const go = (d: number) => setStep(s => Math.max(0, Math.min(stepKeys.length - 1, s + d)));
+  const goTo = (i: number) => setStep(i);
+
+  const goBackBar = (
+    <button
+      type="button"
+      onClick={onExit}
+      style={{
+        position: 'fixed', top: 16, left: 16,
+        background: 'var(--rf-color-surface)', border: '1px solid var(--rf-color-border)',
+        borderRadius: 'var(--rf-radius-md)', padding: '6px 10px',
+        font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)',
+        cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, zIndex: 10,
+      }}
+    >
+      <ArrowLeft size={12} /> Back to library
+    </button>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--rf-color-canvas)', display: 'flex', justifyContent: 'center', overflowY: 'auto' }}>
+      {goBackBar}
+      <div key={step} style={{ width: '100%', maxWidth: 480, padding: '48px 28px 64px' }}>
+        {current !== 'welcome' && current !== 'done' && (
+          <div style={{ marginBottom: 32 }}>
+            <SegmentedProgress current={currentProgress} total={totalProgress} />
+          </div>
+        )}
+
+        {current === 'welcome' && (
+          <div style={{ paddingTop: 32, textAlign: 'center' }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 14, margin: '0 auto 28px',
+              background: 'var(--rf-color-primary)', color: 'var(--rf-color-on-primary)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <UserCircle size={28} />
+            </div>
+            <h1 style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)', margin: '0 0 12px', color: 'var(--rf-color-text)' }}>
+              Welcome, {data.firstName}
+            </h1>
+            <p style={{ font: 'var(--rf-text-body-md)', color: 'var(--rf-color-text-secondary)', margin: '0 auto 8px', maxWidth: 340 }}>
+              <strong style={{ color: 'var(--rf-color-text)', fontWeight: 500 }}>Acme Corp</strong> has invited you to complete your onboarding.
+            </p>
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)', margin: '0 auto 32px', maxWidth: 320 }}>
+              This should take about 5–10 minutes. You'll set up your account, confirm your details, and complete your tax forms.
+            </p>
+            <Button onClick={() => go(1)} size="lg">Get started →</Button>
+          </div>
+        )}
+
+        {current === 'password' && (
+          <>
+            <PageHeader title="Create your password" subtitle="Choose a strong password to secure your account." />
+            <Card variant="outlined" padding="md" style={{ marginBottom: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {pwRules.map((r, i) => {
+                  const idle = password.length === 0;
+                  const pass = r.test(password);
+                  const color = idle ? 'var(--rf-color-text-tertiary)' : pass ? 'var(--rf-color-success-text)' : 'var(--rf-color-danger-text)';
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, font: 'var(--rf-text-body-sm)', color }}>
+                      <span style={{ width: 14, display: 'inline-flex', justifyContent: 'center' }}>
+                        {idle ? '○' : pass ? '✓' : '✗'}
+                      </span>
+                      {r.label}
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
+              <Input inputSize="lg" label="Password" type="password" placeholder="Create a password" value={password} onChange={e => setPassword(e.target.value)} />
+              <Input
+                inputSize="lg"
+                label="Confirm password"
+                type="password"
+                placeholder="Re-enter password"
+                value={confirmPw}
+                onChange={e => setConfirmPw(e.target.value)}
+                error={confirmPw.length > 0 && password !== confirmPw ? "Passwords don't match" : undefined}
+              />
+            </div>
+            <Button fullWidth size="lg" onClick={() => go(1)} disabled={!pwValid}>Continue</Button>
+          </>
+        )}
+
+        {current === 'about' && (
+          <>
+            <PageHeader
+              title="About you"
+              subtitle="Please use your legal name exactly as it appears on official documents. This is required for tax and payroll purposes."
+            />
+            <div style={{ marginBottom: 20 }}>
+              <Alert variant="warning" icon={<Warning size={18} weight="fill" />}>
+                Inaccurate information will result in incorrect tax forms, leading to fines, penalties, and delayed payments.
+              </Alert>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <Input inputSize="lg" label="Legal first name" value={data.firstName} onChange={e => setData({ ...data, firstName: e.target.value })} />
+                <Input inputSize="lg" label="Legal last name" value={data.lastName} onChange={e => setData({ ...data, lastName: e.target.value })} />
+              </div>
+              <Input inputSize="lg" label="Legal middle name" placeholder="Optional" value={data.middleName} onChange={e => setData({ ...data, middleName: e.target.value })} />
+              <PhoneInput
+                label="Phone number"
+                value={data.phone}
+                onChange={v => setData({ ...data, phone: v })}
+                countryCode={data.phoneCountry}
+                onCountryChange={c => setData({ ...data, phoneCountry: c })}
+              />
+              <Input inputSize="lg" label="Email" type="email" value={data.email} onChange={e => setData({ ...data, email: e.target.value })} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <Input inputSize="lg" label="Job title" value={data.jobTitle} disabled />
+                <Input inputSize="lg" label="Work location" value={data.workLocation} disabled />
+              </div>
+            </div>
+            <div style={{ marginBottom: 24 }}>
+              <Checkbox checked={agreed} onChange={() => setAgreed(!agreed)}>
+                I agree to the <a href="#" onClick={e => e.preventDefault()} style={{ color: 'var(--rf-color-text)', fontWeight: 500 }}>Terms of Service</a>, <a href="#" onClick={e => e.preventDefault()} style={{ color: 'var(--rf-color-text)', fontWeight: 500 }}>Privacy Policy</a> &amp; <a href="#" onClick={e => e.preventDefault()} style={{ color: 'var(--rf-color-text)', fontWeight: 500 }}>Payroll Terms</a>
+              </Checkbox>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => go(1)} disabled={!agreed}>Continue</Button>
+            </div>
+          </>
+        )}
+
+        {current === 'personal' && (
+          <>
+            <PageHeader title="Personal information" subtitle="For security and tax purposes, we need to verify your identity." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+              <Field label="Social Security Number" required>
+                <Input
+                  inputSize="lg"
+                  type={showSsn ? 'text' : 'password'}
+                  placeholder="XXX-XX-XXXX"
+                  value={data.ssn}
+                  onChange={e => setData({ ...data, ssn: e.target.value })}
+                  suffix={
+                    <button type="button" onClick={() => setShowSsn(!showSsn)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--rf-color-text-tertiary)', display: 'inline-flex', pointerEvents: 'auto' }}>
+                      {showSsn ? <EyeSlash size={16} /> : <Eye size={16} />}
+                    </button>
+                  }
+                />
+              </Field>
+              <Input inputSize="lg" label="Date of birth" type="date" value={data.dob} onChange={e => setData({ ...data, dob: e.target.value })} />
+              <Input inputSize="lg" label="Address" placeholder="Street address" value={data.address1} onChange={e => setData({ ...data, address1: e.target.value })} />
+              <Input inputSize="lg" label="Address line 2" placeholder="Apt, suite (optional)" value={data.address2} onChange={e => setData({ ...data, address2: e.target.value })} />
+              <Input inputSize="lg" label="City" value={data.city} onChange={e => setData({ ...data, city: e.target.value })} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <Select size="lg" label="State" placeholder="State" options={[
+                  { value: 'CA', label: 'California' },
+                  { value: 'NY', label: 'New York' },
+                  { value: 'TX', label: 'Texas' },
+                  { value: 'WA', label: 'Washington' },
+                ]} value={data.state} onChange={e => setData({ ...data, state: e.target.value })} />
+                <Input inputSize="lg" label="ZIP code" placeholder="00000" value={data.zip} onChange={e => setData({ ...data, zip: e.target.value })} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => setAddressModalOpen(true)} disabled={!(data.ssn && data.dob && data.address1 && data.city && data.state && data.zip)}>Continue</Button>
+            </div>
+
+            <Modal
+              open={addressModalOpen}
+              onClose={() => setAddressModalOpen(false)}
+              title="Verify your address"
+              description="We found a suggested match for the address you entered. Please select which one to use."
+              size="sm"
+              footer={
+                <>
+                  <Button variant="secondary" onClick={() => setAddressModalOpen(false)}>Go back</Button>
+                  <Button onClick={() => { setAddressModalOpen(false); go(1); }}>Use this address</Button>
+                </>
+              }
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <OptionCard
+                  selected={addressChoice === 'suggested'}
+                  onSelect={() => setAddressChoice('suggested')}
+                  title="Suggested address"
+                  description={`${data.address1}, ${data.city}, ${data.state} ${data.zip}-1234`}
+                  badge="Recommended"
+                />
+                <OptionCard
+                  selected={addressChoice === 'entered'}
+                  onSelect={() => setAddressChoice('entered')}
+                  title="Address as entered"
+                  description={`${data.address1}${data.address2 ? ', ' + data.address2 : ''}, ${data.city}, ${data.state} ${data.zip}`}
+                />
+              </div>
+            </Modal>
+          </>
+        )}
+
+        {current === 'federal' && (
+          <>
+            <PageHeader title="Federal withholding" subtitle="These entries correspond to Form W-4 and determine how much income tax to withhold." />
+            <p style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', margin: '-20px 0 24px' }}>
+              Use the <a href="https://www.irs.gov/individuals/tax-withholding-estimator" target="_blank" rel="noreferrer" style={{ color: 'var(--rf-color-text)', fontWeight: 500 }}>IRS Calculator</a> if you're unsure.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+              <Select size="lg" label="Filing status (1c)" placeholder="Select filing status" options={[
+                { value: 'single', label: 'Single or Married filing separately' },
+                { value: 'married', label: 'Married filing jointly' },
+                { value: 'hoh', label: 'Head of Household' },
+              ]} value={data.fedFilingStatus} onChange={e => setData({ ...data, fedFilingStatus: e.target.value })} />
+              <Select size="lg" label="Multiple jobs (2c)" placeholder="Select" hint="Check if you or your spouse hold more than one job." options={[
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+              ]} value={data.fedMultipleJobs} onChange={e => setData({ ...data, fedMultipleJobs: e.target.value })} />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <Input inputSize="lg" label="Dependents under 17" placeholder="0" type="number" value={data.fedDepsUnder17} onChange={e => setData({ ...data, fedDepsUnder17: e.target.value })} />
+                <Input inputSize="lg" label="Other dependents" placeholder="0" type="number" value={data.fedDepsOther} onChange={e => setData({ ...data, fedDepsOther: e.target.value })} />
+              </div>
+              <Input inputSize="lg" label="Extra withholding (4c)" prefix="$" placeholder="0" hint="Optional" value={data.fedExtraWithholding} onChange={e => setData({ ...data, fedExtraWithholding: e.target.value })} />
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => go(1)} disabled={!data.fedFilingStatus}>Continue</Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+              <Button variant="ghost" size="sm" onClick={() => go(1)}>Skip for now →</Button>
+            </div>
+          </>
+        )}
+
+        {current === 'state' && (
+          <>
+            <PageHeader title="California tax withholding" subtitle="Complete the fields below for California income tax withholding." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+              <Select size="lg" label="Filing status" placeholder="Select filing status" hint="Head of Household applies to unmarried individuals with a qualifying relative." options={[
+                { value: 'single', label: 'Single' },
+                { value: 'married', label: 'Married filing jointly' },
+                { value: 'hoh', label: 'Head of Household' },
+              ]} value={data.stateFilingStatus} onChange={e => setData({ ...data, stateFilingStatus: e.target.value })} />
+              <Input inputSize="lg" label="Withholding allowance" type="number" placeholder="0" hint="Consult your state's withholding form if unsure." value={data.stateAllowance} onChange={e => setData({ ...data, stateAllowance: e.target.value })} />
+              <Input inputSize="lg" label="Additional withholding" prefix="$" placeholder="0.00" hint="Extra flat amount per pay period." value={data.stateAdditional} onChange={e => setData({ ...data, stateAdditional: e.target.value })} />
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => go(1)} disabled={!data.stateFilingStatus}>Continue</Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+              <Button variant="ghost" size="sm" onClick={() => go(1)}>Skip for now →</Button>
+            </div>
+          </>
+        )}
+
+        {current === 'bank' && (
+          <>
+            <PageHeader title="Direct deposit" subtitle="Link your bank account so you get paid automatically." />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+              <OptionCard
+                selected={data.bankMethod === 'plaid'}
+                onSelect={() => setData({ ...data, bankMethod: 'plaid' })}
+                title="Instant connection"
+                description="Powered by Plaid"
+                badge="Recommended"
+              />
+              <OptionCard
+                selected={data.bankMethod === 'manual'}
+                onSelect={() => setData({ ...data, bankMethod: 'manual' })}
+                title="Manual account linking"
+                description="Enter routing and account numbers"
+              />
+            </div>
+            {data.bankMethod === 'manual' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 24 }}>
+                <Input inputSize="lg" label="Name of account holder" placeholder="Full legal name" value={data.accountHolderName} onChange={e => setData({ ...data, accountHolderName: e.target.value })} />
+                <Input inputSize="lg" label="Routing number" placeholder="9 digits" value={data.routingNumber} onChange={e => setData({ ...data, routingNumber: e.target.value })} />
+                <Input inputSize="lg" label="Account number" value={data.accountNumber} onChange={e => setData({ ...data, accountNumber: e.target.value })} />
+                <Input
+                  inputSize="lg"
+                  label="Confirm account number"
+                  value={data.confirmAccountNumber}
+                  onChange={e => setData({ ...data, confirmAccountNumber: e.target.value })}
+                  error={data.confirmAccountNumber.length > 0 && data.accountNumber !== data.confirmAccountNumber ? "Account numbers don't match" : undefined}
+                />
+                <Select size="lg" label="Account type" placeholder="Select account type" options={[
+                  { value: 'checking', label: 'Checking' },
+                  { value: 'savings', label: 'Savings' },
+                ]} value={data.accountType} onChange={e => setData({ ...data, accountType: e.target.value })} />
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => go(1)} icon={data.bankMethod === 'plaid' ? <Bank size={16} /> : undefined}>
+                {data.bankMethod === 'plaid' ? 'Connect bank' : 'Continue'}
+              </Button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
+              <Button variant="ghost" size="sm" onClick={() => go(1)}>Skip for now →</Button>
+            </div>
+          </>
+        )}
+
+        {current === 'confirm' && (
+          <>
+            <PageHeader title="Review & submit" subtitle="Confirm everything looks correct before submitting." />
+            <div style={{ marginBottom: 16 }}>
+              <Alert variant="warning" icon={<Warning size={18} weight="fill" />}>
+                Please review carefully. Incorrect information will result in incorrect tax filings, leading to fines and penalties.
+              </Alert>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <Card variant="outlined" padding="md">
+                <CardHeader title="Employee details" action={<Button variant="ghost" size="sm" onClick={() => goTo(2)}>Edit</Button>} />
+                <div style={{ marginTop: 12 }}>
+                  <DetailRow label="Name" value={`${data.firstName} ${data.middleName ? data.middleName + ' ' : ''}${data.lastName}`} />
+                  <DetailRow label="Phone" value={data.phone} />
+                  <DetailRow label="Email" value={data.email} />
+                  <DetailRow label="Job title" value={data.jobTitle} />
+                </div>
+              </Card>
+              <Card variant="outlined" padding="md">
+                <CardHeader title="Personal information" action={<Button variant="ghost" size="sm" onClick={() => goTo(3)}>Edit</Button>} />
+                <div style={{ marginTop: 12 }}>
+                  <DetailRow label="SSN / ITIN" value={data.ssn || '———'} masked />
+                  <DetailRow label="Date of birth" value={data.dob || '———'} />
+                  <DetailRow label="Address" value={`${data.address1 || '—'}, ${data.city || '—'}, ${data.state || '—'} ${data.zip || ''}`} />
+                </div>
+              </Card>
+              <Card variant="outlined" padding="md">
+                <CardHeader title="Federal withholding" action={<Button variant="ghost" size="sm" onClick={() => goTo(4)}>Edit</Button>} />
+                <div style={{ marginTop: 12 }}>
+                  <DetailRow label="Filing status" value={data.fedFilingStatus || '———'} />
+                  <DetailRow label="Multiple jobs" value={data.fedMultipleJobs === 'yes' ? 'Yes' : 'No'} />
+                  <DetailRow label="Dependents" value={`${data.fedDepsUnder17 || 0} under 17, ${data.fedDepsOther || 0} other`} />
+                  <DetailRow label="Extra withholding" value={data.fedExtraWithholding ? `$${data.fedExtraWithholding}` : '$0'} />
+                </div>
+              </Card>
+              <Card variant="outlined" padding="md">
+                <CardHeader title="California withholding" action={<Button variant="ghost" size="sm" onClick={() => goTo(5)}>Edit</Button>} />
+                <div style={{ marginTop: 12 }}>
+                  <DetailRow label="Filing status" value={data.stateFilingStatus || '———'} />
+                  <DetailRow label="Allowance" value={data.stateAllowance || '0'} />
+                  <DetailRow label="Additional" value={data.stateAdditional ? `$${data.stateAdditional}` : '$0'} />
+                </div>
+              </Card>
+              <Card variant="outlined" padding="md">
+                <CardHeader title="Direct deposit" action={<Button variant="ghost" size="sm" onClick={() => goTo(6)}>Edit</Button>} />
+                <div style={{ marginTop: 12 }}>
+                  <DetailRow label="Method" value={data.bankMethod === 'plaid' ? 'Instant verification (Plaid)' : 'Manual entry'} />
+                  {data.accountHolderName && <DetailRow label="Account holder" value={data.accountHolderName} />}
+                  {data.routingNumber && <DetailRow label="Routing" value={`••••${data.routingNumber.slice(-4)}`} />}
+                  {data.accountNumber && <DetailRow label="Account" value={`••••${data.accountNumber.slice(-4)}`} />}
+                  {data.accountType && <DetailRow label="Type" value={data.accountType} />}
+                </div>
+              </Card>
+            </div>
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+              <Button variant="secondary" size="lg" onClick={() => go(-1)}>Back</Button>
+              <Button size="lg" fullWidth onClick={() => go(1)}>Submit</Button>
+            </div>
+          </>
+        )}
+
+        {current === 'done' && (
+          <div style={{ paddingTop: 64, textAlign: 'center' }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%', margin: '0 auto 24px',
+              background: 'var(--rf-color-success)', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <CheckCircleIcon size={32} weight="fill" />
+            </div>
+            <h1 style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)', margin: '0 0 12px', color: 'var(--rf-color-text)' }}>
+              All done for now!
+            </h1>
+            <p style={{ font: 'var(--rf-text-body-md)', color: 'var(--rf-color-text-secondary)', margin: '0 auto 4px', maxWidth: 340 }}>
+              We are verifying the submitted information.
+            </p>
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-tertiary)', margin: '0 auto 32px', maxWidth: 320 }}>
+              Any additional information needed will appear in the tasks section on your dashboard.
+            </p>
+            <Button size="lg" onClick={() => { setStep(0); }}>Continue to dashboard →</Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const PORTAL_COMPANIES = [
+  { id: '1', name: 'Acme Corp', employees: 124, plan: 'Pro', status: 'active', mrr: 2400, days: 4, tasks: 0 },
+  { id: '2', name: 'Globex Inc', employees: 38, plan: 'Starter', status: 'payroll_ready', mrr: 600, days: 1, tasks: 0 },
+  { id: '3', name: 'Initech Industries', employees: 412, plan: 'Enterprise', status: 'active', mrr: 12000, days: 12, tasks: 2 },
+  { id: '4', name: 'Umbrella LLC', employees: 22, plan: 'Pro', status: 'action_required', mrr: 2400, days: 2, tasks: 3 },
+  { id: '5', name: 'Stark Enterprises', employees: 86, plan: 'Pro', status: 'active', mrr: 2400, days: 7, tasks: 1 },
+  { id: '6', name: 'WeWork', employees: 64, plan: 'Pro', status: 'payroll_ready', mrr: 2400, days: 3, tasks: 0 },
+];
+
+const statusVariant = (s: string) =>
+  s === 'active' ? 'success' :
+  s === 'payroll_ready' ? 'teal' :
+  s === 'action_required' ? 'danger' : 'neutral';
+
+const statusLabel = (s: string) =>
+  s === 'active' ? 'Active' :
+  s === 'payroll_ready' ? 'Payroll ready' :
+  s === 'action_required' ? 'Action required' : s;
+
+function StatCard({ label, value }: { label: string; value: string }) {
+  return (
+    <Card variant="outlined" padding="md">
+      <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>{label}</div>
+      <div style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)', color: 'var(--rf-color-text)' }}>{value}</div>
+    </Card>
+  );
+}
+
+function DashboardView() {
+  const { toast } = useToast();
+  return (
+    <>
+      <PageHeader
+        title="Welcome"
+        subtitle="michael.scott@rollfi.xyz"
+        action={<Button variant="secondary" size="sm" icon={<Plus size={14} />}>Add new company</Button>}
+      />
+
+      <div style={{ marginBottom: 20 }}>
+        <Banner
+          variant="danger"
+          icon={<Warning size={18} weight="fill" />}
+          action={<Button variant="danger" size="sm" onClick={() => toast('Opening activity')}>View activity</Button>}
+        >
+          <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Transaction failures require attention</div>
+          <div>Umbrella LLC has a failed payroll transaction. Open Payroll activity to investigate and resolve.</div>
+        </Banner>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
+        <StatCard label="Client" value="Rollfi" />
+        <StatCard label="Companies" value="725" />
+        <StatCard label="Active people" value="782" />
+      </div>
+
+      <Card variant="outlined" padding="none">
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--rf-color-border)' }}>
+          <Input icon={<MagnifyingGlass size={14} />} placeholder="Search companies..." inputSize="sm" />
+        </div>
+        <Table
+          columns={[
+            { key: 'name', header: 'Company', sortable: true, render: row => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Avatar name={row.name as string} size="sm" />
+                <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
+              </div>
+            ) },
+            { key: 'days', header: 'Days until payroll', align: 'right', sortable: true, render: row => {
+              const d = row.days as number;
+              return <span style={{ color: d <= 2 ? 'var(--rf-color-danger-text)' : 'var(--rf-color-text)' }}>{d}d</span>;
+            } },
+            { key: 'tasks', header: 'Tasks', align: 'right', render: row => {
+              const t = row.tasks as number;
+              return t === 0 ? <Badge variant="success">Ready</Badge> : <Badge variant="warning">{t} open</Badge>;
+            } },
+            { key: 'status', header: 'Status', render: row => (
+              <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge>
+            ) },
+          ]}
+          data={PORTAL_COMPANIES}
+          rowKey={r => r.id as string}
+          expandable={row => (
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Upcoming tasks</div>
+              <DetailRow label="Onboarding" value={<Badge variant="success">Complete</Badge>} />
+              <DetailRow label="Bank verification" value={(row.tasks as number) > 0 ? <Badge variant="warning">Pending</Badge> : <Badge variant="success">Verified</Badge>} />
+              <DetailRow label="Payroll cycle" value={`Every 2 weeks · ${row.days}d remaining`} />
+            </div>
+          )}
+        />
+      </Card>
+    </>
+  );
+}
+
+function ImplementationsView() {
+  const [subTab, setSubTab] = useState('readiness');
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+
+  return (
+    <>
+      <PageHeader
+        title="Implementations"
+        subtitle="Onboarding readiness & payroll history"
+        action={subTab === 'readiness' ? (
+          <Button size="sm" variant="secondary" onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 1500); }}>
+            {loading ? <Spinner size="sm" /> : 'Refresh'}
+          </Button>
+        ) : subTab === 'history' ? (
+          <Button size="sm" icon={<Upload size={14} />} onClick={() => setWizardOpen(true)}>Import history</Button>
+        ) : undefined}
+      />
+      <div style={{ marginBottom: 20 }}>
+        <Tabs
+          tabs={[
+            { key: 'readiness', label: 'Readiness' },
+            { key: 'history', label: 'Payroll history' },
+            { key: 'bank_accounts', label: 'Bank accounts' },
+          ]}
+          value={subTab}
+          onChange={setSubTab}
+        />
+      </div>
+
+      {subTab === 'readiness' && loading && (
+        <Card variant="outlined" padding="md">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: i < 4 ? '1px solid var(--rf-color-border-subtle)' : undefined }}>
+              <Skeleton circle width={28} height={28} />
+              <div style={{ flex: 1 }}><Skeleton width="40%" height={12} /></div>
+              <Skeleton width={70} height={20} radius={10} />
+              <Skeleton width={70} height={20} radius={10} />
+              <Skeleton width={70} height={20} radius={10} />
+            </div>
+          ))}
+        </Card>
+      )}
+
+      {subTab === 'readiness' && !loading && (
+        <Card variant="outlined" padding="none">
+          <Table
+            columns={[
+              { key: 'name', header: 'Company', sortable: true, render: row => (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <Avatar name={row.name as string} size="sm" />
+                  <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
+                </div>
+              ) },
+              { key: 'onboarding', header: 'Onboarding', render: () => <Badge variant="success">Complete</Badge> },
+              { key: 'bank', header: 'Bank', render: row => (row.tasks as number) > 0 ? <Badge variant="warning">Pending</Badge> : <Badge variant="success">Verified</Badge> },
+              { key: 'history', header: 'Payroll history', render: row => (row.id === '4' ? <Badge variant="danger">Missing</Badge> : <Badge variant="success">Imported</Badge>) },
+              { key: 'status', header: 'Overall', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
+            ]}
+            data={PORTAL_COMPANIES}
+            rowKey={r => r.id as string}
+          />
+        </Card>
+      )}
+
+      {subTab === 'history' && (
+        <Card variant="outlined" padding="none">
+          <Table
+            columns={[
+              { key: 'company', header: 'Company' },
+              { key: 'period', header: 'Period' },
+              { key: 'records', header: 'Records', align: 'right' },
+              { key: 'source', header: 'Source' },
+              { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
+            ]}
+            data={[
+              { id: 'i1', company: 'WeWork', period: '2026-01-01 → 2026-04-30', records: '312', source: 'Gusto CSV', status: 'active' },
+              { id: 'i2', company: 'Pets.com', period: '2026-01-01 → 2026-03-31', records: '102', source: 'ADP', status: 'payroll_ready' },
+              { id: 'i3', company: 'Umbrella LLC', period: '2026-02-01 → 2026-04-30', records: '0', source: 'Pending', status: 'action_required' },
+            ]}
+            rowKey={r => r.id as string}
+          />
+        </Card>
+      )}
+
+      {subTab === 'bank_accounts' && (
+        <Card variant="outlined" padding="none">
+          <Table
+            columns={[
+              { key: 'company', header: 'Company' },
+              { key: 'account', header: 'Account' },
+              { key: 'method', header: 'Method', render: row => <Badge variant="info">{row.method as string}</Badge> },
+              { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
+            ]}
+            data={[
+              { id: 'b1', company: 'Acme Corp', account: '••• 4521', method: 'Plaid', status: 'active' },
+              { id: 'b2', company: 'Globex Inc', account: '••• 8893', method: 'Micro-deposits', status: 'payroll_ready' },
+              { id: 'b3', company: 'Umbrella LLC', account: 'Not connected', method: 'Plaid', status: 'action_required' },
+            ]}
+            rowKey={r => r.id as string}
+          />
+        </Card>
+      )}
+
+      <SidePanel
+        open={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        title="Import payroll history"
+        description="Bring historical payroll data into Rollfi"
+        width="lg"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setWizardStep(Math.max(0, wizardStep - 1))} disabled={wizardStep === 0}>Back</Button>
+            {wizardStep < 4 ? (
+              <Button onClick={() => setWizardStep(wizardStep + 1)}>Next</Button>
+            ) : (
+              <Button onClick={() => { setWizardOpen(false); setWizardStep(0); toast('Import complete', { variant: 'success' }); }}>Finish</Button>
+            )}
+          </>
+        }
+      >
+        <div style={{ marginBottom: 24 }}>
+          <Stepper
+            steps={[{ label: 'Company' }, { label: 'Configure' }, { label: 'Upload' }, { label: 'Map' }, { label: 'Review' }]}
+            currentIdx={wizardStep}
+          />
+        </div>
+        {wizardStep === 0 && (
+          <Field label="Select company" required>
+            <Select placeholder="Choose..." options={PORTAL_COMPANIES.map(c => ({ value: c.id, label: c.name }))} />
+          </Field>
+        )}
+        {wizardStep === 1 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Field label="Worker type" required>
+              <Select placeholder="Choose..." options={[
+                { value: 'w2', label: 'W-2' },
+                { value: '1099', label: '1099' },
+                { value: 'both', label: 'Both (runs two imports)' },
+              ]} />
+            </Field>
+            <Field label="Pay period type" required>
+              <Select placeholder="Choose..." options={[
+                { value: 'regular', label: 'Regular' },
+                { value: 'off', label: 'Off-Cycle' },
+                { value: 'missing', label: 'Missing' },
+              ]} />
+            </Field>
+          </div>
+        )}
+        {wizardStep === 2 && (
+          <Field label="Upload CSV" required hint="Maximum file size 25 MB">
+            <Input placeholder="payroll_q1_2026.csv" icon={<Upload size={14} />} />
+          </Field>
+        )}
+        {wizardStep === 3 && (
+          <Alert variant="info" icon={<Info size={18} weight="fill" />}>
+            Column mapping detected automatically. Review the field mapping before continuing.
+          </Alert>
+        )}
+        {wizardStep === 4 && (
+          <Card variant="outlined" padding="md">
+            <DetailRow label="Company" value="Acme Corp" />
+            <DetailRow label="Worker type" value="W-2" />
+            <DetailRow label="Pay period type" value="Regular" />
+            <DetailRow label="File" value="payroll_q1_2026.csv" />
+            <DetailRow label="Records" value="312" />
+          </Card>
+        )}
+      </SidePanel>
+    </>
+  );
+}
+
+function ActivityView() {
+  const [subTab, setSubTab] = useState('payments');
+  const [companyId, setCompanyId] = useState('1');
+  const [periodId, setPeriodId] = useState('p2');
+  const periods = [
+    { id: 'p1', label: 'Apr 16 – Apr 30, 2026', status: 'active' },
+    { id: 'p2', label: 'Apr 1 – Apr 15, 2026', status: 'payroll_ready' },
+    { id: 'p3', label: 'Mar 16 – Mar 31, 2026', status: 'active' },
+  ];
+  return (
+    <>
+      <PageHeader title="Payroll activity" subtitle="Money movement and tax filing packages" />
+      <div style={{ marginBottom: 20 }}>
+        <Tabs
+          tabs={[
+            { key: 'payments', label: 'Payments' },
+            { key: 'tax_filings', label: 'Tax filings' },
+          ]}
+          value={subTab}
+          onChange={setSubTab}
+        />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 20, alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <Field label="Company">
+            <Select value={companyId} onChange={e => setCompanyId(e.target.value)} options={PORTAL_COMPANIES.map(c => ({ value: c.id, label: c.name }))} />
+          </Field>
+          {subTab === 'payments' && (
+            <div>
+              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>Pay periods</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {periods.map(p => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => setPeriodId(p.id)}
+                    style={{
+                      textAlign: 'left',
+                      padding: '10px 12px',
+                      borderRadius: 8,
+                      border: '1px solid ' + (periodId === p.id ? 'var(--rf-color-primary)' : 'var(--rf-color-border)'),
+                      background: periodId === p.id ? 'var(--rf-color-surface-elevated)' : 'var(--rf-color-surface)',
+                      cursor: 'pointer',
+                      font: 'var(--rf-text-body-sm)',
+                      color: 'var(--rf-color-text)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                      <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{p.label}</span>
+                      <Badge variant={statusVariant(p.status)}>{statusLabel(p.status)}</Badge>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Card variant="outlined" padding="none">
+          {subTab === 'payments' ? (
+            <Table
+              columns={[
+                { key: 'employee', header: 'Employee', render: row => (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Avatar name={row.employee as string} size="sm" />
+                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.employee as string}</span>
+                  </div>
+                ) },
+                { key: 'destination', header: 'Destination', render: row => (
+                  <Tooltip content={`Full account: ${(row.destination as string).replace('•••', '5678-9012-3456')}`} side="top">
+                    <span style={{ borderBottom: '1px dotted var(--rf-color-text-tertiary)', cursor: 'help' }}>{row.destination as string}</span>
+                  </Tooltip>
+                ) },
+                { key: 'amount', header: 'Amount', align: 'right' },
+                { key: 'status', header: 'Status', render: row => {
+                  const s = row.status as string;
+                  return (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <StatusDot variant={s === 'failed' ? 'danger' : s === 'inProcess' ? 'warning' : 'success'} pulse={s === 'inProcess'} />
+                      <Badge variant={s === 'failed' ? 'danger' : s === 'inProcess' ? 'warning' : 'success'}>{s === 'failed' ? 'Failed' : s === 'inProcess' ? 'In process' : 'Settled'}</Badge>
+                    </div>
+                  );
+                } },
+              ]}
+              data={[
+                { id: 't1', employee: 'Pam Beesly', destination: '••• 4521 · Direct deposit', amount: '$2,450.00', status: 'settled' },
+                { id: 't2', employee: 'Jim Halpert', destination: '••• 7782 · Direct deposit', amount: '$2,860.00', status: 'settled' },
+                { id: 't3', employee: 'Dwight Schrute', destination: 'Check #4421', amount: '$3,120.00', status: 'inProcess' },
+                { id: 't4', employee: 'Stanley Hudson', destination: '••• 1199 · Direct deposit', amount: '$2,940.00', status: 'failed' },
+              ]}
+              rowKey={r => r.id as string}
+              onRowClick={() => {}}
+            />
+          ) : (
+            <Table
+              columns={[
+                { key: 'period', header: 'Period' },
+                { key: 'forms', header: 'Forms', render: () => <Badge variant="info">W-2 · 941 · 940</Badge> },
+                { key: 'deadline', header: 'Deadline' },
+                { key: 'status', header: 'Status', render: row => <Badge variant={statusVariant(row.status as string)}>{statusLabel(row.status as string)}</Badge> },
+              ]}
+              data={[
+                { id: 'q1', period: 'Q1 2026', forms: '', deadline: 'Apr 30, 2026', status: 'active' },
+                { id: 'q4', period: 'Q4 2025', forms: '', deadline: 'Jan 31, 2026', status: 'active' },
+              ]}
+              rowKey={r => r.id as string}
+            />
+          )}
+        </Card>
+      </div>
+    </>
+  );
+}
+
+function BillingView() {
+  const [subTab, setSubTab] = useState('report');
+  const [perEmployee, setPerEmployee] = useState(8);
+  const [employees, setEmployees] = useState(120);
+  return (
+    <>
+      <PageHeader
+        title="Billing"
+        action={subTab === 'report' ? <Button variant="secondary" size="sm" icon={<Download size={14} />}>Export CSV</Button> : undefined}
+      />
+      <div style={{ marginBottom: 20 }}>
+        <Tabs
+          tabs={[
+            { key: 'report', label: 'Report' },
+            { key: 'pricing', label: 'Pricing controls' },
+            { key: 'simulation', label: 'Simulation' },
+            { key: 'payout', label: 'Payout account' },
+          ]}
+          value={subTab}
+          onChange={setSubTab}
+        />
+      </div>
+
+      {subTab === 'report' && (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+            <StatCard label="MRR" value="$21,800" />
+            <StatCard label="Companies" value="6" />
+            <StatCard label="People billed" value="746" />
+            <StatCard label="Per-employee rate" value="$8.00" />
+          </div>
+          <Card variant="outlined" padding="none">
+            <Table
+              columns={[
+                { key: 'name', header: 'Company', sortable: true, render: row => (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <Avatar name={row.name as string} size="sm" />
+                    <span style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</span>
+                  </div>
+                ) },
+                { key: 'plan', header: 'Plan', sortable: true },
+                { key: 'employees', header: 'Employees', align: 'right', sortable: true },
+                { key: 'mrr', header: 'MRR', align: 'right', sortable: true, render: row => `$${(row.mrr as number).toLocaleString()}` },
+              ]}
+              data={PORTAL_COMPANIES}
+              rowKey={r => r.id as string}
+            />
+          </Card>
+        </>
+      )}
+
+      {subTab === 'pricing' && (
+        <Card variant="outlined" padding="md">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 480 }}>
+            <Field label="Base monthly fee" hint="Charged per company"><Input prefix="$" placeholder="49" /></Field>
+            <Field label="Per-employee rate"><Input prefix="$" suffix="/ employee" placeholder="8" /></Field>
+            <Field label="Success fee" hint="Percent of payroll processed"><Input suffix="%" placeholder="0.5" /></Field>
+            <Switch checked={true} onChange={() => {}} label="Charge for off-cycle runs" />
+            <Switch checked={false} onChange={() => {}} label="Apply tiered pricing" />
+          </div>
+        </Card>
+      )}
+
+      {subTab === 'simulation' && (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <Card variant="outlined" padding="md">
+            <CardHeader title="Scenario A" description="Base case" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+              <Slider label="Employees" value={employees} min={10} max={500} step={10} onChange={setEmployees} showMinMax format={v => `${v}`} />
+              <Slider label="Per-employee rate" value={perEmployee} min={4} max={20} step={0.5} onChange={setPerEmployee} format={v => `$${v.toFixed(2)}`} />
+            </div>
+          </Card>
+          <Card variant="outlined" padding="md">
+            <CardHeader title="Projected revenue" />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 }}>
+              <DetailRow label="Base fee" value="$49.00" />
+              <DetailRow label="Per-employee" value={`$${(employees * perEmployee).toFixed(2)}`} />
+              <DetailRow label="Success fee" value="$120.00" />
+              <DetailRow label="Total MRR" value={<strong style={{ font: 'var(--rf-text-body-md-strong)' }}>${(49 + employees * perEmployee + 120).toFixed(2)}</strong>} />
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {subTab === 'payout' && (
+        <Card variant="outlined" padding="md" style={{ maxWidth: 560 }}>
+          <CardHeader title="Payout account" description="Where Rollfi sends your monthly settlement" />
+          <div style={{ marginTop: 16 }}>
+            <DetailRow label="Bank" value="Chase Business" />
+            <DetailRow label="Account" value="••• 4521" />
+            <DetailRow label="Routing" value="••• 5910" />
+            <DetailRow label="Status" value={<Badge variant="success">Connected</Badge>} />
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
+            <Button variant="secondary" size="sm">Change account</Button>
+            <Button variant="ghost" size="sm">View transfer history</Button>
+          </div>
+        </Card>
+      )}
+    </>
+  );
+}
+
+function UsersView() {
+  const [addOpen, setAddOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const { toast } = useToast();
+  const users = [
+    { id: 'u1', name: 'Michael Scott', email: 'michael.scott@rollfi.xyz', dateAdded: '2025-09-12', role: 'Partner Admin', scope: 'All companies' },
+    { id: 'u2', name: 'Pam Beesly', email: 'pam.beesly@rollfi.xyz', dateAdded: '2025-11-04', role: 'Account Manager', scope: '3 companies' },
+    { id: 'u3', name: 'Jim Halpert', email: 'jim.halpert@rollfi.xyz', dateAdded: '2026-01-20', role: 'Account Manager', scope: '5 companies' },
+    { id: 'u4', name: 'Dwight Schrute', email: 'dwight.schrute@rollfi.xyz', dateAdded: '2026-03-08', role: 'Partner Admin', scope: 'All companies' },
+  ];
+  return (
+    <>
+      <PageHeader
+        title="Users"
+        subtitle="Manage your team's access"
+        action={<Button size="sm" icon={<Plus size={14} />} onClick={() => setAddOpen(true)}>Add new user</Button>}
+      />
+      <Card variant="outlined" padding="none">
+        <Table
+          columns={[
+            { key: 'name', header: 'Name', sortable: true, render: row => (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <Avatar name={row.name as string} size="sm" />
+                <div>
+                  <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{row.name as string}</div>
+                  <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)' }}>{row.email as string}</div>
+                </div>
+              </div>
+            ) },
+            { key: 'dateAdded', header: 'Date added', sortable: true },
+            { key: 'role', header: 'Role', render: row => (
+              <Badge variant={(row.role as string) === 'Partner Admin' ? 'purple' : 'info'}>{row.role as string}</Badge>
+            ) },
+            { key: 'scope', header: 'Scope' },
+            { key: 'actions', header: '', render: row => (
+              <DropdownMenu
+                trigger={<button type="button" style={{ border: 'none', background: 'transparent', cursor: 'pointer', color: 'var(--rf-color-text-tertiary)', padding: 4 }}>•••</button>}
+                items={[
+                  { label: 'Edit', icon: <PencilSimple size={14} />, onClick: () => toast(`Editing ${row.name}`) },
+                  { label: 'Remove', icon: <Trash size={14} />, onClick: () => toast('User removed', { variant: 'error' }), danger: true },
+                ]}
+              />
+            ) },
+          ]}
+          data={users}
+          rowKey={r => r.id as string}
+        />
+      </Card>
+
+      <div style={{ marginTop: 16 }}>
+        <Pagination current={page} total={8} onChange={setPage} />
+      </div>
+
+      <SidePanel
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        title="Add team member"
+        description="Invite a Partner Admin or Account Manager"
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setAddOpen(false)}>Cancel</Button>
+            <Button onClick={() => { setAddOpen(false); toast('Invite sent', { variant: 'success' }); }}>Send invite</Button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <Field label="First name" required><Input placeholder="Jane" /></Field>
+            <Field label="Last name" required><Input placeholder="Smith" /></Field>
+          </div>
+          <Field label="Email" required><Input placeholder="jane@partner.com" /></Field>
+          <Field label="Role" required hint="Account Managers only see assigned companies">
+            <Select placeholder="Select role..." options={[
+              { value: 'admin', label: 'Partner Admin' },
+              { value: 'manager', label: 'Account Manager' },
+            ]} />
+          </Field>
+          <Field label="Assigned companies">
+            <MultiSelect
+              values={[]}
+              onChange={() => {}}
+              options={PORTAL_COMPANIES.map(c => ({ value: c.id, label: c.name }))}
+              placeholder="Select companies..."
+            />
+          </Field>
+        </div>
+      </SidePanel>
+    </>
+  );
+}
+
+function PortalMock({ onExit }: { onExit: () => void }) {
+  const [activeNav, setActiveNav] = useState('dashboard');
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  return (
+    <div style={{ display: 'flex', height: '100vh', background: 'var(--rf-color-canvas)' }}>
+      <Sidebar
+        activeId={activeNav}
+        onSelect={setActiveNav}
+        logo={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 8 }}>
+            <Logo size={22} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button
+                type="button"
+                onClick={() => setNotifOpen(true)}
+                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', display: 'flex', alignItems: 'center', position: 'relative', padding: 4 }}
+                aria-label="Notifications"
+              >
+                <Bell size={16} />
+                <span style={{ position: 'absolute', top: 0, right: 0, width: 6, height: 6, borderRadius: '50%', background: 'var(--rf-color-brand)' }} />
+              </button>
+              <button
+                type="button"
+                onClick={onExit}
+                style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
+                aria-label="Back to library"
+              >
+                ← Library
+              </button>
+            </div>
+          </div>
+        }
+        items={[
+          { id: 'dashboard', label: 'Dashboard', icon: <House size={16} /> },
+          { id: 'implementations', label: 'Implementations', icon: <Lightning size={16} /> },
+          { id: 'activity', label: 'Payroll activity', icon: <ChartBar size={16} />, badge: <Badge variant="danger">1</Badge> },
+          { id: 'billing', label: 'Billing', icon: <CreditCard size={16} /> },
+          { id: 'users', label: 'Users', icon: <User size={16} /> },
+        ]}
+        footer={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 4 }}>
+            <Avatar name="Michael Scott" size="sm" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ font: 'var(--rf-text-caption)', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Michael Scott</div>
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'rgba(255,255,255,0.5)' }}>Partner Admin</div>
+            </div>
+          </div>
+        }
+      />
+
+      <main style={{ flex: 1, overflow: 'auto', padding: '32px 40px 56px' }}>
+        {activeNav === 'dashboard' && <DashboardView />}
+        {activeNav === 'implementations' && <ImplementationsView />}
+        {activeNav === 'activity' && <ActivityView />}
+        {activeNav === 'billing' && <BillingView />}
+        {activeNav === 'users' && <UsersView />}
+      </main>
+
+      <SidePanel
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+        title="Notifications"
+        footer={<Button variant="ghost" size="sm" onClick={() => setNotifOpen(false)}>Mark all read</Button>}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Alert variant="danger" icon={<Warning size={18} weight="fill" />}>
+            <div style={{ font: 'var(--rf-text-body-sm-strong)', marginBottom: 2 }}>Failed transaction · Umbrella LLC</div>
+            <div>Stanley Hudson's direct deposit was rejected. Apr 15, 2026.</div>
+          </Alert>
+          <Alert variant="warning" icon={<Warning size={18} />}>
+            <div style={{ font: 'var(--rf-text-body-sm-strong)', marginBottom: 2 }}>Bank verification pending · Globex Inc</div>
+            <div>Micro-deposits sent 2 days ago. Verify by Apr 18.</div>
+          </Alert>
+          <Alert variant="info" icon={<Info size={18} />}>
+            <div style={{ font: 'var(--rf-text-body-sm-strong)', marginBottom: 2 }}>New user invited</div>
+            <div>Jim Halpert accepted the invitation as Account Manager.</div>
+          </Alert>
+        </div>
+      </SidePanel>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <IconContext.Provider value={{ weight: 'regular', size: 16 }}>
+      <ThemeProvider>
+        <ToastProvider>
+          <Demo />
+        </ToastProvider>
+      </ThemeProvider>
+    </IconContext.Provider>
+  );
+}

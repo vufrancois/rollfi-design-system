@@ -1,0 +1,50 @@
+.rf-otp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rf-otp__label {
+  font: var(--rf-text-label);
+  color: var(--rf-color-text);
+}
+
+.rf-otp {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.rf-otp__slot {
+  width: 40px;
+  height: 48px;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+  border-radius: var(--rf-radius-md);
+  text-align: center;
+  font: var(--rf-text-heading-md);
+  font-feature-settings: var(--rf-font-feature);
+  color: var(--rf-color-text);
+  outline: none;
+  transition: border-color var(--rf-transition-fast), box-shadow var(--rf-transition-fast);
+}
+
+.rf-otp__slot:hover:not(:disabled) {
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-otp__slot:focus {
+  border-color: var(--rf-color-border-focus);
+  box-shadow: var(--rf-shadow-focus);
+}
+
+.rf-otp__slot:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.rf-otp-wrap--error .rf-otp__slot {
+  border-color: var(--rf-color-danger);
+}
+
+.rf-otp__hint  { font: var(--rf-text-caption); color: var(--rf-color-text-tertiary); }
+.rf-otp__error { font: var(--rf-text-caption); color: var(--rf-color-danger-text); }

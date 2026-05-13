@@ -1,0 +1,23 @@
+.rf-avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.rf-avatar-group__item {
+  border: 2px solid var(--rf-color-surface);
+  border-radius: var(--rf-radius-full);
+  margin-left: -8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rf-avatar-group__item:first-child {
+  margin-left: 0;
+}
+
+.rf-avatar-group__overflow {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+  font-weight: 600;
+}

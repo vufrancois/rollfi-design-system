@@ -1,0 +1,195 @@
+.rf-docs {
+  min-height: 100vh;
+  background: var(--rf-color-canvas);
+}
+
+.rf-docs__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--rf-color-surface);
+  border-bottom: 1px solid var(--rf-color-border);
+  backdrop-filter: blur(8px);
+}
+
+.rf-docs__back {
+  appearance: none;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  padding: 6px 12px;
+  border-radius: var(--rf-radius-sm);
+  font: var(--rf-text-body-sm-strong);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-docs__back:hover {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-docs__title {
+  font: var(--rf-text-code);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-docs__article {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 32px 96px;
+  color: var(--rf-color-text);
+  font: var(--rf-text-body-md);
+  line-height: 1.7;
+}
+
+/* ── Headings ── */
+.rf-docs__article h1 {
+  font: var(--rf-text-display-md);
+  letter-spacing: var(--rf-tracking-tight);
+  margin: 0 0 16px;
+  color: var(--rf-color-text);
+}
+
+.rf-docs__article h2 {
+  font: var(--rf-text-heading-xl);
+  letter-spacing: var(--rf-tracking-tight);
+  margin: 48px 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rf-color-border);
+  color: var(--rf-color-text);
+}
+
+.rf-docs__article h3 {
+  font: var(--rf-text-heading-md);
+  margin: 32px 0 12px;
+  color: var(--rf-color-text);
+}
+
+.rf-docs__article h4 {
+  font: var(--rf-text-heading-sm);
+  margin: 24px 0 8px;
+  color: var(--rf-color-text);
+}
+
+/* ── Body ── */
+.rf-docs__article p {
+  margin: 12px 0;
+  color: var(--rf-color-text-secondary);
+}
+
+.rf-docs__article strong {
+  color: var(--rf-color-text);
+  font-weight: 600;
+}
+
+.rf-docs__article a {
+  color: var(--rf-color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--rf-color-border-strong);
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--rf-transition-fast);
+}
+
+.rf-docs__article a:hover {
+  text-decoration-color: var(--rf-color-brand);
+}
+
+/* ── Code ── */
+.rf-docs__article code {
+  font: var(--rf-text-code);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text);
+  padding: 2px 6px;
+  border-radius: var(--rf-radius-xs);
+  border: 1px solid var(--rf-color-border);
+}
+
+.rf-docs__article pre {
+  background: var(--rf-color-surface-elevated);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 16px 0;
+  line-height: 1.55;
+}
+
+.rf-docs__article pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+}
+
+/* ── Lists ── */
+.rf-docs__article ul,
+.rf-docs__article ol {
+  margin: 12px 0;
+  padding-left: 24px;
+  color: var(--rf-color-text-secondary);
+}
+
+.rf-docs__article li {
+  margin: 6px 0;
+}
+
+.rf-docs__article li::marker {
+  color: var(--rf-color-text-tertiary);
+}
+
+/* ── Tables ── */
+.rf-docs__article table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font: var(--rf-text-body-sm);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  overflow: hidden;
+}
+
+.rf-docs__article thead {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-docs__article th,
+.rf-docs__article td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-docs__article th {
+  font-weight: 600;
+  color: var(--rf-color-text);
+}
+
+.rf-docs__article tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Blockquote ── */
+.rf-docs__article blockquote {
+  border-left: 3px solid var(--rf-color-brand);
+  padding: 8px 16px;
+  margin: 16px 0;
+  background: var(--rf-color-surface-elevated);
+  border-radius: 0 var(--rf-radius-md) var(--rf-radius-md) 0;
+  color: var(--rf-color-text-secondary);
+}
+
+.rf-docs__article blockquote p {
+  margin: 0;
+}
+
+/* ── Rule ── */
+.rf-docs__article hr {
+  border: none;
+  height: 1px;
+  background: var(--rf-color-border);
+  margin: 32px 0;
+}

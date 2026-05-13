@@ -1,0 +1,62 @@
+.rf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--rf-radius-full);
+  font: var(--rf-text-caption-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.rf-badge__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.rf-badge--neutral {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+  border-color: var(--rf-color-border);
+}
+
+.rf-badge--success {
+  background: var(--rf-color-success-soft);
+  color: var(--rf-color-success-text);
+  border-color: var(--rf-color-success-border);
+}
+
+.rf-badge--danger {
+  background: var(--rf-color-danger-soft);
+  color: var(--rf-color-danger-text);
+  border-color: var(--rf-color-danger-border);
+}
+
+.rf-badge--warning {
+  background: var(--rf-color-warning-soft);
+  color: var(--rf-color-warning-text);
+  border-color: var(--rf-color-warning-border);
+}
+
+.rf-badge--info {
+  background: var(--rf-color-info-soft);
+  color: var(--rf-color-info-text);
+  border-color: var(--rf-color-info-border);
+}
+
+.rf-badge--teal {
+  background: var(--rf-color-accent-teal-bg);
+  color: var(--rf-color-accent-teal-text);
+  border-color: var(--rf-color-accent-teal-border);
+}
+
+.rf-badge--purple {
+  background: var(--rf-color-accent-purple-soft);
+  color: var(--rf-color-accent-purple-text);
+}
+
+.rf-badge--orange {
+  background: var(--rf-color-accent-orange-soft);
+  color: var(--rf-color-accent-orange-text);
+}

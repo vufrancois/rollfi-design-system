@@ -1,0 +1,101 @@
+.rf-toast-container {
+  position: fixed;
+  bottom: var(--rf-space-7);
+  right: var(--rf-space-7);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-3);
+  z-index: var(--rf-z-toast);
+  pointer-events: none;
+}
+
+.rf-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+  min-width: 280px;
+  max-width: 420px;
+  padding: var(--rf-space-4) var(--rf-space-5);
+  font: var(--rf-text-body-sm);
+  font-feature-settings: var(--rf-font-feature);
+  background-color: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-lg);
+  box-shadow: var(--rf-shadow-lg);
+  pointer-events: auto;
+  animation: rf-toast-in var(--rf-duration-slow) var(--rf-ease-bounce);
+}
+
+.rf-toast--exit {
+  animation: rf-toast-out var(--rf-duration-normal) var(--rf-ease-default) forwards;
+}
+
+/* ── Variant accents ── */
+.rf-toast--default { color: var(--rf-color-text); }
+
+.rf-toast--success {
+  border-color: var(--rf-color-success-border);
+  color: var(--rf-color-text);
+}
+.rf-toast--success .rf-toast__icon { color: var(--rf-color-success-text); }
+
+.rf-toast--error {
+  border-color: var(--rf-color-danger-border);
+  color: var(--rf-color-text);
+}
+.rf-toast--error .rf-toast__icon { color: var(--rf-color-danger-text); }
+
+.rf-toast--warning {
+  border-color: var(--rf-color-warning-border);
+  color: var(--rf-color-text);
+}
+.rf-toast--warning .rf-toast__icon { color: var(--rf-color-warning-text); }
+
+.rf-toast--info {
+  border-color: var(--rf-color-info-border);
+  color: var(--rf-color-text);
+}
+.rf-toast--info .rf-toast__icon { color: var(--rf-color-info-text); }
+
+.rf-toast__icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.rf-toast__message {
+  flex: 1;
+}
+
+.rf-toast__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--rf-radius-xs);
+  background: transparent;
+  color: var(--rf-color-text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color var(--rf-duration-fast) var(--rf-ease-default);
+}
+
+.rf-toast__close:hover {
+  background-color: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text);
+}
+
+@keyframes rf-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+}
+
+@keyframes rf-toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}

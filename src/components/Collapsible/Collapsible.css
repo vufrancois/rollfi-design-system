@@ -1,0 +1,28 @@
+.rf-collapsible {
+  display: flex;
+  flex-direction: column;
+}
+
+.rf-collapsible__trigger {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.rf-collapsible__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+}
+
+.rf-collapsible__content--open {
+  grid-template-rows: 1fr;
+}
+
+.rf-collapsible__content-inner {
+  overflow: hidden;
+}

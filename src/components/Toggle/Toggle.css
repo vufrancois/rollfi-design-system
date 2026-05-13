@@ -1,0 +1,32 @@
+.rf-toggle-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--rf-color-border);
+  color: var(--rf-color-text-secondary);
+  border-radius: var(--rf-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--rf-transition-fast), color var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-toggle-btn:hover:not(.rf-toggle-btn--on) {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text);
+}
+
+.rf-toggle-btn--on {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text);
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-toggle-btn:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 1px;
+}
+
+.rf-toggle-btn--sm { width: 28px; height: 28px; }
+.rf-toggle-btn--md { width: 32px; height: 32px; }
+.rf-toggle-btn--lg { width: 40px; height: 40px; }

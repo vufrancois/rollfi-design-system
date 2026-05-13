@@ -1,0 +1,42 @@
+.rf-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+  overflow: hidden;
+  flex-shrink: 0;
+  font-weight: 600;
+  border: 1px solid var(--rf-color-border-subtle);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.rf-avatar--sm {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.rf-avatar--md {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.rf-avatar--lg {
+  width: 40px;
+  height: 40px;
+  font-size: 14px;
+}
+
+.rf-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rf-avatar__initials {
+  letter-spacing: -0.01em;
+}

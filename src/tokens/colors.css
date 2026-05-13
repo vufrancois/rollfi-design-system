@@ -1,0 +1,209 @@
+/* ─────────────────────────────────────────────
+   Rollfi — Semantic Color Tokens
+   Light & Dark themes via [data-theme] attribute
+
+   Brand palette:
+   Primary:   #000000, #FFFFFF
+   Secondary: #FF2F1C
+   Tertiary:  #5E6167, #3A6DFF, #CEFF00,
+              #F7DE52, #FF6905, #9146FF
+   ───────────────────────────────────────────── */
+
+:root,
+[data-theme="light"] {
+  /* ── Brand ── */
+  --rf-color-primary: #000000;
+  --rf-color-primary-hover: #1a1a1a;
+  --rf-color-primary-pressed: #333333;
+  --rf-color-on-primary: #ffffff;
+
+  /* ── Brand Accent (#FF2F1C) ── */
+  --rf-color-brand: #FF2F1C;
+  --rf-color-brand-hover: #e6220f;
+  --rf-color-brand-soft: rgba(255, 47, 28, 0.08);
+  --rf-color-brand-text: #d4220f;
+  --rf-color-brand-border: rgba(255, 47, 28, 0.2);
+
+  /* ── Surfaces ── */
+  --rf-color-canvas: #f9f9fa;
+  --rf-color-surface: #ffffff;
+  --rf-color-surface-elevated: #f2f2f4;
+  --rf-color-surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* ── Borders ── */
+  --rf-color-border: #e2e2e6;
+  --rf-color-border-subtle: #ebebef;
+  --rf-color-border-strong: #d0d0d6;
+  --rf-color-border-focus: #000000;
+
+  /* ── Text ── */
+  --rf-color-text: #0a0a0a;
+  --rf-color-text-secondary: #5E6167;
+  --rf-color-text-tertiary: #8b8d92;
+  --rf-color-text-disabled: #b4b6ba;
+  --rf-color-text-inverse: #ffffff;
+  --rf-color-text-on-accent: #ffffff;
+
+  /* ── Semantic: Info (#3A6DFF) ── */
+  --rf-color-info: #3A6DFF;
+  --rf-color-info-soft: rgba(58, 109, 255, 0.08);
+  --rf-color-info-bg: #EFF6FF;
+  --rf-color-info-text: #2854cc;
+  --rf-color-info-border: rgba(58, 109, 255, 0.2);
+
+  /* ── Semantic: Success ── */
+  --rf-color-success: #16A34A;
+  --rf-color-success-soft: rgba(22, 163, 74, 0.1);
+  --rf-color-success-bg: #F0FDF4;
+  --rf-color-success-text: #15803d;
+  --rf-color-success-border: rgba(22, 163, 74, 0.25);
+
+  /* ── Accent: Lime (#CEFF00) — highlight color ── */
+  --rf-color-accent-lime: #CEFF00;
+  --rf-color-accent-lime-soft: rgba(206, 255, 0, 0.15);
+  --rf-color-accent-lime-text: #4d6200;
+  --rf-color-accent-lime-border: rgba(206, 255, 0, 0.4);
+
+  /* ── Semantic: Warning (#F7DE52) ── */
+  --rf-color-warning: #F7DE52;
+  --rf-color-warning-soft: rgba(247, 222, 82, 0.15);
+  --rf-color-warning-bg: #FFFBEB;
+  --rf-color-warning-text: #8a7400;
+  --rf-color-warning-border: rgba(247, 222, 82, 0.4);
+
+  /* ── Semantic: Danger ── */
+  --rf-color-danger: #cc1a0a;
+  --rf-color-danger-soft: rgba(204, 26, 10, 0.06);
+  --rf-color-danger-bg: #FEF2F2;
+  --rf-color-danger-text: #b01508;
+  --rf-color-danger-border: rgba(204, 26, 10, 0.18);
+
+  /* ── Accent: Orange (#FF6905) ── */
+  --rf-color-accent-orange: #FF6905;
+  --rf-color-accent-orange-soft: rgba(255, 105, 5, 0.1);
+  --rf-color-accent-orange-text: #cc5400;
+
+  /* ── Accent: Purple (#9146FF) ── */
+  --rf-color-accent-purple: #9146FF;
+  --rf-color-accent-purple-soft: rgba(145, 70, 255, 0.08);
+  --rf-color-accent-purple-text: #7a2de6;
+
+  /* ── Accent: Teal (#0891B2) — payroll/ready status ── */
+  --rf-color-accent-teal: #0891B2;
+  --rf-color-accent-teal-soft: rgba(8, 145, 178, 0.1);
+  --rf-color-accent-teal-bg: #F0F9FA;
+  --rf-color-accent-teal-text: #0E7490;
+  --rf-color-accent-teal-border: rgba(8, 145, 178, 0.25);
+
+  /* ── Sidebar (dark in both themes) ── */
+  --rf-color-sidebar: #0A0A0A;
+  --rf-color-sidebar-active: rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover: rgba(255, 255, 255, 0.04);
+  --rf-color-sidebar-text: rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.5);
+  --rf-color-sidebar-border: rgba(255, 255, 255, 0.08);
+
+  /* ── Interactive ── */
+  --rf-color-interactive: #000000;
+  --rf-color-interactive-hover: #1a1a1a;
+  --rf-color-interactive-disabled: #e2e2e6;
+}
+
+[data-theme="dark"] {
+  /* ── Brand ── */
+  --rf-color-primary: #ffffff;
+  --rf-color-primary-hover: #e8e8e8;
+  --rf-color-primary-pressed: #d4d4d4;
+  --rf-color-on-primary: #000000;
+
+  /* ── Brand Accent (#FF2F1C) ── */
+  --rf-color-brand: #FF2F1C;
+  --rf-color-brand-hover: #ff5443;
+  --rf-color-brand-soft: rgba(255, 47, 28, 0.12);
+  --rf-color-brand-text: #ff5443;
+  --rf-color-brand-border: rgba(255, 47, 28, 0.25);
+
+  /* ── Surfaces ── */
+  --rf-color-canvas: #0a0a0b;
+  --rf-color-surface: #121214;
+  --rf-color-surface-elevated: #1a1a1e;
+  --rf-color-surface-overlay: rgba(0, 0, 0, 0.7);
+
+  /* ── Borders ── */
+  --rf-color-border: #2a2a2e;
+  --rf-color-border-subtle: rgba(255, 255, 255, 0.07);
+  --rf-color-border-strong: rgba(255, 255, 255, 0.14);
+  --rf-color-border-focus: #ffffff;
+
+  /* ── Text ── */
+  --rf-color-text: #f4f4f6;
+  --rf-color-text-secondary: #9c9da2;
+  --rf-color-text-tertiary: #6e7075;
+  --rf-color-text-disabled: #4a4b50;
+  --rf-color-text-inverse: #0a0a0b;
+  --rf-color-text-on-accent: #ffffff;
+
+  /* ── Semantic: Info (#3A6DFF) ── */
+  --rf-color-info: #6b93ff;
+  --rf-color-info-soft: rgba(58, 109, 255, 0.14);
+  --rf-color-info-bg: #1a2340;
+  --rf-color-info-text: #6b93ff;
+  --rf-color-info-border: rgba(58, 109, 255, 0.3);
+
+  /* ── Semantic: Success ── */
+  --rf-color-success: #22c55e;
+  --rf-color-success-soft: rgba(34, 197, 94, 0.12);
+  --rf-color-success-bg: #0a1f12;
+  --rf-color-success-text: #4ade80;
+  --rf-color-success-border: rgba(34, 197, 94, 0.3);
+
+  /* ── Accent: Lime (#CEFF00) — highlight color ── */
+  --rf-color-accent-lime: #CEFF00;
+  --rf-color-accent-lime-soft: rgba(206, 255, 0, 0.12);
+  --rf-color-accent-lime-text: #CEFF00;
+  --rf-color-accent-lime-border: rgba(206, 255, 0, 0.3);
+
+  /* ── Semantic: Warning (#F7DE52) ── */
+  --rf-color-warning: #F7DE52;
+  --rf-color-warning-soft: rgba(247, 222, 82, 0.12);
+  --rf-color-warning-bg: #2a2200;
+  --rf-color-warning-text: #F7DE52;
+  --rf-color-warning-border: rgba(247, 222, 82, 0.25);
+
+  /* ── Semantic: Danger ── */
+  --rf-color-danger: #ff5443;
+  --rf-color-danger-soft: rgba(255, 84, 67, 0.12);
+  --rf-color-danger-bg: #2a1210;
+  --rf-color-danger-text: #ff5443;
+  --rf-color-danger-border: rgba(255, 84, 67, 0.25);
+
+  /* ── Accent: Orange (#FF6905) ── */
+  --rf-color-accent-orange: #ff8438;
+  --rf-color-accent-orange-soft: rgba(255, 105, 5, 0.14);
+  --rf-color-accent-orange-text: #ff8438;
+
+  /* ── Accent: Purple (#9146FF) ── */
+  --rf-color-accent-purple: #a76aff;
+  --rf-color-accent-purple-soft: rgba(145, 70, 255, 0.14);
+  --rf-color-accent-purple-text: #a76aff;
+
+  /* ── Accent: Teal (#0891B2) — payroll/ready status ── */
+  --rf-color-accent-teal: #22d3ee;
+  --rf-color-accent-teal-soft: rgba(34, 211, 238, 0.14);
+  --rf-color-accent-teal-bg: #062a32;
+  --rf-color-accent-teal-text: #67e8f9;
+  --rf-color-accent-teal-border: rgba(34, 211, 238, 0.3);
+
+  /* ── Sidebar (stays dark) ── */
+  --rf-color-sidebar: #0A0A0A;
+  --rf-color-sidebar-active: rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover: rgba(255, 255, 255, 0.04);
+  --rf-color-sidebar-text: rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.5);
+  --rf-color-sidebar-border: rgba(255, 255, 255, 0.08);
+
+  /* ── Interactive ── */
+  --rf-color-interactive: #ffffff;
+  --rf-color-interactive-hover: #e8e8e8;
+  --rf-color-interactive-disabled: #2a2a2e;
+}

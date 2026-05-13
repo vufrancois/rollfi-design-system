@@ -1,0 +1,17 @@
+.rf-segmented-progress {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.rf-segmented-progress__segment {
+  flex: 1;
+  height: 2px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-border);
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-segmented-progress__segment--active {
+  background: var(--rf-color-primary);
+}
