@@ -40,7 +40,7 @@ Semantic tokens that flip automatically between light and dark themes:
 | `--rf-color-accent-lime` (+ `-soft` / `-text` / `-border`) | Lime highlight accent |
 | `--rf-color-accent-orange` (+ `-soft` / `-text` / `-border`) | Orange highlight accent |
 | `--rf-color-accent-purple` (+ `-soft` / `-text` / `-border`) | Purple highlight accent |
-| `--rf-color-sidebar` (+ `-active` / `-hover` / `-text` / `-text-dim` / `-border`) | Sidebar — stays dark in both themes |
+| `--rf-color-sidebar` (+ `-active` / `-hover` / `-text` / `-text-dim` / `-text-strong` / `-border`) | Sidebar — defaults to dark in both themes; flips to light contrast via `<BrandProvider sidebar="…">` |
 | `--rf-color-{state}-soft` | Translucent background for badges/toasts |
 | `--rf-color-{state}-text` | Text color for semantic states |
 
@@ -104,6 +104,21 @@ Mount once at the app root. Omit any prop to keep the Rollfi default for that to
 1. `BrandProvider` writes `--rf-color-brand` and/or `--rf-color-sidebar` as inline custom properties on a wrapper element (uses `display: contents` so layout is untouched).
 2. The derived brand variants (`-hover`, `-soft`, `-text`, `-border`) and sidebar overlays are defined in `src/tokens/colors.css` as **CSS `color-mix()` recipes** that read the base. Override the base → every variant re-derives automatically.
 3. For light sidebar colors, BrandProvider sets `data-sidebar-mode="light"` on its wrapper. The token rules at the bottom of `colors.css` flip white overlay tints to black and bump text to near-black so the sidebar stays legible.
+
+### Sidebar token reference
+
+When a tenant sets a light sidebar, these tokens auto-flip:
+
+| Token                                | Dark sidebar (default)         | Light sidebar (auto-flip)      |
+| ------------------------------------ | ------------------------------ | ------------------------------ |
+| `--rf-color-sidebar-text`            | `rgba(255,255,255,0.72)`       | `rgba(0,0,0,0.78)`             |
+| `--rf-color-sidebar-text-dim`        | `rgba(255,255,255,0.50)`       | `rgba(0,0,0,0.55)`             |
+| `--rf-color-sidebar-text-strong`     | `#ffffff` (hover/active fg)    | `#0a0a0a`                      |
+| `--rf-color-sidebar-hover`           | sidebar + 4% white             | sidebar + 4% black             |
+| `--rf-color-sidebar-active`          | sidebar + 8% white             | sidebar + 8% black             |
+| `--rf-color-sidebar-border`          | `rgba(255,255,255,0.08)`       | `rgba(0,0,0,0.10)`             |
+
+**Custom sidebar slots** (e.g. a user-profile footer, a back-to-library link rendered into Sidebar's `footer` or `logo` slot) must consume these tokens — never `#ffffff` or `rgba(255,255,255,…)` directly — or they'll be invisible under a light-mode tenant theme.
 
 ### Brand color recommendations
 
