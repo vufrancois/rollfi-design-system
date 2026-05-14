@@ -30,6 +30,7 @@ import {
   AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
   IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
+  BrandProvider,
 } from './components';
 import './tokens/index.css';
 
@@ -1030,6 +1031,98 @@ function Demo() {
           ))}
         </div>
       </Section>
+
+      <Section title="White-label theming">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
+          Wrap any subtree in <code>&lt;BrandProvider&gt;</code> to scope a tenant's brand color,
+          sidebar color, and logo. Three presets below — every branded surface inside the panel
+          updates atomically.
+        </p>
+        <WhiteLabelPreview />
+      </Section>
+    </div>
+  );
+}
+
+function WhiteLabelPreview() {
+  const presets = [
+    { name: 'Rollfi (default)', brand: undefined, sidebar: undefined },
+    { name: 'Acme Blue', brand: '#0066ff', sidebar: '#1a1f2e' },
+    { name: 'Nova Purple', brand: '#7c3aed', sidebar: undefined },
+    { name: 'Mint (light sidebar)', brand: '#16a34a', sidebar: '#f4f4f6' },
+  ];
+  const [active, setActive] = useState(0);
+  const p = presets[active];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {presets.map((preset, i) => (
+          <Button
+            key={preset.name}
+            variant={i === active ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setActive(i)}
+          >
+            {preset.name}
+          </Button>
+        ))}
+      </div>
+      <BrandProvider brand={p.brand} sidebar={p.sidebar}>
+        <div
+          style={{
+            border: '1px solid var(--rf-color-border)',
+            borderRadius: 'var(--rf-radius-md)',
+            overflow: 'hidden',
+            display: 'grid',
+            gridTemplateColumns: '200px 1fr',
+            height: 280,
+          }}
+        >
+          <div style={{ background: 'var(--rf-color-sidebar)', padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ marginBottom: 8 }}>
+              <Logo size={24} color="var(--rf-color-sidebar-text)" />
+            </div>
+            {['Dashboard', 'Activity', 'Users'].map((label, i) => (
+              <div
+                key={label}
+                style={{
+                  padding: '8px 10px',
+                  borderRadius: 'var(--rf-radius-sm)',
+                  font: 'var(--rf-text-body-sm)',
+                  color: i === 0 ? 'var(--rf-color-sidebar-text)' : 'var(--rf-color-sidebar-text-dim)',
+                  background: i === 0 ? 'var(--rf-color-sidebar-active)' : 'transparent',
+                }}
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+          <div style={{ padding: 24, background: 'var(--rf-color-canvas)', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Logo size={32} />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <Pill>Brand pill</Pill>
+              <Pill tone="outline">Outline pill</Pill>
+            </div>
+            <a href="#" style={{ color: 'var(--rf-color-brand-text)', font: 'var(--rf-text-body-sm)' }}>
+              A link in --rf-color-brand-text
+            </a>
+            <div
+              style={{
+                background: 'var(--rf-color-brand-soft)',
+                border: '1px solid var(--rf-color-brand-border)',
+                color: 'var(--rf-color-brand-text)',
+                padding: '8px 12px',
+                borderRadius: 'var(--rf-radius-sm)',
+                font: 'var(--rf-text-body-sm)',
+                width: 'fit-content',
+              }}
+            >
+              Brand-soft surface
+            </div>
+          </div>
+        </div>
+      </BrandProvider>
     </div>
   );
 }

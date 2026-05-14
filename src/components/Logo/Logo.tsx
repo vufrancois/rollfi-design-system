@@ -1,10 +1,43 @@
+import { useBrand } from '../BrandProvider/BrandContext';
+
 interface LogoProps {
   size?: number;
   color?: string;
   title?: string;
+  /**
+   * Override the rendered logo with a tenant-hosted image URL. Takes
+   * precedence over the default SVG mark. When mounted inside a
+   * `<BrandProvider logoUrl="...">`, every `<Logo>` reads the URL from
+   * context automatically — no need to thread the prop manually.
+   */
+  src?: string;
 }
 
-export function Logo({ size = 32, color = 'var(--rf-color-brand)', title = 'Rollfi' }: LogoProps) {
+export function Logo({
+  size = 32,
+  color = 'var(--rf-color-brand)',
+  title = 'Rollfi',
+  src,
+}: LogoProps) {
+  const { logoUrl, logoTitle } = useBrand();
+  const effectiveSrc = src ?? logoUrl;
+  const effectiveTitle = logoTitle ?? title;
+
+  // Tenant override: render the supplied image. We constrain height to `size`
+  // and let width auto-scale so a tenant's non-square mark keeps its aspect ratio.
+  if (effectiveSrc) {
+    return (
+      <img
+        src={effectiveSrc}
+        alt={effectiveTitle}
+        height={size}
+        style={{ height: size, width: 'auto', display: 'block' }}
+        className="rf-logo rf-logo--image"
+      />
+    );
+  }
+
+  // Default: inline Rollfi wordmark, currentColor-driven for theme/brand recoloring.
   const width = (size * 800) / 300;
   return (
     <svg
@@ -15,9 +48,9 @@ export function Logo({ size = 32, color = 'var(--rf-color-brand)', title = 'Roll
       xmlns="http://www.w3.org/2000/svg"
       style={{ color, display: 'block' }}
       role="img"
-      aria-label={title}
+      aria-label={effectiveTitle}
     >
-      <title>{title}</title>
+      <title>{effectiveTitle}</title>
       <g clipPath="url(#rf-logo-clip)">
         <path d="M254.4 121.025L227.663 93.8675L155.761 165.765V218.868L155.949 219.055L254.4 121.025ZM290.047 299.681L192.016 201.23L164.859 227.967L236.758 299.868H289.859L290.047 299.681ZM236.574 84.9565L334.607 183.41L361.764 156.674L289.865 84.7695H236.761L236.574 84.9565ZM298.958 290.77L370.86 218.867V165.4L272.222 263.613L298.958 290.77Z" fill="currentColor" />
       </g>

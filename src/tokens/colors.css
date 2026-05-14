@@ -17,12 +17,15 @@
   --rf-color-primary-pressed: #333333;
   --rf-color-on-primary: #ffffff;
 
-  /* ── Brand Accent (#FF2F1C) ── */
+  /* ── Brand Accent ──
+     `--rf-color-brand` is the only base value tenants override (via
+     <BrandProvider brand="…"/>). All derived variants are computed
+     here via color-mix() so a tenant only supplies one color. */
   --rf-color-brand: #FF2F1C;
-  --rf-color-brand-hover: #e6220f;
-  --rf-color-brand-soft: rgba(255, 47, 28, 0.08);
-  --rf-color-brand-text: #d4220f;
-  --rf-color-brand-border: rgba(255, 47, 28, 0.2);
+  --rf-color-brand-hover:  color-mix(in srgb, var(--rf-color-brand) 88%, black);
+  --rf-color-brand-soft:   color-mix(in srgb, var(--rf-color-brand) 10%, transparent);
+  --rf-color-brand-text:   color-mix(in srgb, var(--rf-color-brand) 92%, black);
+  --rf-color-brand-border: color-mix(in srgb, var(--rf-color-brand) 25%, transparent);
 
   /* ── Surfaces ── */
   --rf-color-canvas: #f9f9fa;
@@ -97,13 +100,18 @@
   --rf-color-accent-teal-text: #0E7490;
   --rf-color-accent-teal-border: rgba(8, 145, 178, 0.25);
 
-  /* ── Sidebar (dark in both themes) ── */
+  /* ── Sidebar ──
+     `--rf-color-sidebar` is the only base value tenants override (via
+     <BrandProvider sidebar="…"/>). The overlay + text variants below
+     assume a dark base; for light sidebar overrides, BrandProvider
+     sets data-sidebar-mode="light" on a wrapper and the rules at the
+     bottom of this file swap white tints for black tints. */
   --rf-color-sidebar: #0A0A0A;
-  --rf-color-sidebar-active: rgba(255, 255, 255, 0.08);
-  --rf-color-sidebar-hover: rgba(255, 255, 255, 0.04);
-  --rf-color-sidebar-text: rgba(255, 255, 255, 0.72);
-  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.5);
-  --rf-color-sidebar-border: rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover:    color-mix(in srgb, white 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:   color-mix(in srgb, white 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:     rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.50);
+  --rf-color-sidebar-border:   rgba(255, 255, 255, 0.08);
 
   /* ── Interactive ── */
   --rf-color-interactive: #000000;
@@ -118,12 +126,12 @@
   --rf-color-primary-pressed: #d4d4d4;
   --rf-color-on-primary: #000000;
 
-  /* ── Brand Accent (#FF2F1C) ── */
+  /* ── Brand Accent ── (dark theme: lighten toward white instead of darken toward black) */
   --rf-color-brand: #FF2F1C;
-  --rf-color-brand-hover: #ff5443;
-  --rf-color-brand-soft: rgba(255, 47, 28, 0.12);
-  --rf-color-brand-text: #ff5443;
-  --rf-color-brand-border: rgba(255, 47, 28, 0.25);
+  --rf-color-brand-hover:  color-mix(in srgb, var(--rf-color-brand) 80%, white);
+  --rf-color-brand-soft:   color-mix(in srgb, var(--rf-color-brand) 14%, transparent);
+  --rf-color-brand-text:   color-mix(in srgb, var(--rf-color-brand) 70%, white);
+  --rf-color-brand-border: color-mix(in srgb, var(--rf-color-brand) 30%, transparent);
 
   /* ── Surfaces ── */
   --rf-color-canvas: #0a0a0b;
@@ -198,16 +206,33 @@
   --rf-color-accent-teal-text: #67e8f9;
   --rf-color-accent-teal-border: rgba(34, 211, 238, 0.3);
 
-  /* ── Sidebar (stays dark) ── */
+  /* ── Sidebar (same recipes as light theme — derives from --rf-color-sidebar) ── */
   --rf-color-sidebar: #0A0A0A;
-  --rf-color-sidebar-active: rgba(255, 255, 255, 0.08);
-  --rf-color-sidebar-hover: rgba(255, 255, 255, 0.04);
-  --rf-color-sidebar-text: rgba(255, 255, 255, 0.72);
-  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.5);
-  --rf-color-sidebar-border: rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover:    color-mix(in srgb, white 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:   color-mix(in srgb, white 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:     rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.50);
+  --rf-color-sidebar-border:   rgba(255, 255, 255, 0.08);
 
   /* ── Interactive ── */
   --rf-color-interactive: #ffffff;
   --rf-color-interactive-hover: #e8e8e8;
   --rf-color-interactive-disabled: #2a2a2e;
 }
+
+/* ─────────────────────────────────────────────
+   White-label: sidebar mode
+   <BrandProvider sidebar="…"> sets data-sidebar-mode="light"
+   on a wrapper when the supplied color is light (WCAG luminance > 0.179).
+   We flip the overlay tints from white to black and bump text contrast
+   so the sidebar remains legible on any tenant-chosen base color.
+   ───────────────────────────────────────────── */
+
+[data-sidebar-mode="light"] {
+  --rf-color-sidebar-hover:    color-mix(in srgb, black 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:   color-mix(in srgb, black 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:     rgba(0, 0, 0, 0.78);
+  --rf-color-sidebar-text-dim: rgba(0, 0, 0, 0.55);
+  --rf-color-sidebar-border:   rgba(0, 0, 0, 0.10);
+}
+

@@ -135,7 +135,7 @@ Overlay: `Modal`, `SidePanel`, `AlertDialog`, `Dropdown`, `DropdownMenu`, `Toolt
 
 Indicators / display: `Avatar`, `Logo`, `DetailRow`, `StatCard`, `IconTile`, `SettingsRow`, `StackedBar`, `SaveBar`, `Kbd`, `OptionCard`, `NotificationItem`.
 
-Theming: `ThemeProvider`, `useTheme`.
+Theming: `ThemeProvider`, `useTheme`, `BrandProvider`, `useBrand`.
 
 Full per-component API in [`design-system.md`](./design-system.md).
 
@@ -148,7 +148,8 @@ Full per-component API in [`design-system.md`](./design-system.md).
 - All colors, spacing, radii, shadows, and type come from `--rf-*` tokens. No hardcoded hex values inside components.
 - No Tailwind. No Radix. No CSS-in-JS. Vanilla `.css` files imported by the component module.
 - Dark mode is opt-in per page via `<ThemeProvider>`. Components must work in both themes.
-- The sidebar palette stays dark in both themes, by design.
+- The default sidebar palette is dark in both themes; tenants can override per-app via `<BrandProvider sidebar="…">` and the sidebar palette auto-adapts (light/dark) for contrast.
+- Per-tenant white-labelling (brand color, sidebar color, logo URL) goes through `<BrandProvider>`. Derived brand and sidebar variants are computed via CSS `color-mix()` — components reference only the `--rf-color-brand*` / `--rf-color-sidebar*` tokens, never raw hex.
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full "how to add a component" walkthrough.
 

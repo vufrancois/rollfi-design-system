@@ -1,0 +1,7 @@
+/* The wrapper is transparent — it exists only to scope CSS variable
+   overrides and the data-sidebar-mode attribute to its subtree.
+   `display: contents` keeps the wrapper out of the layout flow so the
+   provider is invisible to flex/grid parents. */
+.rf-brand-provider {
+  display: contents;
+}

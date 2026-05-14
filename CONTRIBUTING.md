@@ -6,7 +6,7 @@ This guide covers how to add, modify, and ship components in the Rollfi Design S
 
 ## Principles
 
-1. **Tokens over hardcoded values.** Every color, spacing value, radius, shadow, and type style comes from a `--rf-*` CSS custom property. If a token doesn't exist for what you need, add one in `src/tokens/`.
+1. **Tokens over hardcoded values.** Every color, spacing value, radius, shadow, and type style comes from a `--rf-*` CSS custom property. If a token doesn't exist for what you need, add one in `src/tokens/`. **Critical for white-labelling**: any new component that uses a brand or sidebar accent MUST consume `--rf-color-brand*` / `--rf-color-sidebar*` tokens (never raw hex like `#FF2F1C`) — that's the only way per-tenant `<BrandProvider>` overrides flow through automatically.
 2. **Hand-authored CSS.** No Tailwind, no styled-components, no CSS-in-JS. Each component owns a sibling `.css` file.
 3. **BEM, prefixed `rf-`.** `.rf-<component>__<element>--<modifier>`. Keep classes flat — avoid descendant selectors deeper than one level.
 4. **Light + dark must both work.** Pull colors from semantic tokens (`--rf-color-text`, `--rf-color-surface`, etc.), not raw hex.

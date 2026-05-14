@@ -74,6 +74,59 @@ const { theme, toggleTheme, setTheme } = useTheme();
 
 The provider reads `prefers-color-scheme` on first load and persists the choice to `localStorage`.
 
+## White-label theming
+
+The design system supports per-tenant white-labelling via `<BrandProvider>`. A tenant can override:
+
+- **Brand accent color** — drives `--rf-color-brand` and every derived variant (`-hover`, `-soft`, `-text`, `-border`)
+- **Sidebar color** — drives `--rf-color-sidebar`; sidebar text + overlays auto-flip between light and dark based on the supplied color's WCAG luminance
+- **Logo** — a hosted image URL replaces the default Rollfi mark in every `<Logo>` instance under the provider
+
+```tsx
+import { ThemeProvider, BrandProvider } from 'rollfi-design-system';
+
+<ThemeProvider>
+  <BrandProvider
+    brand="#0066ff"
+    sidebar="#1a1f2e"
+    logoUrl="https://cdn.tenant.com/logo.svg"
+    logoTitle="Acme"
+  >
+    <App />
+  </BrandProvider>
+</ThemeProvider>
+```
+
+Mount once at the app root. Omit any prop to keep the Rollfi default for that token.
+
+### How it works
+
+1. `BrandProvider` writes `--rf-color-brand` and/or `--rf-color-sidebar` as inline custom properties on a wrapper element (uses `display: contents` so layout is untouched).
+2. The derived brand variants (`-hover`, `-soft`, `-text`, `-border`) and sidebar overlays are defined in `src/tokens/colors.css` as **CSS `color-mix()` recipes** that read the base. Override the base → every variant re-derives automatically.
+3. For light sidebar colors, BrandProvider sets `data-sidebar-mode="light"` on its wrapper. The token rules at the bottom of `colors.css` flip white overlay tints to black and bump text to near-black so the sidebar stays legible.
+
+### Brand color recommendations
+
+Pick a brand color with WCAG relative luminance in roughly **0.10–0.45** — this range gives the best contrast both on white and dark surfaces.
+
+- Too light (e.g. `#ffe680`): `brand-text` won't pass AA on white surfaces.
+- Too dark (e.g. `#1a1a1a`): brand becomes indistinguishable from regular text.
+- Pure-saturated mid-tones (blues, purples, reds, greens) work best.
+
+For accessibility-critical surfaces, manually verify contrast at runtime — or open a future enhancement for auto-computed foreground colors.
+
+### Sidebar luminance threshold
+
+The mode flip happens at relative luminance **0.179** (the WCAG-derived cutoff where black-on-color first beats 4.5:1 contrast). Colors above the threshold are treated as "light"; below as "dark". The choice is deterministic per supplied hex — no interpolation, no flicker.
+
+### Components that pick up the brand
+
+Today: `Pill`, `Calendar` (selected dates), `Docs` (link underlines and quote bars), `Logo` (when using the default SVG mark). Any component you add that uses `--rf-color-brand*` tokens will white-label for free.
+
+### Browser support
+
+Requires `color-mix()` support: Safari 16.4+, Chrome 111+, Firefox 113+ — all shipped in 2023.
+
 ## Icons
 
 Rollfi uses [Phosphor Icons](https://phosphoricons.com/) at **regular** weight as the project default. Install:
