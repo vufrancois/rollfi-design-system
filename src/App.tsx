@@ -4459,7 +4459,7 @@ function PortalMock({ onExit }: { onExit: () => void }) {
             <button
               type="button"
               onClick={onExit}
-              style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--rf-color-sidebar-text-dim)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
               aria-label="Back to library"
             >
               ← Library
@@ -4481,8 +4481,8 @@ function PortalMock({ onExit }: { onExit: () => void }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 4 }}>
             <Avatar name="Michael Scott" size="sm" />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ font: 'var(--rf-text-caption)', color: '#fff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Michael Scott</div>
-              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'rgba(255,255,255,0.5)' }}>Partner Admin</div>
+              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-sidebar-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Michael Scott</div>
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-sidebar-text-dim)' }}>Partner Admin</div>
             </div>
           </div>
         }
