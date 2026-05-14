@@ -4429,11 +4429,26 @@ function UsersView() {
   );
 }
 
+const TENANT_PRESETS = [
+  { id: 'rollfi', label: 'Rollfi', brand: undefined,  sidebar: undefined,  logoUrl: undefined },
+  { id: 'acme',   label: 'Acme',   brand: '#0066ff',  sidebar: '#1a1f2e',  logoUrl: 'https://placehold.co/120x40/0066ff/white?text=ACME&font=lato' },
+  { id: 'nova',   label: 'Nova',   brand: '#7c3aed',  sidebar: undefined,  logoUrl: 'https://placehold.co/120x40/7c3aed/white?text=NOVA&font=lato' },
+  { id: 'mint',   label: 'Mint',   brand: '#16a34a',  sidebar: '#f4f4f6',  logoUrl: 'https://placehold.co/120x40/16a34a/white?text=MINT&font=lato' },
+];
+
 function PortalMock({ onExit }: { onExit: () => void }) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [notifOpen, setNotifOpen] = useState(false);
+  const [tenantId, setTenantId] = useState('rollfi');
+  const tenant = TENANT_PRESETS.find(t => t.id === tenantId) ?? TENANT_PRESETS[0];
 
   return (
+    <BrandProvider
+      brand={tenant.brand}
+      sidebar={tenant.sidebar}
+      logoUrl={tenant.logoUrl}
+      logoTitle={tenant.label}
+    >
     <div style={{ display: 'flex', height: '100vh', background: 'var(--rf-color-canvas)' }}>
       <Sidebar
         activeId={activeNav}
@@ -4473,12 +4488,47 @@ function PortalMock({ onExit }: { onExit: () => void }) {
         }
       />
 
-      <main style={{ flex: 1, overflow: 'auto', padding: '32px 40px 56px' }}>
-        {activeNav === 'dashboard' && <DashboardView />}
-        {activeNav === 'implementations' && <ImplementationsView />}
-        {activeNav === 'activity' && <ActivityView />}
-        {activeNav === 'billing' && <BillingView />}
-        {activeNav === 'users' && <UsersView />}
+      <main style={{ flex: 1, overflow: 'auto' }}>
+        <div
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '10px 40px',
+            background: 'var(--rf-color-surface-elevated)',
+            borderBottom: '1px solid var(--rf-color-border)',
+            position: 'sticky', top: 0, zIndex: 10,
+          }}
+        >
+          <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+            White-label demo · viewing as
+          </span>
+          <div style={{ display: 'inline-flex', gap: 6 }}>
+            {TENANT_PRESETS.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTenantId(t.id)}
+                style={{
+                  font: 'var(--rf-text-caption)',
+                  padding: '4px 10px',
+                  borderRadius: 'var(--rf-radius-full)',
+                  border: '1px solid ' + (t.id === tenantId ? 'var(--rf-color-brand-border)' : 'var(--rf-color-border)'),
+                  background: t.id === tenantId ? 'var(--rf-color-brand-soft)' : 'var(--rf-color-surface)',
+                  color: t.id === tenantId ? 'var(--rf-color-brand-text)' : 'var(--rf-color-text-secondary)',
+                  cursor: 'pointer',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '32px 40px 56px' }}>
+          {activeNav === 'dashboard' && <DashboardView />}
+          {activeNav === 'implementations' && <ImplementationsView />}
+          {activeNav === 'activity' && <ActivityView />}
+          {activeNav === 'billing' && <BillingView />}
+          {activeNav === 'users' && <UsersView />}
+        </div>
       </main>
 
       <SidePanel
@@ -4503,6 +4553,7 @@ function PortalMock({ onExit }: { onExit: () => void }) {
         </div>
       </SidePanel>
     </div>
+    </BrandProvider>
   );
 }
 
