@@ -45,12 +45,12 @@
 
 .rf-sidebar__item:hover {
   background: var(--rf-color-sidebar-hover);
-  color: #ffffff;
+  color: var(--rf-color-sidebar-text-strong);
 }
 
 .rf-sidebar__item--active {
   background: var(--rf-color-sidebar-active);
-  color: #ffffff;
+  color: var(--rf-color-sidebar-text-strong);
 }
 
 .rf-sidebar__icon {
@@ -61,7 +61,7 @@
 
 .rf-sidebar__item--active .rf-sidebar__icon,
 .rf-sidebar__item:hover .rf-sidebar__icon {
-  color: #ffffff;
+  color: var(--rf-color-sidebar-text-strong);
 }
 
 .rf-sidebar__label {

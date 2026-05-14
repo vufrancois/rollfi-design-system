@@ -107,11 +107,12 @@
      sets data-sidebar-mode="light" on a wrapper and the rules at the
      bottom of this file swap white tints for black tints. */
   --rf-color-sidebar: #0A0A0A;
-  --rf-color-sidebar-hover:    color-mix(in srgb, white 4%, var(--rf-color-sidebar));
-  --rf-color-sidebar-active:   color-mix(in srgb, white 8%, var(--rf-color-sidebar));
-  --rf-color-sidebar-text:     rgba(255, 255, 255, 0.72);
-  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.50);
-  --rf-color-sidebar-border:   rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover:        color-mix(in srgb, white 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:       color-mix(in srgb, white 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:         rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim:     rgba(255, 255, 255, 0.50);
+  --rf-color-sidebar-text-strong:  #ffffff;                  /* hover/active foreground */
+  --rf-color-sidebar-border:       rgba(255, 255, 255, 0.08);
 
   /* ── Interactive ── */
   --rf-color-interactive: #000000;
@@ -208,11 +209,12 @@
 
   /* ── Sidebar (same recipes as light theme — derives from --rf-color-sidebar) ── */
   --rf-color-sidebar: #0A0A0A;
-  --rf-color-sidebar-hover:    color-mix(in srgb, white 4%, var(--rf-color-sidebar));
-  --rf-color-sidebar-active:   color-mix(in srgb, white 8%, var(--rf-color-sidebar));
-  --rf-color-sidebar-text:     rgba(255, 255, 255, 0.72);
-  --rf-color-sidebar-text-dim: rgba(255, 255, 255, 0.50);
-  --rf-color-sidebar-border:   rgba(255, 255, 255, 0.08);
+  --rf-color-sidebar-hover:        color-mix(in srgb, white 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:       color-mix(in srgb, white 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:         rgba(255, 255, 255, 0.72);
+  --rf-color-sidebar-text-dim:     rgba(255, 255, 255, 0.50);
+  --rf-color-sidebar-text-strong:  #ffffff;
+  --rf-color-sidebar-border:       rgba(255, 255, 255, 0.08);
 
   /* ── Interactive ── */
   --rf-color-interactive: #ffffff;
@@ -229,10 +231,11 @@
    ───────────────────────────────────────────── */
 
 [data-sidebar-mode="light"] {
-  --rf-color-sidebar-hover:    color-mix(in srgb, black 4%, var(--rf-color-sidebar));
-  --rf-color-sidebar-active:   color-mix(in srgb, black 8%, var(--rf-color-sidebar));
-  --rf-color-sidebar-text:     rgba(0, 0, 0, 0.78);
-  --rf-color-sidebar-text-dim: rgba(0, 0, 0, 0.55);
-  --rf-color-sidebar-border:   rgba(0, 0, 0, 0.10);
+  --rf-color-sidebar-hover:        color-mix(in srgb, black 4%, var(--rf-color-sidebar));
+  --rf-color-sidebar-active:       color-mix(in srgb, black 8%, var(--rf-color-sidebar));
+  --rf-color-sidebar-text:         rgba(0, 0, 0, 0.78);
+  --rf-color-sidebar-text-dim:     rgba(0, 0, 0, 0.55);
+  --rf-color-sidebar-text-strong:  #0a0a0a;
+  --rf-color-sidebar-border:       rgba(0, 0, 0, 0.10);
 }
 
