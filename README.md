@@ -141,15 +141,6 @@ Full per-component API in [`design-system.md`](./design-system.md).
 
 ---
 
-## Deprecated aliases
-
-| Old name      | Replacement         | Notes                                                                                                                                                                  |
-| ------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Toggle`\*    | `Switch`            | The boolean on/off control was renamed. The new `Toggle` is the icon-button primitive. If you imported `Toggle` expecting a boolean switch, change the import to `Switch`. |
-| `ProgressBar` | `SegmentedProgress` | Re-exported as an alias. Will be removed in the next major.                                                                                                            |
-
----
-
 ## Conventions
 
 - One component = one directory: `src/components/<Name>/<Name>.tsx` + `<Name>.css`.

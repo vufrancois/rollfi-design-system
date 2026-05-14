@@ -186,7 +186,7 @@ When a public API is deprecated:
 3. Document the deprecation in `design-system.md` + `README.md`.
 4. Remove the alias only on a major-version bump.
 
-Current deprecations: see `README.md` § Deprecated aliases.
+No deprecated APIs currently. When the first deprecation lands, document it in `README.md` so consumers see it before upgrading.
 
 ---
 

@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useState, useCallback, createContext, useContext } from 'react';
+import { CheckCircle, XCircle, Warning, Info, X } from '@phosphor-icons/react';
 import './Toast.css';
 
 type ToastVariant = 'default' | 'success' | 'error' | 'warning' | 'info';
@@ -68,26 +69,10 @@ function ToastItem({ data, onDismiss }: { data: ToastData; onDismiss: (id: strin
 
   const icons: Record<ToastVariant, ReactNode> = {
     default: null,
-    success: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M13 5L6.5 11.5 3 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
-    error: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M10.5 5.5l-5 5M5.5 5.5l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    warning: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M8 5v3.5M8 10.5h.005" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    info: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M8 7v4M8 5h.005" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
+    success: <CheckCircle size={16} weight="fill" />,
+    error: <XCircle size={16} weight="fill" />,
+    warning: <Warning size={16} weight="fill" />,
+    info: <Info size={16} weight="fill" />,
   };
 
   return (
@@ -100,9 +85,7 @@ function ToastItem({ data, onDismiss }: { data: ToastData; onDismiss: (id: strin
       )}
       <span className="rf-toast__message">{data.message}</span>
       <button className="rf-toast__close" onClick={() => setExiting(true)} aria-label="Dismiss">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-          <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
+        <X size={14} />
       </button>
     </div>
   );
