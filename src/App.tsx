@@ -335,6 +335,15 @@ function Demo() {
         </p>
       </Section>
 
+      <Section title="Sidebar">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
+          Top-level nav with optional <code>children</code> for one level of collapsible sub-items.
+          Parents render a chevron, navigate AND toggle on click, expand independently, and
+          auto-expand whenever the active id is one of their descendants.
+        </p>
+        <SidebarDemo />
+      </Section>
+
       <Section title="Badge">
         <Row>
           <Badge variant="neutral">Neutral</Badge>
@@ -1234,6 +1243,79 @@ function WhiteLabelPreview() {
           </div>
         </div>
       </BrandProvider>
+    </div>
+  );
+}
+
+function SidebarDemo() {
+  const [active, setActive] = useState('billing_pricing');
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '232px 1fr',
+        height: 480,
+        border: '1px solid var(--rf-color-border)',
+        borderRadius: 'var(--rf-radius-md)',
+        overflow: 'hidden',
+      }}
+    >
+      <Sidebar
+        activeId={active}
+        onSelect={setActive}
+        items={[
+          { id: 'dashboard', label: 'Dashboard', icon: <House size={16} /> },
+          { id: 'implementations', label: 'Implementations', icon: <Lightning size={16} /> },
+          {
+            id: 'activity',
+            label: 'Payroll activity',
+            icon: <ChartBar size={16} />,
+            badge: <Badge variant="danger">1</Badge>,
+            children: [
+              { id: 'activity_payments', label: 'Payments' },
+              { id: 'activity_tax_filings', label: 'Tax filings' },
+            ],
+          },
+          {
+            id: 'billing',
+            label: 'Billing',
+            icon: <CreditCard size={16} />,
+            children: [
+              { id: 'billing_report', label: 'Report' },
+              { id: 'billing_pricing', label: 'Pricing controls' },
+              { id: 'billing_simulation', label: 'Simulation' },
+              { id: 'billing_payout', label: 'Payout account' },
+            ],
+          },
+          { id: 'users', label: 'Users', icon: <User size={16} /> },
+        ]}
+      />
+      <div
+        style={{
+          padding: 24,
+          background: 'var(--rf-color-canvas)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8,
+        }}
+      >
+        <span
+          style={{
+            font: 'var(--rf-text-caption-sm)',
+            color: 'var(--rf-color-text-tertiary)',
+            textTransform: 'uppercase',
+            letterSpacing: 0.4,
+          }}
+        >
+          Active id
+        </span>
+        <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text)' }}>{active}</code>
+        <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', marginTop: 12 }}>
+          Click <strong>Billing</strong> or <strong>Payroll activity</strong> to expand. Sub-items deep-link
+          via ids like <code>billing_pricing</code> — map the prefix to a top-level view and the suffix to
+          an in-page tab in your app.
+        </p>
+      </div>
     </div>
   );
 }
