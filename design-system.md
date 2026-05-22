@@ -163,6 +163,24 @@ const { theme, toggleTheme, setTheme } = useTheme();
 
 The provider reads `prefers-color-scheme` on first load and persists the choice to `localStorage`.
 
+### ThemeToggle
+
+A small control that flips light/dark via the active `ThemeProvider`. Two variants:
+
+- `variant="icon"` (default) — a single round button that shows the icon for the theme you'd switch TO (Moon when light, Sun when dark). Best for headers and toolbars.
+- `variant="segmented"` — a pill with explicit `Light` / `Dark` choices, ARIA `radiogroup`. Best for settings panels.
+
+```tsx
+<ThemeProvider>
+  {/* header */}
+  <ThemeToggle />
+  {/* settings panel */}
+  <ThemeToggle variant="segmented" />
+</ThemeProvider>
+```
+
+Props: `variant?: 'icon' | 'segmented'`, `size?: 'sm' | 'md'`, `ariaLabel?: string`, `className?: string`. Requires a `ThemeProvider` ancestor.
+
 ## White-label theming
 
 The design system supports per-tenant white-labelling via `<BrandProvider>`. A tenant can override:

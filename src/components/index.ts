@@ -83,6 +83,7 @@ export { SettingsRow } from './SettingsRow/SettingsRow';
 export { DataGrid } from './DataGrid/DataGrid';
 export { StackedBar } from './StackedBar/StackedBar';
 export { SaveBar } from './SaveBar/SaveBar';
+export { ThemeToggle } from './ThemeToggle/ThemeToggle';
 export { BrandProvider } from './BrandProvider/BrandProvider';
 export { useBrand, BrandContext } from './BrandProvider/BrandContext';
 export type { BrandProviderProps } from './BrandProvider/BrandProvider';

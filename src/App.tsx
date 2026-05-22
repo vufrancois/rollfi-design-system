@@ -30,7 +30,7 @@ import {
   AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
   IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
-  BrandProvider,
+  BrandProvider, ThemeToggle,
 } from './components';
 import './tokens/index.css';
 
@@ -992,6 +992,30 @@ function Demo() {
 
       <Section title="Colors">
         <ColorSwatches />
+      </Section>
+
+      <Section title="ThemeToggle">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
+          Two variants: a single icon button for headers/toolbars, and a segmented switch with explicit Light / Dark choices for settings panels. Both compose with the active <code>ThemeProvider</code>.
+        </p>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Icon (md)</span>
+            <ThemeToggle />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Icon (sm)</span>
+            <ThemeToggle size="sm" />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Segmented (md)</span>
+            <ThemeToggle variant="segmented" />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-start' }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Segmented (sm)</span>
+            <ThemeToggle variant="segmented" size="sm" />
+          </div>
+        </div>
       </Section>
 
       <Section title="White-label theming">
@@ -4588,7 +4612,7 @@ function PortalMock({ onExit }: { onExit: () => void }) {
           <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
             White-label demo · viewing as
           </span>
-          <div style={{ display: 'inline-flex', gap: 6 }}>
+          <div style={{ display: 'inline-flex', gap: 6, flex: 1 }}>
             {TENANT_PRESETS.map(t => (
               <button
                 key={t.id}
@@ -4608,6 +4632,7 @@ function PortalMock({ onExit }: { onExit: () => void }) {
               </button>
             ))}
           </div>
+          <ThemeToggle variant="segmented" size="sm" />
         </div>
         <div style={{ padding: '32px 40px 56px' }}>
           {activeNav === 'dashboard' && <DashboardView />}

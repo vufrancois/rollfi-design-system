@@ -1,0 +1,72 @@
+/* ── Icon variant ─────────────────────────────────────────── */
+.rf-theme-toggle.rf-theme-toggle--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text-secondary);
+  border-radius: var(--rf-radius-full);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast),
+              border-color var(--rf-transition-fast),
+              color var(--rf-transition-fast);
+}
+
+.rf-theme-toggle--icon.rf-theme-toggle--sm { width: 28px; height: 28px; }
+.rf-theme-toggle--icon.rf-theme-toggle--md { width: 32px; height: 32px; }
+
+.rf-theme-toggle--icon:hover {
+  background: var(--rf-color-surface-elevated);
+  border-color: var(--rf-color-border-strong);
+  color: var(--rf-color-text);
+}
+
+.rf-theme-toggle--icon:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── Segmented variant ────────────────────────────────────── */
+.rf-theme-toggle.rf-theme-toggle--segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface-elevated);
+  border-radius: var(--rf-radius-full);
+  gap: 2px;
+}
+
+.rf-theme-toggle__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: none;
+  background: transparent;
+  color: var(--rf-color-text-tertiary);
+  font: var(--rf-text-caption);
+  border-radius: var(--rf-radius-full);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast), color var(--rf-transition-fast);
+}
+
+.rf-theme-toggle--sm .rf-theme-toggle__seg {
+  padding: 3px 8px;
+  font: var(--rf-text-caption-sm);
+}
+
+.rf-theme-toggle__seg:hover {
+  color: var(--rf-color-text);
+}
+
+.rf-theme-toggle__seg--active {
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  box-shadow: var(--rf-shadow-xs);
+}
+
+.rf-theme-toggle__seg:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
