@@ -3971,8 +3971,10 @@ function TaxFilingsTab() {
   );
 }
 
-function ActivityView() {
-  const [subTab, setSubTab] = useState('payments');
+function ActivityView({ subTab = 'payments', onSubTabChange }: { subTab?: string; onSubTabChange?: (key: string) => void }) {
+  const [internal, setInternal] = useState(subTab);
+  const value = onSubTabChange ? subTab : internal;
+  const setValue = onSubTabChange ?? setInternal;
   return (
     <>
       <PageHeader title="Payroll activity" subtitle="Money movement and tax filing packages" />
@@ -3982,12 +3984,12 @@ function ActivityView() {
             { key: 'payments', label: 'Payments' },
             { key: 'tax_filings', label: 'Tax filings' },
           ]}
-          value={subTab}
-          onChange={setSubTab}
+          value={value}
+          onChange={setValue}
         />
       </div>
-      {subTab === 'payments' && <PaymentsTab />}
-      {subTab === 'tax_filings' && <TaxFilingsTab />}
+      {value === 'payments' && <PaymentsTab />}
+      {value === 'tax_filings' && <TaxFilingsTab />}
     </>
   );
 }
@@ -4424,8 +4426,10 @@ function PayoutAccountTab() {
   );
 }
 
-function BillingView() {
-  const [subTab, setSubTab] = useState('report');
+function BillingView({ subTab = 'report', onSubTabChange }: { subTab?: string; onSubTabChange?: (key: string) => void }) {
+  const [internal, setInternal] = useState(subTab);
+  const value = onSubTabChange ? subTab : internal;
+  const setValue = onSubTabChange ?? setInternal;
   return (
     <>
       <PageHeader title="Billing" />
@@ -4437,14 +4441,14 @@ function BillingView() {
             { key: 'simulation', label: 'Simulation' },
             { key: 'payout', label: 'Payout account' },
           ]}
-          value={subTab}
-          onChange={setSubTab}
+          value={value}
+          onChange={setValue}
         />
       </div>
-      {subTab === 'report' && <BillingReportTab />}
-      {subTab === 'pricing' && <PricingControlsTab />}
-      {subTab === 'simulation' && <SimulationTab />}
-      {subTab === 'payout' && <PayoutAccountTab />}
+      {value === 'report' && <BillingReportTab />}
+      {value === 'pricing' && <PricingControlsTab />}
+      {value === 'simulation' && <SimulationTab />}
+      {value === 'payout' && <PayoutAccountTab />}
     </>
   );
 }
@@ -4548,10 +4552,46 @@ const TENANT_PRESETS = [
 ];
 
 function PortalMock({ onExit }: { onExit: () => void }) {
+  // activeNav is the parent destination ("dashboard", "billing", etc.).
+  // subNav is the in-page tab id within that parent ("pricing", "tax_filings", etc.).
   const [activeNav, setActiveNav] = useState('dashboard');
+  const [subNav, setSubNav] = useState<Record<string, string>>({
+    activity: 'payments',
+    billing: 'report',
+  });
   const [notifOpen, setNotifOpen] = useState(false);
   const [tenantId, setTenantId] = useState('rollfi');
   const tenant = TENANT_PRESETS.find(t => t.id === tenantId) ?? TENANT_PRESETS[0];
+
+  // Sub-item ids the sidebar surfaces. Click → set both parent + sub-tab.
+  const subItemToParent: Record<string, string> = {
+    activity_payments: 'activity', activity_tax_filings: 'activity',
+    billing_report: 'billing', billing_pricing: 'billing',
+    billing_simulation: 'billing', billing_payout: 'billing',
+  };
+  const subItemToTab: Record<string, string> = {
+    activity_payments: 'payments', activity_tax_filings: 'tax_filings',
+    billing_report: 'report', billing_pricing: 'pricing',
+    billing_simulation: 'simulation', billing_payout: 'payout',
+  };
+
+  const handleNavSelect = (id: string) => {
+    const parent = subItemToParent[id];
+    if (parent) {
+      setActiveNav(parent);
+      setSubNav(prev => ({ ...prev, [parent]: subItemToTab[id] }));
+    } else {
+      setActiveNav(id);
+    }
+  };
+
+  // Sidebar activeId: when the user is on a parent (e.g. Billing/Report tab),
+  // highlight the matching sub-item so the nav reflects the in-view state.
+  const sidebarActiveId = (() => {
+    if (activeNav === 'activity') return `activity_${subNav.activity}`;
+    if (activeNav === 'billing') return `billing_${subNav.billing}`;
+    return activeNav;
+  })();
 
   return (
     <BrandProvider
@@ -4562,8 +4602,8 @@ function PortalMock({ onExit }: { onExit: () => void }) {
     >
     <div style={{ display: 'flex', height: '100vh', background: 'var(--rf-color-canvas)' }}>
       <Sidebar
-        activeId={activeNav}
-        onSelect={setActiveNav}
+        activeId={sidebarActiveId}
+        onSelect={handleNavSelect}
         logo={
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 8 }}>
             <Logo size={22} />
@@ -4580,8 +4620,22 @@ function PortalMock({ onExit }: { onExit: () => void }) {
         items={[
           { id: 'dashboard', label: 'Dashboard', icon: <House size={16} /> },
           { id: 'implementations', label: 'Implementations', icon: <Lightning size={16} /> },
-          { id: 'activity', label: 'Payroll activity', icon: <ChartBar size={16} />, badge: <Badge variant="danger">1</Badge> },
-          { id: 'billing', label: 'Billing', icon: <CreditCard size={16} /> },
+          {
+            id: 'activity', label: 'Payroll activity', icon: <ChartBar size={16} />, badge: <Badge variant="danger">1</Badge>,
+            children: [
+              { id: 'activity_payments', label: 'Payments' },
+              { id: 'activity_tax_filings', label: 'Tax filings' },
+            ],
+          },
+          {
+            id: 'billing', label: 'Billing', icon: <CreditCard size={16} />,
+            children: [
+              { id: 'billing_report', label: 'Report' },
+              { id: 'billing_pricing', label: 'Pricing controls' },
+              { id: 'billing_simulation', label: 'Simulation' },
+              { id: 'billing_payout', label: 'Payout account' },
+            ],
+          },
           { id: 'users', label: 'Users', icon: <User size={16} /> },
         ]}
         secondaryItems={[
@@ -4637,8 +4691,18 @@ function PortalMock({ onExit }: { onExit: () => void }) {
         <div style={{ padding: '32px 40px 56px' }}>
           {activeNav === 'dashboard' && <DashboardView />}
           {activeNav === 'implementations' && <ImplementationsView />}
-          {activeNav === 'activity' && <ActivityView />}
-          {activeNav === 'billing' && <BillingView />}
+          {activeNav === 'activity' && (
+            <ActivityView
+              subTab={subNav.activity}
+              onSubTabChange={(key) => setSubNav(p => ({ ...p, activity: key }))}
+            />
+          )}
+          {activeNav === 'billing' && (
+            <BillingView
+              subTab={subNav.billing}
+              onSubTabChange={(key) => setSubNav(p => ({ ...p, billing: key }))}
+            />
+          )}
           {activeNav === 'users' && <UsersView />}
         </div>
       </main>

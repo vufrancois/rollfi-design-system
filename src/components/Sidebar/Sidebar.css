@@ -68,6 +68,60 @@
   flex: 1;
 }
 
+/* ── Nested sub-items ──────────────────────────────────────── */
+
+.rf-sidebar__group {
+  display: flex;
+  flex-direction: column;
+}
+
+.rf-sidebar__chevron {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-sidebar-text-dim);
+  transition: transform var(--rf-transition-fast), color var(--rf-transition-fast);
+}
+
+.rf-sidebar__chevron--open {
+  transform: rotate(180deg);
+}
+
+.rf-sidebar__item--active .rf-sidebar__chevron,
+.rf-sidebar__item:hover .rf-sidebar__chevron {
+  color: var(--rf-color-sidebar-text-strong);
+}
+
+/* grid-template-rows 0fr -> 1fr animation, same technique as Accordion */
+.rf-sidebar__children {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 180ms ease;
+}
+
+.rf-sidebar__children--open {
+  grid-template-rows: 1fr;
+}
+
+.rf-sidebar__children-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+
+.rf-sidebar__item--child {
+  margin-left: 22px;
+  padding-left: 10px;
+  border-left: 1px solid var(--rf-color-sidebar-border);
+  border-radius: 0 var(--rf-radius-sm) var(--rf-radius-sm) 0;
+  font: var(--rf-text-body-sm);
+}
+
+.rf-sidebar__item--child .rf-sidebar__icon {
+  display: none;
+}
+
 .rf-sidebar__badge {
   display: flex;
   align-items: center;

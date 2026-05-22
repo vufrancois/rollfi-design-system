@@ -455,7 +455,50 @@ Label-value pair for review/confirmation screens. **Props:** `label`, `value`, `
 />
 ```
 
-Stays dark in both themes by design. **Props:** `items`, `activeId`, `onSelect`, `logo?`, `footer?`.
+**Props:** `items`, `activeId`, `onSelect`, `logo?`, `secondaryItems?`, `footer?`, plus `expandedIds?` / `onExpandedChange?` for controlled sub-item expansion.
+
+Defaults to dark in both themes; tenants can override via `<BrandProvider sidebar="…">` and text/overlay colors auto-flip for contrast.
+
+#### Sub-items (one level)
+
+Any `SidebarItem` can declare `children: SidebarItem[]` for nested navigation. The parent renders a `CaretDown` chevron that rotates on open; clicking the parent **both navigates to its own destination AND toggles its children** (chosen behavior — see "Clickable parent" below).
+
+```tsx
+<Sidebar
+  activeId={activeId}
+  onSelect={setActiveId}
+  items={[
+    { id: 'dash', label: 'Dashboard', icon: <House /> },
+    {
+      id: 'billing', label: 'Billing', icon: <CreditCard />,
+      children: [
+        { id: 'billing_report',  label: 'Report' },
+        { id: 'billing_pricing', label: 'Pricing controls' },
+      ],
+    },
+  ]}
+/>
+```
+
+**Expansion behavior**:
+- Each parent toggles **independently** — opening one group never closes others.
+- Whenever `activeId` matches a child id, the parent **auto-expands** on mount and on subsequent activeId changes (uncontrolled mode only). Deep links never land in a collapsed group.
+- Pass `expandedIds={[…]}` + `onExpandedChange={…}` to take control if your app needs to persist expansion in URL state.
+
+**Pattern**: a typical setup pairs `activeId` with sub-item ids (`billing_report`, `billing_pricing`, …) and maps those back to the parent's view + in-page tab in the consumer:
+
+```tsx
+const handleSelect = (id: string) => {
+  if (id.startsWith('billing_')) {
+    setActiveNav('billing');
+    setBillingTab(id.replace('billing_', ''));
+  } else {
+    setActiveNav(id);
+  }
+};
+```
+
+Nesting is intentionally capped at one level; deeper trees compose poorly visually.
 
 ### Tabs
 
