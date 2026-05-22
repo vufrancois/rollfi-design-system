@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import {
   IconContext, Info, Warning, CheckCircle, XCircle, MagnifyingGlass, Envelope, ArrowRight,
   House, User, Gear, Bell, CreditCard, ChartBar, Calendar as CalendarIcon, FileText, Lock, Trash,
@@ -908,19 +908,7 @@ function Demo() {
       </Section>
 
       <Section title="Typography">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <p style={{ font: 'var(--rf-text-display-xl)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display XL</p>
-          <p style={{ font: 'var(--rf-text-display-lg)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display LG</p>
-          <p style={{ font: 'var(--rf-text-display-md)', letterSpacing: 'var(--rf-tracking-tight)' }}>Display MD</p>
-          <p style={{ font: 'var(--rf-text-heading-xl)' }}>Heading XL</p>
-          <p style={{ font: 'var(--rf-text-heading-lg)' }}>Heading LG</p>
-          <p style={{ font: 'var(--rf-text-heading-md)' }}>Heading MD</p>
-          <p style={{ font: 'var(--rf-text-heading-sm)' }}>Heading SM</p>
-          <p style={{ font: 'var(--rf-text-body-lg)' }}>Body LG — The quick brown fox jumps over the lazy dog</p>
-          <p style={{ font: 'var(--rf-text-body-md)' }}>Body MD — The quick brown fox jumps over the lazy dog</p>
-          <p style={{ font: 'var(--rf-text-body-sm)' }}>Body SM — The quick brown fox jumps over the lazy dog</p>
-          <p style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Caption — Metadata and secondary information</p>
-        </div>
+        <TypeSpecimens />
       </Section>
 
       <Section title="Icons">
@@ -1003,33 +991,7 @@ function Demo() {
       </Section>
 
       <Section title="Colors">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 12 }}>
-          {[
-            ['Primary', 'var(--rf-color-primary)'],
-            ['Brand', 'var(--rf-color-brand)'],
-            ['Surface', 'var(--rf-color-surface)'],
-            ['Elevated', 'var(--rf-color-surface-elevated)'],
-            ['Info', 'var(--rf-color-info)'],
-            ['Success', 'var(--rf-color-success)'],
-            ['Warning', 'var(--rf-color-warning)'],
-            ['Danger', 'var(--rf-color-danger)'],
-            ['Lime', 'var(--rf-color-accent-lime)'],
-            ['Orange', 'var(--rf-color-accent-orange)'],
-            ['Purple', 'var(--rf-color-accent-purple)'],
-            ['Teal', 'var(--rf-color-accent-teal)'],
-            ['Sidebar', 'var(--rf-color-sidebar)'],
-          ].map(([label, color]) => (
-            <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{
-                width: '100%', height: 48,
-                backgroundColor: color,
-                border: '1px solid var(--rf-color-border)',
-                borderRadius: 8,
-              }} />
-              <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>{label}</span>
-            </div>
-          ))}
-        </div>
+        <ColorSwatches />
       </Section>
 
       <Section title="White-label theming">
@@ -1040,6 +1002,131 @@ function Demo() {
         </p>
         <WhiteLabelPreview />
       </Section>
+    </div>
+  );
+}
+
+// Reads the resolved hex/rgba of a --rf-* token on mount. Re-runs when
+// the theme attribute on <html> flips so dark-mode values display correctly.
+function useResolvedToken(varName: string): string {
+  const [value, setValue] = useState('');
+  useEffect(() => {
+    const read = () => {
+      const v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+      setValue(v);
+    };
+    read();
+    const observer = new MutationObserver(read);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, [varName]);
+  return value;
+}
+
+const TYPE_SPECIMENS: { token: string; label: string; weight: number; size: number; lineHeight: number; family: string; sample: string }[] = [
+  { token: '--rf-text-display-xl',     label: 'Display XL',     weight: 600, size: 64, lineHeight: 1.1,  family: 'Funnel Display', sample: 'Display XL' },
+  { token: '--rf-text-display-lg',     label: 'Display LG',     weight: 600, size: 48, lineHeight: 1.15, family: 'Funnel Display', sample: 'Display LG' },
+  { token: '--rf-text-display-md',     label: 'Display MD',     weight: 600, size: 36, lineHeight: 1.2,  family: 'Funnel Display', sample: 'Display MD' },
+  { token: '--rf-text-heading-xl',     label: 'Heading XL',     weight: 600, size: 28, lineHeight: 1.3,  family: 'Funnel Display', sample: 'Heading XL' },
+  { token: '--rf-text-heading-lg',     label: 'Heading LG',     weight: 600, size: 24, lineHeight: 1.35, family: 'Funnel Display', sample: 'Heading LG' },
+  { token: '--rf-text-heading-md',     label: 'Heading MD',     weight: 500, size: 20, lineHeight: 1.4,  family: 'Funnel Sans',    sample: 'Heading MD' },
+  { token: '--rf-text-heading-sm',     label: 'Heading SM',     weight: 500, size: 18, lineHeight: 1.4,  family: 'Funnel Sans',    sample: 'Heading SM' },
+  { token: '--rf-text-body-lg',        label: 'Body LG',        weight: 400, size: 18, lineHeight: 1.6,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-body-md',        label: 'Body MD',        weight: 400, size: 16, lineHeight: 1.6,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-body-md-strong', label: 'Body MD Strong', weight: 500, size: 16, lineHeight: 1.5,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-body-sm',        label: 'Body SM',        weight: 400, size: 14, lineHeight: 1.6,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-body-sm-strong', label: 'Body SM Strong', weight: 500, size: 14, lineHeight: 1.5,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-body-xs',        label: 'Body XS',        weight: 400, size: 12, lineHeight: 1.5,  family: 'Funnel Sans',    sample: 'The quick brown fox jumps over the lazy dog' },
+  { token: '--rf-text-caption',        label: 'Caption',        weight: 400, size: 13, lineHeight: 1.4,  family: 'Funnel Display', sample: 'Metadata and secondary information' },
+  { token: '--rf-text-caption-sm',     label: 'Caption SM',     weight: 400, size: 11, lineHeight: 1.4,  family: 'Funnel Display', sample: 'Small caption text' },
+  { token: '--rf-text-label',          label: 'Label',          weight: 500, size: 14, lineHeight: 1.4,  family: 'Funnel Display', sample: 'Form Label' },
+  { token: '--rf-text-button',         label: 'Button',         weight: 500, size: 14, lineHeight: 1.0,  family: 'Funnel Sans',    sample: 'Button label' },
+  { token: '--rf-text-button-sm',      label: 'Button SM',      weight: 500, size: 13, lineHeight: 1.0,  family: 'Funnel Sans',    sample: 'Small button' },
+  { token: '--rf-text-code',           label: 'Code',           weight: 400, size: 13, lineHeight: 1.5,  family: 'JetBrains Mono', sample: 'const value = 42;' },
+];
+
+function TypeSpecimens() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {TYPE_SPECIMENS.map((spec) => {
+        const isDisplay = spec.token.includes('display-');
+        return (
+          <div key={spec.token} style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: 24, alignItems: 'baseline', paddingBottom: 16, borderBottom: '1px solid var(--rf-color-border-subtle)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{spec.label}</div>
+              <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text-tertiary)' }}>{spec.token}</code>
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-secondary)' }}>
+                {spec.family} · {spec.weight} · {spec.size}px / {spec.lineHeight}
+              </div>
+            </div>
+            <p style={{ font: `var(${spec.token})`, letterSpacing: isDisplay ? 'var(--rf-tracking-tight)' : undefined, margin: 0 }}>
+              {spec.sample}
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+const COLOR_SWATCHES: { label: string; token: string; group: string }[] = [
+  { group: 'Brand & primary', label: 'Primary',         token: '--rf-color-primary' },
+  { group: 'Brand & primary', label: 'On primary',      token: '--rf-color-on-primary' },
+  { group: 'Brand & primary', label: 'Brand',           token: '--rf-color-brand' },
+  { group: 'Brand & primary', label: 'Brand soft',      token: '--rf-color-brand-soft' },
+  { group: 'Brand & primary', label: 'Brand text',      token: '--rf-color-brand-text' },
+  { group: 'Surfaces',        label: 'Canvas',          token: '--rf-color-canvas' },
+  { group: 'Surfaces',        label: 'Surface',         token: '--rf-color-surface' },
+  { group: 'Surfaces',        label: 'Elevated',        token: '--rf-color-surface-elevated' },
+  { group: 'Surfaces',        label: 'Border',          token: '--rf-color-border' },
+  { group: 'Surfaces',        label: 'Border strong',   token: '--rf-color-border-strong' },
+  { group: 'Text',            label: 'Text',            token: '--rf-color-text' },
+  { group: 'Text',            label: 'Text secondary',  token: '--rf-color-text-secondary' },
+  { group: 'Text',            label: 'Text tertiary',   token: '--rf-color-text-tertiary' },
+  { group: 'Semantic',        label: 'Info',            token: '--rf-color-info' },
+  { group: 'Semantic',        label: 'Success',         token: '--rf-color-success' },
+  { group: 'Semantic',        label: 'Warning',         token: '--rf-color-warning' },
+  { group: 'Semantic',        label: 'Danger',          token: '--rf-color-danger' },
+  { group: 'Accent',          label: 'Teal',            token: '--rf-color-accent-teal' },
+  { group: 'Accent',          label: 'Lime',            token: '--rf-color-accent-lime' },
+  { group: 'Accent',          label: 'Orange',          token: '--rf-color-accent-orange' },
+  { group: 'Accent',          label: 'Purple',          token: '--rf-color-accent-purple' },
+  { group: 'Sidebar',         label: 'Sidebar',         token: '--rf-color-sidebar' },
+  { group: 'Sidebar',         label: 'Sidebar text',    token: '--rf-color-sidebar-text' },
+  { group: 'Sidebar',         label: 'Sidebar strong',  token: '--rf-color-sidebar-text-strong' },
+];
+
+function ColorSwatch({ label, token }: { label: string; token: string }) {
+  const value = useResolvedToken(token);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{
+        width: '100%', height: 64,
+        backgroundColor: `var(${token})`,
+        border: '1px solid var(--rf-color-border)',
+        borderRadius: 8,
+      }} />
+      <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{label}</div>
+      <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text-tertiary)', fontSize: 11 }}>{token}</code>
+      <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text-secondary)' }}>{value || '—'}</code>
+    </div>
+  );
+}
+
+function ColorSwatches() {
+  const groups = Array.from(new Set(COLOR_SWATCHES.map(s => s.group)));
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      {groups.map(group => (
+        <div key={group}>
+          <h3 style={{ font: 'var(--rf-text-heading-sm)', color: 'var(--rf-color-text-secondary)', marginBottom: 12 }}>{group}</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+            {COLOR_SWATCHES.filter(s => s.group === group).map(s => (
+              <ColorSwatch key={s.token} label={s.label} token={s.token} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

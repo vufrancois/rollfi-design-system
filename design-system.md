@@ -21,40 +21,129 @@ All tokens use the `--rf-` prefix. They live in `src/tokens/` as CSS custom prop
 
 ### Colors (`colors.css`)
 
-Semantic tokens that flip automatically between light and dark themes:
+Semantic tokens that flip automatically between light and dark themes. Hex values below are the resolved defaults; every token can be inspected live in the App's library demo "Colors" section.
 
-| Token | Purpose |
-|---|---|
-| `--rf-color-primary` | Primary CTA background |
-| `--rf-color-on-primary` | Text on primary |
-| `--rf-color-canvas` | Page background |
-| `--rf-color-surface` | Card/panel background |
-| `--rf-color-surface-elevated` | Elevated surface (inputs, table headers) |
-| `--rf-color-border` | Default border |
-| `--rf-color-border-focus` | Focus ring border |
-| `--rf-color-text` | Primary text |
-| `--rf-color-text-secondary` | Secondary text |
-| `--rf-color-text-tertiary` | Muted/placeholder text |
-| `--rf-color-info` / `success` / `warning` / `danger` | Semantic states |
-| `--rf-color-accent-teal` (+ `-soft` / `-bg` / `-text` / `-border`) | Highlight accent for payroll/ready statuses (used by Badge `teal` variant) |
-| `--rf-color-accent-lime` (+ `-soft` / `-text` / `-border`) | Lime highlight accent |
-| `--rf-color-accent-orange` (+ `-soft` / `-text` / `-border`) | Orange highlight accent |
-| `--rf-color-accent-purple` (+ `-soft` / `-text` / `-border`) | Purple highlight accent |
-| `--rf-color-sidebar` (+ `-active` / `-hover` / `-text` / `-text-dim` / `-text-strong` / `-border`) | Sidebar — defaults to dark in both themes; flips to light contrast via `<BrandProvider sidebar="…">` |
-| `--rf-color-{state}-soft` | Translucent background for badges/toasts |
-| `--rf-color-{state}-text` | Text color for semantic states |
+#### Brand & primary
+
+| Token | Light | Dark | Purpose |
+|---|---|---|---|
+| `--rf-color-primary` | `#000000` | `#ffffff` | Primary CTA background |
+| `--rf-color-primary-hover` | `#1a1a1a` | `#e8e8e8` | Primary hover |
+| `--rf-color-primary-pressed` | `#333333` | `#d4d4d4` | Primary pressed |
+| `--rf-color-on-primary` | `#ffffff` | `#000000` | Text on primary |
+| `--rf-color-brand` | `#FF2F1C` | `#FF2F1C` | Brand accent base (tenant-overridable via `<BrandProvider brand="…">`) |
+| `--rf-color-brand-hover` | derives — `color-mix(brand 88%, black)` | derives — `color-mix(brand 80%, white)` | Brand hover |
+| `--rf-color-brand-soft` | derives — `color-mix(brand 10%, transparent)` | derives — `color-mix(brand 14%, transparent)` | Brand-tinted background |
+| `--rf-color-brand-text` | derives — `color-mix(brand 92%, black)` | derives — `color-mix(brand 70%, white)` | Brand text/link color |
+| `--rf-color-brand-border` | derives — `color-mix(brand 25%, transparent)` | derives — `color-mix(brand 30%, transparent)` | Brand-tinted border |
+
+#### Surfaces & borders
+
+| Token | Light | Dark |
+|---|---|---|
+| `--rf-color-canvas` | `#f9f9fa` | `#0a0a0b` |
+| `--rf-color-surface` | `#ffffff` | `#121214` |
+| `--rf-color-surface-elevated` | `#f2f2f4` | `#1a1a1e` |
+| `--rf-color-surface-overlay` | `rgba(0,0,0,0.5)` | `rgba(0,0,0,0.7)` |
+| `--rf-color-border` | `#e2e2e6` | `#2a2a2e` |
+| `--rf-color-border-subtle` | `#ebebef` | `rgba(255,255,255,0.07)` |
+| `--rf-color-border-strong` | `#d0d0d6` | `rgba(255,255,255,0.14)` |
+| `--rf-color-border-focus` | `#000000` | `#ffffff` |
+
+#### Text
+
+| Token | Light | Dark |
+|---|---|---|
+| `--rf-color-text` | `#0a0a0a` | `#f4f4f6` |
+| `--rf-color-text-secondary` | `#5E6167` | `#9c9da2` |
+| `--rf-color-text-tertiary` | `#8b8d92` | `#6e7075` |
+| `--rf-color-text-disabled` | `#b4b6ba` | `#4a4b50` |
+| `--rf-color-text-inverse` | `#ffffff` | `#0a0a0b` |
+| `--rf-color-text-on-accent` | `#ffffff` | `#ffffff` |
+
+#### Semantic states (each ships `-soft` / `-bg` / `-text` / `-border` siblings)
+
+| Token | Light | Dark | Purpose |
+|---|---|---|---|
+| `--rf-color-info` | `#3A6DFF` | `#6b93ff` | Info / neutral notification |
+| `--rf-color-success` | `#16A34A` | `#22c55e` | Success state |
+| `--rf-color-warning` | `#F7DE52` | `#F7DE52` | Warning state |
+| `--rf-color-danger` | `#cc1a0a` | `#ff5443` | Danger / destructive |
+
+#### Accent palette (each ships `-soft` / `-text` / `-border`; some add `-bg`)
+
+| Token | Light | Dark | Purpose |
+|---|---|---|---|
+| `--rf-color-accent-teal` | `#0891B2` | `#22d3ee` | Payroll-ready / status accent |
+| `--rf-color-accent-lime` | `#CEFF00` | `#CEFF00` | Highlight accent |
+| `--rf-color-accent-orange` | `#FF6905` | `#ff8438` | Highlight accent |
+| `--rf-color-accent-purple` | `#9146FF` | `#a76aff` | Highlight accent |
+
+#### Sidebar (overridable via `<BrandProvider sidebar="…">`)
+
+| Token | Default (dark sidebar) | Light sidebar (auto-flip) |
+|---|---|---|
+| `--rf-color-sidebar` | `#0A0A0A` | tenant-supplied |
+| `--rf-color-sidebar-hover` | `color-mix(white 4%, sidebar)` | `color-mix(black 4%, sidebar)` |
+| `--rf-color-sidebar-active` | `color-mix(white 8%, sidebar)` | `color-mix(black 8%, sidebar)` |
+| `--rf-color-sidebar-text` | `rgba(255,255,255,0.72)` | `rgba(0,0,0,0.78)` |
+| `--rf-color-sidebar-text-dim` | `rgba(255,255,255,0.50)` | `rgba(0,0,0,0.55)` |
+| `--rf-color-sidebar-text-strong` | `#ffffff` | `#0a0a0a` |
+| `--rf-color-sidebar-border` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.10)` |
 
 ### Typography (`typography.css`)
 
-Use the `font` shorthand with CSS variables:
+Use the `font` shorthand with CSS variables — never set individual `font-size`/`font-weight` on components:
 
 ```css
 font: var(--rf-text-body-md);
 ```
 
-**Scale:** `display-xl` (64px) → `display-lg` (48px) → `display-md` (36px) → `heading-xl` (28px) → `heading-lg` (24px) → `heading-md` (20px) → `heading-sm` (18px) → `body-lg` (18px) → `body-md` (16px) → `body-sm` (14px) → `body-xs` (12px) → `caption` (13px) → `caption-sm` (11px)
+#### Font families
 
-**Font features:** Always set `font-feature-settings: var(--rf-font-feature)` on the root — this enables the contextual alternates, kerning, and ligatures that give Funnel its calibrated rhythm.
+| Token | Stack | Purpose |
+|---|---|---|
+| `--rf-font-display` | `'Funnel Display', system-ui, -apple-system, sans-serif` | Display, headings xl/lg, captions, labels |
+| `--rf-font-sans` | `'Funnel Sans', system-ui, -apple-system, sans-serif` | Body copy, UI, headings md/sm, buttons |
+| `--rf-font-mono` | `'JetBrains Mono', 'Fira Code', monospace` | Code blocks |
+| `--rf-font-feature` | `"calt", "kern", "liga"` | OpenType features (contextual alternates + kerning + ligatures) |
+
+Funnel Display + Funnel Sans are loaded via Google Fonts `@import` at the top of `typography.css`. Always apply `font-feature-settings: var(--rf-font-feature)` at the root.
+
+#### Type scale
+
+Each token is a CSS `font` shorthand: `<weight> <size>/<line-height> <family>`.
+
+| Token | Weight | Size | Line height | Family |
+|---|---|---|---|---|
+| `--rf-text-display-xl` | 600 | 64px | 1.1 | Funnel Display |
+| `--rf-text-display-lg` | 600 | 48px | 1.15 | Funnel Display |
+| `--rf-text-display-md` | 600 | 36px | 1.2 | Funnel Display |
+| `--rf-text-heading-xl` | 600 | 28px | 1.3 | Funnel Display |
+| `--rf-text-heading-lg` | 600 | 24px | 1.35 | Funnel Display |
+| `--rf-text-heading-md` | 500 | 20px | 1.4 | Funnel Sans |
+| `--rf-text-heading-sm` | 500 | 18px | 1.4 | Funnel Sans |
+| `--rf-text-body-lg` | 400 | 18px | 1.6 | Funnel Sans |
+| `--rf-text-body-md` | 400 | 16px | 1.6 | Funnel Sans |
+| `--rf-text-body-md-strong` | 500 | 16px | 1.5 | Funnel Sans |
+| `--rf-text-body-sm` | 400 | 14px | 1.6 | Funnel Sans |
+| `--rf-text-body-sm-strong` | 500 | 14px | 1.5 | Funnel Sans |
+| `--rf-text-body-xs` | 400 | 12px | 1.5 | Funnel Sans |
+| `--rf-text-caption` | 400 | 13px | 1.4 | Funnel Display |
+| `--rf-text-caption-sm` | 400 | 11px | 1.4 | Funnel Display |
+| `--rf-text-label` | 500 | 14px | 1.4 | Funnel Display |
+| `--rf-text-button` | 500 | 14px | 1.0 | Funnel Sans |
+| `--rf-text-button-sm` | 500 | 13px | 1.0 | Funnel Sans |
+| `--rf-text-code` | 400 | 13px | 1.5 | JetBrains Mono |
+
+#### Letter spacing
+
+| Token | Value | Use |
+|---|---|---|
+| `--rf-tracking-tight` | `-0.01em` | Display headings (negative tracking tightens the eye) |
+| `--rf-tracking-normal` | `0` | Default |
+| `--rf-tracking-wide` | `0.01em` | Small caps / labels |
+| `--rf-tracking-wider` | `0.02em` | Uppercase eyebrows |
 
 ### Spacing (`spacing.css`)
 
