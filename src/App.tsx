@@ -221,12 +221,35 @@ function Demo() {
       </Section>
 
       <Section title="Detail Row">
-        <Card variant="outlined" padding="md">
-          <DetailRow label="Full Name" value="John Doe" />
-          <DetailRow label="Email" value="john@rollfi.com" />
-          <DetailRow label="SSN" value="123-45-6789" masked />
-          <DetailRow label="Department" value="Engineering" />
-        </Card>
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Two layouts: <code>inline</code> (default — label left, value right) for traditional
+          key/value lists, and <code>stacked</code> (label on top, value below) for info-card
+          displays where each datum reads as a labelled stat.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+              Inline (default)
+            </span>
+            <Card variant="outlined" padding="md">
+              <DetailRow label="Full Name" value="John Doe" />
+              <DetailRow label="Email" value="john@rollfi.com" />
+              <DetailRow label="SSN" value="123-45-6789" masked />
+              <DetailRow label="Department" value="Engineering" />
+            </Card>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+              Stacked
+            </span>
+            <Card variant="outlined" padding="md">
+              <DetailRow layout="stacked" label="Full name" value="John Doe" />
+              <DetailRow layout="stacked" label="Email" value="john@rollfi.com" />
+              <DetailRow layout="stacked" label="SSN" value="123-45-6789" masked />
+              <DetailRow layout="stacked" label="Department" value="Engineering" />
+            </Card>
+          </div>
+        </div>
       </Section>
 
       <Section title="Page Header">

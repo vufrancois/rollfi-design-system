@@ -505,11 +505,30 @@ Linear filled bar. **Sizes:** `sm` | `md` (default) | `lg`. **Variants:** `defau
 
 ### DetailRow
 
+Label-value pair for review/confirmation screens and info-card layouts. Two layouts:
+
 ```tsx
+{/* Inline (default) — label left, value right-aligned on the same baseline.
+    Best for traditional key/value lists in side panels and forms. */}
 <DetailRow label="SSN" value="123-45-6789" masked />
+
+{/* Stacked — label on top (uppercase eyebrow), value below in body-md-strong.
+    Best for "info card" layouts where each datum reads as a labelled stat. */}
+<DetailRow layout="stacked" label="Total companies" value="725" />
 ```
 
-Label-value pair for review/confirmation screens. **Props:** `label`, `value`, `masked?`
+**Props:** `label`, `value`, `masked?`, `layout?` (`'inline'` default | `'stacked'`), `className?`.
+
+**Layout differences:**
+
+| | `inline` | `stacked` |
+|---|---|---|
+| Orientation | flex row, baseline-aligned | flex column |
+| Label style | `--rf-text-caption`, tertiary | `--rf-text-caption-sm`, tertiary, uppercase + 0.04em tracking |
+| Value style | `--rf-text-body-sm-strong`, right-aligned | `--rf-text-body-md-strong`, left-aligned |
+| Bottom divider | yes (except last child) | yes (except last child) |
+
+The stacked variant pairs naturally with `Card variant="outlined" padding="md"` to compose info-card grids without reaching for `StatCard`.
 
 ### PageHeader
 
