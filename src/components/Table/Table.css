@@ -124,3 +124,196 @@
   background: var(--rf-color-surface-elevated);
   border-bottom: 1px solid var(--rf-color-border-subtle);
 }
+
+/* ── Toolbar (search) ──────────────────────────────────────── */
+
+.rf-table__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid var(--rf-color-border);
+  background: var(--rf-color-surface);
+}
+
+.rf-table__search {
+  flex: 1;
+  max-width: 320px;
+}
+
+.rf-table__filter-count {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-table__toolbar {
+  flex-wrap: wrap;
+}
+
+/* Filter button */
+
+.rf-table__filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font: var(--rf-text-button-sm);
+  background: var(--rf-color-surface);
+  color: var(--rf-color-text);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-sm);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-table__filter-btn:hover {
+  background: var(--rf-color-surface-elevated);
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-table__filter-btn--active {
+  border-color: var(--rf-color-brand-border);
+  background: var(--rf-color-brand-soft);
+  color: var(--rf-color-brand-text);
+}
+
+.rf-table__filter-btn-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-brand);
+  color: var(--rf-color-on-primary);
+  font: var(--rf-text-caption-sm);
+  font-weight: 600;
+}
+
+/* Filter menu (inside the Popover) */
+
+.rf-table__filter-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.rf-table__filter-group {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-table__filter-group:last-of-type {
+  border-bottom: none;
+}
+
+.rf-table__filter-group-label {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.rf-table__filter-group-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rf-table__filter-empty {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-tertiary);
+  padding: 4px 0;
+}
+
+.rf-table__filter-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  background: transparent;
+  border: none;
+  border-radius: var(--rf-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-table__filter-opt:hover {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-table__filter-opt-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--rf-color-border-strong);
+  border-radius: var(--rf-radius-xs);
+  background: var(--rf-color-surface);
+  color: transparent;
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast), color var(--rf-transition-fast);
+}
+
+.rf-table__filter-opt--on .rf-table__filter-opt-box {
+  background: var(--rf-color-primary);
+  border-color: var(--rf-color-primary);
+  color: var(--rf-color-on-primary);
+}
+
+.rf-table__filter-menu-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  border-top: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-table__filter-clear {
+  background: transparent;
+  border: none;
+  font: var(--rf-text-button-sm);
+  color: var(--rf-color-text-secondary);
+  cursor: pointer;
+}
+
+.rf-table__filter-clear:hover {
+  color: var(--rf-color-text);
+}
+
+/* Active filter chips (inline in the toolbar) */
+
+.rf-table__filter-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 1 1 100%;
+}
+
+.rf-table__filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: var(--rf-color-brand-soft);
+  color: var(--rf-color-brand-text);
+  border: 1px solid var(--rf-color-brand-border);
+  border-radius: var(--rf-radius-full);
+  font: var(--rf-text-caption);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-table__filter-chip:hover {
+  background: color-mix(in srgb, var(--rf-color-brand-soft) 60%, transparent);
+}
+
+.rf-table__filter-chip-label {
+  color: var(--rf-color-text-secondary);
+}

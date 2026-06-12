@@ -30,7 +30,7 @@ import {
   AlertDialog, ConfirmationDialog, ContextMenu, HoverCard, Drawer, Command,
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
   IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
-  BrandProvider, ThemeToggle,
+  BrandProvider, ThemeToggle, PayPeriodSelect, type PayPeriodOption,
 } from './components';
 import './tokens/index.css';
 
@@ -43,11 +43,12 @@ const sampleData = [
 
 const columns = [
   { key: 'name', header: 'Company' },
-  { key: 'plan', header: 'Plan' },
+  { key: 'plan', header: 'Plan', filterable: true },
   { key: 'mrr', header: 'MRR', align: 'right' as const },
   {
     key: 'status',
     header: 'Status',
+    filterable: true,
     render: (row: typeof sampleData[0]) => (
       <span className={`status-badge status-badge--${row.status.toLowerCase()}`}>
         {row.status}
@@ -274,12 +275,21 @@ function Demo() {
       </Section>
 
       <Section title="Table">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Two filtering modes — combine freely:
+          <br />• <strong>Search</strong> (<code>searchable</code>) — case-insensitive substring across columns.
+          <br />• <strong>Filter menu</strong> (<code>filterable</code>) — click <strong>Filter</strong>, pick distinct values from
+          <code>filterable</code> columns. Active selections appear as removable chips below.
+        </p>
         <Card variant="outlined" padding="none">
           <Table
             columns={columns}
             data={sampleData}
             rowKey={row => row.id}
             onRowClick={row => toast(`Clicked ${row.name}`)}
+            searchable
+            filterable
+            searchPlaceholder="Search companies…"
           />
         </Card>
       </Section>
@@ -433,6 +443,15 @@ function Demo() {
             <Select placeholder="Choose..." options={[{ value: 'a', label: 'Acme' }]} />
           </Field>
         </div>
+      </Section>
+
+      <Section title="PayPeriodSelect">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Domain-specific dropdown for picking a pay period. Trigger shows the selected pay date +
+          range + type; menu items expand the same data with optional status pulses. Sorts by{' '}
+          <code>payDate</code> — default <code>paydate-desc</code> (newest first).
+        </p>
+        <PayPeriodSelectDemo />
       </Section>
 
       <Section title="StatCard">
@@ -1003,6 +1022,18 @@ function Demo() {
         <ColorSwatches />
       </Section>
 
+      <Section title="Spacing">
+        <SpacingScale />
+      </Section>
+
+      <Section title="Radius">
+        <RadiusScale />
+      </Section>
+
+      <Section title="Shadows">
+        <ShadowScale />
+      </Section>
+
       <Section title="ThemeToggle">
         <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
           Two variants: a single icon button for headers/toolbars, and a segmented switch with explicit Light / Dark choices for settings panels. Both compose with the active <code>ThemeProvider</code>.
@@ -1243,6 +1274,180 @@ function WhiteLabelPreview() {
           </div>
         </div>
       </BrandProvider>
+    </div>
+  );
+}
+
+const SPACING_TOKENS: { token: string; px: number; use: string }[] = [
+  { token: '--rf-space-0',  px: 0,  use: 'Reset' },
+  { token: '--rf-space-1',  px: 2,  use: 'Hairline gaps inside controls' },
+  { token: '--rf-space-2',  px: 4,  use: 'Sub-grid; chevron-to-label, tick-to-box' },
+  { token: '--rf-space-3',  px: 8,  use: 'Base unit — default gap, badge padding-x' },
+  { token: '--rf-space-4',  px: 12, use: 'Control padding-x, tight form gaps' },
+  { token: '--rf-space-5',  px: 16, use: 'Card padding (sm), unrelated control gaps' },
+  { token: '--rf-space-6',  px: 20, use: 'Card padding (md)' },
+  { token: '--rf-space-7',  px: 24, use: 'Card padding (lg), grid gap' },
+  { token: '--rf-space-8',  px: 32, use: 'Gap between page sections, PageHeader vertical pad' },
+  { token: '--rf-space-9',  px: 40, use: 'Page horizontal padding (small viewport)' },
+  { token: '--rf-space-10', px: 48, use: 'Page horizontal padding (default)' },
+  { token: '--rf-space-12', px: 64, use: 'Vertical breathing room between page sections' },
+  { token: '--rf-space-14', px: 80, use: 'Hero / empty-state vertical padding' },
+  { token: '--rf-space-16', px: 96, use: 'Marketing-style breathing room' },
+];
+
+function SpacingScale() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 8, maxWidth: 720 }}>
+        8px base grid with two sub-grid steps (2px, 4px). Use these for{' '}
+        <code>padding</code>, <code>margin</code>, <code>gap</code> — never hardcode px in component CSS.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        {SPACING_TOKENS.map((s) => (
+          <div
+            key={s.token}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '180px 60px 1fr 120px',
+              alignItems: 'center',
+              gap: 16,
+              padding: '6px 8px',
+              borderRadius: 'var(--rf-radius-sm)',
+            }}
+          >
+            <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text)' }}>{s.token}</code>
+            <span style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-tertiary)', fontVariantNumeric: 'tabular-nums' }}>
+              {s.px}px
+            </span>
+            <span style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+              {s.use}
+            </span>
+            <div
+              style={{
+                height: 16,
+                width: Math.max(s.px, 1),
+                background: 'var(--rf-color-brand)',
+                borderRadius: 2,
+              }}
+              aria-hidden
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const RADIUS_TOKENS: { token: string; px: string; use: string }[] = [
+  { token: '--rf-radius-none', px: '0',    use: 'Tabular cells, dividers' },
+  { token: '--rf-radius-xs',   px: '4',    use: 'Checkbox boxes, small inline chips' },
+  { token: '--rf-radius-sm',   px: '6',    use: 'Inputs, sidebar items, small buttons' },
+  { token: '--rf-radius-md',   px: '8',    use: 'Cards, modals, popovers — default container radius' },
+  { token: '--rf-radius-lg',   px: '12',   use: 'Hero cards, prominent containers' },
+  { token: '--rf-radius-xl',   px: '16',   use: 'Marketing surfaces' },
+  { token: '--rf-radius-2xl',  px: '20',   use: 'Hero/promo cards' },
+  { token: '--rf-radius-full', px: 'pill', use: 'Pills, badges, avatars, status dots' },
+];
+
+function RadiusScale() {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
+      {RADIUS_TOKENS.map((r) => (
+        <div key={r.token} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div
+            style={{
+              height: 80,
+              borderRadius: `var(${r.token})`,
+              background: 'var(--rf-color-surface-elevated)',
+              border: '1px solid var(--rf-color-border)',
+            }}
+          />
+          <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>{r.px === 'pill' ? 'Full (pill)' : `${r.px}px`}</div>
+          <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text-tertiary)', fontSize: 11 }}>{r.token}</code>
+          <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-secondary)' }}>{r.use}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const SHADOW_TOKENS: { token: string; use: string }[] = [
+  { token: '--rf-shadow-xs', use: 'Subtle lift — hovered rows, pressed segments' },
+  { token: '--rf-shadow-sm', use: 'Cards, surface-elevated panels at rest' },
+  { token: '--rf-shadow-md', use: 'Popovers, dropdowns, tooltips' },
+  { token: '--rf-shadow-lg', use: 'Modals, side panels, drawers' },
+  { token: '--rf-shadow-xl', use: 'Auth dialogs, hero cards' },
+];
+
+function ShadowScale() {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 24, paddingBottom: 24 }}>
+      {SHADOW_TOKENS.map((s) => (
+        <div key={s.token} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div
+            style={{
+              height: 96,
+              background: 'var(--rf-color-surface)',
+              borderRadius: 'var(--rf-radius-md)',
+              boxShadow: `var(${s.token})`,
+            }}
+          />
+          <code style={{ font: 'var(--rf-text-code)', color: 'var(--rf-color-text)' }}>{s.token}</code>
+          <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-secondary)' }}>{s.use}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const PAY_PERIOD_DEMO: PayPeriodOption[] = [
+  { id: 'pp-1', payDate: '2026-05-15', payBeginDate: '2026-05-01', payEndDate: '2026-05-15', type: 'Regular',  status: 'pending' },
+  { id: 'pp-2', payDate: '2026-04-30', payBeginDate: '2026-04-16', payEndDate: '2026-04-30', type: 'Regular',  status: 'failed'  },
+  { id: 'pp-3', payDate: '2026-04-15', payBeginDate: '2026-04-01', payEndDate: '2026-04-15', type: 'Regular',  status: 'paid'    },
+  { id: 'pp-4', payDate: '2026-04-08', payBeginDate: '2026-04-08', payEndDate: '2026-04-08', type: 'Off-cycle', status: 'paid'   },
+  { id: 'pp-5', payDate: '2026-03-31', payBeginDate: '2026-03-16', payEndDate: '2026-03-31', type: 'Regular',  status: 'paid'    },
+  { id: 'pp-6', payDate: '2026-03-22', payBeginDate: '2026-03-22', payEndDate: '2026-03-22', type: 'Dismissal', status: 'paid'   },
+];
+
+function PayPeriodSelectDemo() {
+  const [value, setValue] = useState<string | null>('pp-2');
+  const [sortBy, setSortBy] = useState<'paydate-desc' | 'paydate-asc'>('paydate-desc');
+  return (
+    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div style={{ width: 320 }}>
+        <PayPeriodSelect
+          label="Pay period"
+          options={PAY_PERIOD_DEMO}
+          value={value}
+          onChange={setValue}
+          sortBy={sortBy}
+        />
+        <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
+          <Button
+            variant={sortBy === 'paydate-desc' ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setSortBy('paydate-desc')}
+          >Newest first</Button>
+          <Button
+            variant={sortBy === 'paydate-asc' ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setSortBy('paydate-asc')}
+          >Oldest first</Button>
+        </div>
+      </div>
+      <div style={{ width: 240 }}>
+        <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+          Empty state
+        </span>
+        <div style={{ marginTop: 6 }}>
+          <PayPeriodSelect
+            options={[]}
+            value={null}
+            onChange={() => {}}
+            placeholder="No periods available"
+          />
+        </div>
+      </div>
     </div>
   );
 }

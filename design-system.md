@@ -147,11 +147,104 @@ Each token is a CSS `font` shorthand: `<weight> <size>/<line-height> <family>`.
 
 ### Spacing (`spacing.css`)
 
-8px base grid: `--rf-space-1` (2px) through `--rf-space-16` (96px).
+Rollfi uses an **8px base grid** with two sub-grid steps (2px, 4px) for tight rhythms inside controls. Use these tokens for `padding`, `margin`, `gap` — never hardcode a px value in component CSS.
 
-**Radius:** `--rf-radius-xs` (4px) → `sm` (6px) → `md` (8px) → `lg` (12px) → `xl` (16px) → `full` (pill).
+#### Scale
 
-**Shadows:** `--rf-shadow-xs` through `--rf-shadow-xl`. Dark theme uses heavier shadows automatically.
+| Token             | Px   | Use                                                                                                |
+| ----------------- | ---- | -------------------------------------------------------------------------------------------------- |
+| `--rf-space-0`    | 0    | Reset.                                                                                             |
+| `--rf-space-1`    | 2    | Hairline gaps inside controls (e.g. between an icon and a tiny adjacent count badge).              |
+| `--rf-space-2`    | 4    | Sub-grid; chevron-to-label, between checkbox tick and box edge.                                    |
+| `--rf-space-3`    | 8    | **Base unit.** Default `gap` between related inline items, padding-y on small inputs, badge padding-x. |
+| `--rf-space-4`    | 12   | Padding-x on most controls (inputs, buttons), gap between form fields in a tight column.           |
+| `--rf-space-5`    | 16   | Card padding (sm), gap between unrelated controls, table row vertical padding.                     |
+| `--rf-space-6`    | 20   | Card padding (md), spacing under a section heading inside a card.                                  |
+| `--rf-space-7`    | 24   | Card padding (lg), gap between cards in a grid, gap between toolbar and body.                      |
+| `--rf-space-8`    | 32   | Gap between major sections inside a page, top/bottom padding of a `PageHeader`.                    |
+| `--rf-space-9`    | 40   | Page-level horizontal padding (small viewports).                                                   |
+| `--rf-space-10`   | 48   | Page-level horizontal padding (default), gap between dashboard regions.                            |
+| `--rf-space-12`   | 64   | Vertical breathing room between top-level page sections in long layouts.                           |
+| `--rf-space-14`   | 80   | Hero / empty-state vertical padding.                                                               |
+| `--rf-space-16`   | 96   | Marketing-style breathing room; rarely used in the portal.                                         |
+
+`--rf-space-11`, `13`, `15` intentionally do not exist — the upper scale jumps by 16px on purpose. If you need an in-between value, you almost certainly want one of the existing steps.
+
+#### Usage rules
+
+1. **Never write a raw px**. `padding: 12px` → `padding: var(--rf-space-4)`. The only place raw px is acceptable is inside the tokens file itself, or for `1px` border widths.
+2. **Pick by intent, not by visual match**. Two layouts that happen to both be 16px apart can drift later if one wants to grow — bind both to `--rf-space-5` and they stay in lockstep.
+3. **Stack like with like**. Use the same step for sibling items in the same context (e.g. every input in a form gets `gap: var(--rf-space-4)`). Mixing steps within one stack reads as a bug.
+4. **Density tiers**:
+   - **Dense** controls (badges, pills, table cells): scale **1–3** (2–8 px).
+   - **Default** controls (buttons, inputs, cards): scale **4–6** (12–20 px).
+   - **Layout** (page margins, section gaps): scale **7–10** (24–48 px).
+   - **Hero / empty** states: scale **12–16** (64–96 px).
+5. **Grids**: use `gap: var(--rf-space-5)` (16px) as the default for component grids. Drop to `var(--rf-space-4)` for tight data grids, jump to `var(--rf-space-7)` for card grids.
+
+#### Cheatsheet
+
+```css
+.rf-thing {
+  padding: var(--rf-space-5) var(--rf-space-6);   /* 16px / 20px */
+  gap: var(--rf-space-3);                          /* 8px between children */
+  margin-bottom: var(--rf-space-7);                /* 24px below the block */
+}
+```
+
+### Radius (`spacing.css`)
+
+| Token                | Px        | Use                                                                       |
+| -------------------- | --------- | ------------------------------------------------------------------------- |
+| `--rf-radius-none`   | 0         | Tabular cells, dividers — anywhere a rounded edge would conflict.         |
+| `--rf-radius-xs`     | 4         | Checkbox boxes, small inline chips, table cell corner accents.            |
+| `--rf-radius-sm`     | 6         | Inputs, dropdown items, sidebar items, small buttons.                     |
+| `--rf-radius-md`     | 8         | Cards, modals, popovers, panels — the **default container radius**.       |
+| `--rf-radius-lg`     | 12        | Hero cards, prominent containers, large surfaces.                         |
+| `--rf-radius-xl`     | 16        | Marketing surfaces.                                                       |
+| `--rf-radius-2xl`    | 20        | Reserved for hero/promo cards.                                            |
+| `--rf-radius-full`   | 9999      | Pills, badges, avatars, status dots.                                      |
+
+**Rule:** never put a smaller radius inside a larger one (e.g. a `radius-md` card inside a `radius-sm` input) — visually breaks. Containers always have ≥ the radius of their children.
+
+### Shadows (`spacing.css`)
+
+| Token              | Use                                                                       |
+| ------------------ | ------------------------------------------------------------------------- |
+| `--rf-shadow-xs`   | Subtle lift for hovered table rows or pressed segments.                   |
+| `--rf-shadow-sm`   | Cards, surface-elevated panels at rest.                                   |
+| `--rf-shadow-md`   | Floating popovers, dropdown menus, tooltips.                              |
+| `--rf-shadow-lg`   | Modals, side panels, drawers.                                             |
+| `--rf-shadow-xl`   | Auth dialogs, marketing hero cards.                                       |
+| `--rf-shadow-focus`| Focus-ring helper — double-stroke layer (canvas + brand) for keyboard nav.|
+
+Dark-theme shadow tokens are heavier (higher alpha) and are swapped automatically by the `[data-theme="dark"]` block — components don't need to know about the theme.
+
+### Motion (`spacing.css`)
+
+| Token                | Value                                  | Use                                                              |
+| -------------------- | -------------------------------------- | ---------------------------------------------------------------- |
+| `--rf-duration-fast` | `120ms`                                | Hover/active state transitions.                                  |
+| `--rf-duration-normal` | `200ms`                              | Mounted-element transitions (popovers, accordions, toasts).      |
+| `--rf-duration-slow` | `300ms`                                | Page-level transitions, sidepanel slide-in.                      |
+| `--rf-ease-default`  | `cubic-bezier(0.25, 0.1, 0.25, 1)`     | Default easing.                                                  |
+| `--rf-ease-out`      | `cubic-bezier(0, 0, 0.2, 1)`           | Decelerating motion (entering elements).                         |
+| `--rf-ease-bounce`   | `cubic-bezier(0.34, 1.56, 0.64, 1)`    | Playful affordances — use sparingly.                             |
+
+There's also a `--rf-transition-fast` token (alias for `var(--rf-duration-fast) var(--rf-ease-default)`) used as the typical `transition: <prop> var(--rf-transition-fast)` shorthand throughout components.
+
+### Z-index (`spacing.css`)
+
+A scale of 5 stable layers — never invent your own z-index values.
+
+| Token                | Value | Use                                                              |
+| -------------------- | ----- | ---------------------------------------------------------------- |
+| `--rf-z-base`        | 0     | Default — most content.                                          |
+| `--rf-z-dropdown`    | 100   | Dropdown menus, popovers, sidebar group expansions.              |
+| `--rf-z-sticky`      | 200   | Sticky table headers, sticky toolbars, sticky page banners.      |
+| `--rf-z-modal`       | 300   | Modals + their backdrops, side panels, drawers.                  |
+| `--rf-z-toast`       | 400   | Toasts (above modals so confirmations remain visible).           |
+| `--rf-z-tooltip`     | 500   | Tooltips — top of the stack so they survive any overlay.         |
 
 ## Theming
 
@@ -619,6 +712,58 @@ Use for composite controls or anywhere `Input.label` is not enough. **Props:** `
 />
 ```
 
+### Table — search and filter
+
+Two independent filtering modes — combine freely or use either alone.
+
+**Search (`searchable`)** — surfaces a magnifier-iconed input at the top of the table. Case-insensitive substring match runs across every column by default; narrow with `filterKeys` (column keys to include) or replace the predicate entirely with `filterFn(row, query) => boolean`. Use `Column.filterValue(row) => string` when a column's raw value isn't a useful search string (e.g. a custom-rendered cell).
+
+```tsx
+<Table
+  columns={cols}
+  data={rows}
+  rowKey={r => r.id}
+  searchable
+  searchPlaceholder="Search companies…"
+/>
+```
+
+**Structured filter menu (`filterable`)** — surfaces a **Filter** button that opens a popover listing every column marked `filterable: true`. Each column's distinct values are derived from `data` and rendered as checkboxes. Selecting values narrows the table (AND across columns, OR within a column). Active selections appear as removable chips below the toolbar, and a `Clear all` link appears in the popover footer.
+
+```tsx
+const columns = [
+  { key: 'name',   header: 'Company' },
+  { key: 'plan',   header: 'Plan',   filterable: true },
+  { key: 'mrr',    header: 'MRR',    align: 'right' },
+  { key: 'status', header: 'Status', filterable: true },
+];
+
+<Table
+  columns={columns}
+  data={rows}
+  rowKey={r => r.id}
+  filterable
+/>
+```
+
+If the raw row values aren't display-ready, override with `Column.filterOptions: { label, value }[]`.
+
+**Controlled mode** for either feature:
+
+```tsx
+<Table
+  searchable
+  filterValue={search}                  onFilterChange={setSearch}
+  filterable
+  activeFilters={filters}               onActiveFiltersChange={setFilters}
+  /* … */
+/>
+```
+
+`activeFilters` shape: `Record<columnKey, selectedValue[]>`.
+
+The empty state automatically tightens — `"No results for \"xyz\""` when narrowed by search, `"No rows match the current filters"` when narrowed only by the structured filter, and the consumer's `emptyMessage` (default `"No data"`) when the underlying dataset is empty.
+
 ### Input & Select Sizes
 
 Both Input and Select support a size prop:
@@ -937,6 +1082,61 @@ Single notification row with optional unread dot, semantic icon background, time
 </Carousel>
 ```
 Horizontal snap-scroll with chevron controls and optional dot indicators.
+
+### PayPeriodSelect
+
+Domain-specific dropdown for picking a pay period. Trigger displays the selected period's pay date + range + type badge; menu rows expand the same data with optional status pulses. Sorted by `payDate` (default: newest first).
+
+```tsx
+import { PayPeriodSelect, type PayPeriodOption } from 'rollfi-design-system';
+
+const periods: PayPeriodOption[] = [
+  { id: 'pp-1', payDate: '2026-05-15', payBeginDate: '2026-05-01', payEndDate: '2026-05-15', type: 'Regular',   status: 'pending' },
+  { id: 'pp-2', payDate: '2026-04-30', payBeginDate: '2026-04-16', payEndDate: '2026-04-30', type: 'Regular',   status: 'failed'  },
+  { id: 'pp-3', payDate: '2026-04-15', payBeginDate: '2026-04-01', payEndDate: '2026-04-15', type: 'Regular',   status: 'paid'    },
+];
+
+<PayPeriodSelect
+  label="Pay period"
+  options={periods}
+  value={selectedId}
+  onChange={setSelectedId}
+  sortBy="paydate-desc"
+/>
+```
+
+**`PayPeriodOption` shape:**
+
+| Field           | Type                                            | Required | Purpose                                                                 |
+| --------------- | ----------------------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `id`            | `string`                                        | yes      | Stable identifier for `value` / `onChange`.                             |
+| `payDate`       | `string` (ISO `YYYY-MM-DD`)                     | yes      | The pay date itself — drives sort order.                                |
+| `payBeginDate`  | `string` (ISO `YYYY-MM-DD`)                     | yes      | Range start.                                                            |
+| `payEndDate`    | `string` (ISO `YYYY-MM-DD`)                     | yes      | Range end.                                                              |
+| `type`          | `string`                                        | no       | Renders as a `Badge`. Reserved labels: `Regular` (info), `Off-cycle` (warning), `Dismissal` (purple); anything else → neutral. |
+| `status`        | `'paid' \| 'pending' \| 'failed' \| 'draft'`    | no       | Surfaces a colored `StatusDot` in the menu row. `failed` pulses.        |
+
+**Component props:**
+
+| Prop             | Type                                   | Default            | Purpose                                                                |
+| ---------------- | -------------------------------------- | ------------------ | ---------------------------------------------------------------------- |
+| `options`        | `PayPeriodOption[]`                    | —                  | The full set; the component handles sorting.                           |
+| `value`          | `string \| null`                       | —                  | Selected `id`, or `null` for "unselected".                             |
+| `onChange`       | `(id: string) => void`                 | —                  | Fired on menu-item click.                                              |
+| `sortBy`         | `'paydate-desc' \| 'paydate-asc'`      | `'paydate-desc'`   | Sort direction by `payDate`.                                           |
+| `label`          | `string`                               | —                  | Optional form-style label above the trigger.                           |
+| `placeholder`    | `string`                               | `'Select pay period'` | Shown when `value` is `null` or unmatched.                          |
+| `disabled`       | `boolean`                              | `false`            | Disables the trigger.                                                  |
+| `width`          | `number \| string`                     | `'100%'` of parent | Overrides container width; menu width matches the trigger.             |
+| `className`      | `string`                               | —                  | Class on the root.                                                     |
+
+**Behavior:**
+- Dates parsed as UTC so bare ISO strings render without timezone drift.
+- Menu portals via `Popover` (above/below trigger, auto-position).
+- Menu width auto-matches the trigger so rich rows align.
+- Selected row gets a brand-colored left rail + a `✓` tick in the gutter.
+- Menu has `role="listbox"`; rows have `role="option"` with `aria-selected`.
+- Empty `options` array renders a centered `"No pay periods"` placeholder.
 
 ### StatCard
 ```tsx
