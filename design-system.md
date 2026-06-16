@@ -747,6 +747,72 @@ const items: UserMenuItem[] = [
 
 Chip-style multi-value select. **Props:** `label?`, `values`, `onChange`, `options`, `placeholder?`, `hint?`.
 
+### CompanySelect
+
+Combobox-flavored company picker with always-on search, full keyboard navigation, and an optional **"All companies"** affordance for multi-tenant portal headers. Pairs naturally with a `SegmentedControl` view switcher and `UserMenu` in the same header row.
+
+```tsx
+import { CompanySelect, type CompanyOption } from 'rollfi-design-system';
+
+const companies: CompanyOption[] = [
+  { id: 'a', name: 'Acme Corp' },
+  { id: 'g', name: 'Globex Inc' },
+  { id: 'i', name: 'Initech Industries', meta: 'Enterprise · 412 employees' },
+];
+
+<CompanySelect
+  options={companies}
+  value={companyId}                  // string | null
+  onChange={setCompanyId}            // (id: string | null) => void
+  allowAll                           // prepends an "All companies" row → onChange(null)
+  allLabel="All companies"
+  placeholder="Select company"
+/>
+```
+
+**`CompanyOption` shape:**
+
+| Field        | Type     | Required | Purpose                                                     |
+| ------------ | -------- | -------- | ----------------------------------------------------------- |
+| `id`         | `string` | yes      | Stable identifier for `value` / `onChange`.                 |
+| `name`       | `string` | yes      | Display name; drives Avatar initials when `avatarSrc` is absent. |
+| `avatarSrc`  | `string` | no       | Logo URL; falls back to initials.                           |
+| `meta`       | `string` | no       | Optional sub-line (e.g. "Pro · 124 employees").             |
+
+**Component props:**
+
+| Prop                 | Type                                          | Default            | Purpose                                                                  |
+| -------------------- | --------------------------------------------- | ------------------ | ------------------------------------------------------------------------ |
+| `options`            | `CompanyOption[]`                             | —                  | The full set.                                                            |
+| `value`              | `string \| null`                              | —                  | Selected `id`, or `null` for "all" / unselected.                         |
+| `onChange`           | `(id: string \| null) => void`                | —                  | Fires on row click or Enter; `null` when the "All companies" row fires.  |
+| `searchable`         | `boolean`                                     | `true`             | Hides the search input when `false`. Combobox keyboard nav still works.  |
+| `searchPlaceholder`  | `string`                                      | `'Search companies…'` | Search input placeholder.                                             |
+| `placeholder`        | `string`                                      | `'Select company'` | Trigger text when nothing is selected and `allowAll` is off.             |
+| `allowAll`           | `boolean`                                     | `false`            | Prepends the "All companies" row.                                        |
+| `allLabel`           | `string`                                      | `'All companies'`  | Label for the all-row.                                                   |
+| `compact`            | `boolean`                                     | `false`            | Avatar-only trigger (no name/meta/chevron). For dense headers.           |
+| `align`              | `'start' \| 'center' \| 'end'`                | `'start'`          | Popover panel alignment.                                                 |
+| `width`              | `number \| string`                            | `auto`             | Override container width; menu auto-matches trigger width as a minimum.  |
+| `className`          | `string`                                      | —                  | Class on the root.                                                       |
+
+**Keyboard:**
+
+| Key            | Effect                                              |
+| -------------- | --------------------------------------------------- |
+| Typing         | Filters the list; first match becomes active.       |
+| ↑ / ↓          | Move the active row.                                |
+| `Home` / `End` | Jump to first / last visible row.                   |
+| `Enter`        | Select the active row.                              |
+| `Esc`          | Close the menu.                                     |
+
+**ARIA & behavior:**
+- Trigger: `aria-haspopup="listbox"` + `aria-expanded`.
+- Search input: `role="combobox"`, `aria-autocomplete="list"`, `aria-activedescendant` tracks the highlighted row.
+- List: `role="listbox"`; rows: `role="option"` with `aria-selected`.
+- Menu width auto-matches the trigger (with a 280px floor) so rows align with the trigger's footprint.
+- Empty state: `"No results for \"xyz\""` when nothing matches; `"No companies"` when `options` is empty.
+
 ### Field
 
 ```tsx
