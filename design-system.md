@@ -680,6 +680,65 @@ Falls back to initials if no `src` is provided. **Sizes:** `sm` (24px) | `md` (3
 
 **Props:** `trigger`, `items`, `align?` (`left` | `right`).
 
+### UserMenu
+
+Avatar-led trigger button that opens a panel with profile actions (help, settings, theme toggle, sign out). Pair with a `SegmentedControl` for view-switching in the same header row (e.g. Employer ↔ Employee).
+
+```tsx
+import { UserMenu, type UserMenuItem } from 'rollfi-design-system';
+
+const items: UserMenuItem[] = [
+  { label: 'Help & support', icon: <Question />, onClick: openHelp },
+  { label: 'Settings',       icon: <GearSix />,  onClick: openSettings, dividerAfter: true },
+  {
+    label: theme === 'light' ? 'Dark mode' : 'Light mode',
+    icon: theme === 'light' ? <MoonStars /> : <SunDim />,
+    onClick: toggleTheme,
+    dividerAfter: true,
+  },
+  { label: 'Sign out', icon: <SignOut />, onClick: signOut, danger: true },
+];
+
+<UserMenu
+  name="Michael Scott"
+  role="Partner Admin"
+  items={items}
+  align="right"
+/>
+```
+
+**`UserMenuItem`:**
+
+| Field          | Type                       | Purpose                                                         |
+| -------------- | -------------------------- | --------------------------------------------------------------- |
+| `label`        | `string`                   | Row label.                                                      |
+| `icon`         | `ReactNode`                | Leading icon (Phosphor at size 16 looks right).                 |
+| `onClick`      | `() => void`               | Fired on click; the menu auto-closes afterward.                 |
+| `danger`       | `boolean`                  | Renders in `--rf-color-danger-text` with a danger-soft hover.   |
+| `disabled`     | `boolean`                  | Greys out + blocks click.                                       |
+| `dividerAfter` | `boolean`                  | Inserts a hairline below this item (groups sections).           |
+| `trailing`     | `ReactNode`                | Right-side accessory (status pill, keyboard shortcut, switch).  |
+
+**Component props:**
+
+| Prop         | Type                       | Default | Purpose                                                     |
+| ------------ | -------------------------- | ------- | ----------------------------------------------------------- |
+| `name`       | `string` (required)        | —       | Drives the trigger's name + Avatar initials.                |
+| `role`       | `string`                   | —       | Sub-line under the name (e.g. "Partner Admin").             |
+| `avatarSrc`  | `string`                   | —       | Image URL; falls back to initials when omitted.             |
+| `items`      | `UserMenuItem[]` (required)| —       | Menu rows.                                                  |
+| `compact`    | `boolean`                  | `false` | Avatar-only trigger (no name/role/chevron). Use in tight headers. |
+| `align`      | `'left' \| 'right'`        | `'right'`| Panel alignment relative to the trigger.                   |
+| `className`  | `string`                   | —       | Class on the root.                                          |
+
+**Behavior:**
+- Trigger: pill-shaped button — `Avatar(sm)` + (name + role column) + chevron. Truncates the name with ellipsis at ~140px so long names don't blow up the header.
+- Panel: portals-free absolute positioning (right or left of trigger), `--rf-shadow-lg`, `--rf-z-dropdown`.
+- Header section: larger Avatar + full name + role pulled from the same props, so the trigger and the panel header always agree.
+- `Escape` closes; click-outside closes; menu auto-closes when any item fires.
+- Items have `role="menuitem"`; the panel has `role="menu"`.
+- Pair with `SegmentedControl` directly to its left for view-switching in the same header.
+
 ### MultiSelect
 
 ```tsx

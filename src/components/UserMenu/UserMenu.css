@@ -1,0 +1,193 @@
+.rf-user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+/* ── Trigger ──────────────────────────────────────────────── */
+
+.rf-user-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 4px 4px;
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  cursor: pointer;
+  text-align: left;
+  max-width: 240px;
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-user-menu__trigger--compact {
+  padding: 2px;
+  gap: 0;
+}
+
+.rf-user-menu__trigger:hover,
+.rf-user-menu__trigger--open {
+  background: var(--rf-color-surface-elevated);
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-user-menu__trigger:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
+
+.rf-user-menu__id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 140px;
+}
+
+.rf-user-menu__name {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.rf-user-menu__role {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rf-user-menu__chevron {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-text-tertiary);
+  transition: transform var(--rf-transition-fast);
+  flex-shrink: 0;
+}
+
+.rf-user-menu__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ── Panel ────────────────────────────────────────────────── */
+
+.rf-user-menu__panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  min-width: 240px;
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  box-shadow: var(--rf-shadow-lg);
+  z-index: var(--rf-z-dropdown);
+  overflow: hidden;
+}
+
+.rf-user-menu__panel--right { right: 0; }
+.rf-user-menu__panel--left  { left: 0; }
+
+/* Header */
+
+.rf-user-menu__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--rf-color-surface-elevated);
+  border-bottom: 1px solid var(--rf-color-border);
+}
+
+.rf-user-menu__header-id {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.rf-user-menu__header-name {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rf-user-menu__header-role {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Items */
+
+.rf-user-menu__items {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.rf-user-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--rf-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-user-menu__item:hover:not(:disabled) {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-user-menu__item:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.rf-user-menu__item--danger {
+  color: var(--rf-color-danger-text);
+}
+
+.rf-user-menu__item--danger:hover:not(:disabled) {
+  background: var(--rf-color-danger-soft);
+}
+
+.rf-user-menu__item-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-text-tertiary);
+  flex-shrink: 0;
+}
+
+.rf-user-menu__item--danger .rf-user-menu__item-icon {
+  color: var(--rf-color-danger-text);
+}
+
+.rf-user-menu__item-label {
+  flex: 1;
+}
+
+.rf-user-menu__item-trailing {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-text-tertiary);
+  font: var(--rf-text-caption);
+  flex-shrink: 0;
+}
+
+.rf-user-menu__divider {
+  height: 1px;
+  background: var(--rf-color-border-subtle);
+  margin: 4px 0;
+}

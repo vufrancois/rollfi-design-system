@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   IconContext, Info, Warning, CheckCircle, XCircle, MagnifyingGlass, Envelope, ArrowRight,
   House, User, Gear, Bell, CreditCard, ChartBar, Calendar as CalendarIcon, FileText, Lock, Trash,
@@ -31,7 +31,9 @@ import {
   Pill, AvatarGroup, Timeline, ActivityFeed, Item, NotificationItem, Carousel,
   IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
   BrandProvider, ThemeToggle, PayPeriodSelect, type PayPeriodOption,
+  UserMenu, type UserMenuItem, CompanySelect, type CompanyOption,
 } from './components';
+import { Question, GearSix, SunDim, MoonStars, SignOut as SignOutIcon } from '@phosphor-icons/react';
 import './tokens/index.css';
 
 const sampleData = [
@@ -1081,6 +1083,14 @@ function Demo() {
         </div>
       </Section>
 
+      <Section title="UserMenu">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
+          Top-bar avatar trigger with a dropdown for help / settings / theme / sign-out. Pair with{' '}
+          <code>SegmentedControl</code> for view-switching (e.g. Employer ↔ Employee) in the same header row.
+        </p>
+        <UserMenuDemo />
+      </Section>
+
       <Section title="White-label theming">
         <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
           Wrap any subtree in <code>&lt;BrandProvider&gt;</code> to scope a tenant's brand color,
@@ -1431,6 +1441,55 @@ const PAY_PERIOD_DEMO: PayPeriodOption[] = [
   { id: 'pp-5', payDate: '2026-03-31', payBeginDate: '2026-03-16', payEndDate: '2026-03-31', type: 'Regular',  status: 'paid'    },
   { id: 'pp-6', payDate: '2026-03-22', payBeginDate: '2026-03-22', payEndDate: '2026-03-22', type: 'Dismissal', status: 'paid'   },
 ];
+
+function UserMenuDemo() {
+  const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
+  const [viewAs, setViewAs] = useState<'employer' | 'employee'>('employer');
+
+  const items: UserMenuItem[] = [
+    { label: 'Help & support', icon: <Question size={16} />, onClick: () => toast('Help opened') },
+    { label: 'Settings', icon: <GearSix size={16} />, onClick: () => toast('Settings opened'), dividerAfter: true },
+    {
+      label: theme === 'light' ? 'Dark mode' : 'Light mode',
+      icon: theme === 'light' ? <MoonStars size={16} /> : <SunDim size={16} />,
+      onClick: toggleTheme,
+      dividerAfter: true,
+    },
+    { label: 'Sign out', icon: <SignOutIcon size={16} />, onClick: () => toast('Signed out'), danger: true },
+  ];
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 12,
+        padding: '12px 20px',
+        background: 'var(--rf-color-surface-elevated)',
+        border: '1px solid var(--rf-color-border)',
+        borderRadius: 'var(--rf-radius-md)',
+      }}
+    >
+      <SegmentedControl
+        size="sm"
+        value={viewAs}
+        onChange={(v) => setViewAs(v as 'employer' | 'employee')}
+        items={[
+          { value: 'employer', label: 'Employer' },
+          { value: 'employee', label: 'Employee' },
+        ]}
+      />
+      <UserMenu
+        name="Michael Scott"
+        role={viewAs === 'employer' ? 'Partner Admin' : 'Employee'}
+        items={items}
+        align="right"
+      />
+    </div>
+  );
+}
 
 function PayPeriodSelectDemo() {
   const [value, setValue] = useState<string | null>('pp-2');
@@ -4871,7 +4930,27 @@ function PortalMock({ onExit }: { onExit: () => void }) {
   });
   const [notifOpen, setNotifOpen] = useState(false);
   const [tenantId, setTenantId] = useState('rollfi');
+  const [viewAs, setViewAs] = useState<'employer' | 'employee'>('employer');
+  const [companyId, setCompanyId] = useState<string | null>(null); // null = All companies
+  const companyOptions: CompanyOption[] = useMemo(
+    () => PORTAL_COMPANIES.map(c => ({ id: c.id, name: c.name })),
+    []
+  );
+  const { theme, toggleTheme } = useTheme();
+  const { toast } = useToast();
   const tenant = TENANT_PRESETS.find(t => t.id === tenantId) ?? TENANT_PRESETS[0];
+
+  const userMenuItems: UserMenuItem[] = [
+    { label: 'Help & support', icon: <Question size={16} />, onClick: () => toast('Help opened') },
+    { label: 'Settings', icon: <GearSix size={16} />, onClick: () => toast('Settings opened'), dividerAfter: true },
+    {
+      label: theme === 'light' ? 'Dark mode' : 'Light mode',
+      icon: theme === 'light' ? <MoonStars size={16} /> : <SunDim size={16} />,
+      onClick: toggleTheme,
+      dividerAfter: true,
+    },
+    { label: 'Sign out', icon: <SignOutIcon size={16} />, onClick: () => toast('Signed out'), danger: true },
+  ];
 
   // Sub-item ids the sidebar surfaces. Click → set both parent + sub-tab.
   const subItemToParent: Record<string, string> = {
@@ -4948,33 +5027,52 @@ function PortalMock({ onExit }: { onExit: () => void }) {
           },
           { id: 'users', label: 'Users', icon: <User size={16} /> },
         ]}
-        secondaryItems={[
-          { id: 'notifications', label: 'Notifications', icon: <Bell size={16} />, badge: <Badge variant="danger">3</Badge>, onClick: () => setNotifOpen(true) },
-          { id: 'signout', label: 'Sign out', icon: <ArrowLeft size={16} />, onClick: () => {} },
-        ]}
         footer={
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 4 }}>
-            <Avatar name="Michael Scott" size="sm" />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-sidebar-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Michael Scott</div>
-              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-sidebar-text-dim)' }}>Partner Admin</div>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={() => { setViewAs('employer'); setActiveNav('dashboard'); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              width: '100%',
+              padding: '8px 12px',
+              background: 'transparent',
+              border: '1px solid var(--rf-color-sidebar-border)',
+              borderRadius: 'var(--rf-radius-sm)',
+              color: 'var(--rf-color-sidebar-text)',
+              font: 'var(--rf-text-body-sm-strong)',
+              cursor: 'pointer',
+              textAlign: 'left',
+              transition: 'background var(--rf-transition-fast), color var(--rf-transition-fast)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--rf-color-sidebar-hover)';
+              e.currentTarget.style.color = 'var(--rf-color-sidebar-text-strong)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--rf-color-sidebar-text)';
+            }}
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Partner Portal</span>
+          </button>
         }
       />
 
       <main style={{ flex: 1, overflow: 'auto' }}>
         <div
           style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            padding: '10px 40px',
+            display: 'flex', alignItems: 'center', gap: 16,
+            padding: '6px 40px',
             background: 'var(--rf-color-surface-elevated)',
             borderBottom: '1px solid var(--rf-color-border)',
             position: 'sticky', top: 0, zIndex: 10,
           }}
         >
           <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
-            White-label demo · viewing as
+            White-label · viewing as
           </span>
           <div style={{ display: 'inline-flex', gap: 6, flex: 1 }}>
             {TENANT_PRESETS.map(t => (
@@ -4996,7 +5094,74 @@ function PortalMock({ onExit }: { onExit: () => void }) {
               </button>
             ))}
           </div>
-          <ThemeToggle variant="segmented" size="sm" />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+            <SegmentedControl
+              size="sm"
+              value={viewAs}
+              onChange={(v) => setViewAs(v as 'employer' | 'employee')}
+              items={[
+                { value: 'employer', label: 'Employer' },
+                { value: 'employee', label: 'Employee' },
+              ]}
+            />
+            <CompanySelect
+              options={companyOptions}
+              value={companyId}
+              onChange={setCompanyId}
+              allowAll
+              allLabel="All companies"
+              placeholder="Select company"
+            />
+            <button
+              type="button"
+              onClick={() => setNotifOpen(true)}
+              aria-label="Notifications"
+              style={{
+                position: 'relative',
+                width: 36,
+                height: 36,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--rf-color-surface)',
+                border: '1px solid var(--rf-color-border)',
+                borderRadius: 'var(--rf-radius-md)',
+                color: 'var(--rf-color-text-secondary)',
+                cursor: 'pointer',
+              }}
+            >
+              <Bell size={16} />
+              <span
+                aria-hidden
+                style={{
+                  position: 'absolute',
+                  top: -4,
+                  right: -4,
+                  minWidth: 16,
+                  height: 16,
+                  padding: '0 4px',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'var(--rf-color-danger)',
+                  color: 'var(--rf-color-on-primary)',
+                  font: 'var(--rf-text-caption-sm)',
+                  fontWeight: 600,
+                  borderRadius: 'var(--rf-radius-full)',
+                  border: '2px solid var(--rf-color-surface-elevated)',
+                }}
+              >
+                3
+              </span>
+            </button>
+            <div aria-hidden style={{ width: 1, height: 24, background: 'var(--rf-color-border)' }} />
+            <UserMenu
+              name="Michael Scott"
+              role={viewAs === 'employer' ? 'Partner Admin' : 'Employee'}
+              items={userMenuItems}
+              align="right"
+            />
+          </div>
         </div>
         <div style={{ padding: '32px 40px 56px' }}>
           {activeNav === 'dashboard' && <DashboardView />}

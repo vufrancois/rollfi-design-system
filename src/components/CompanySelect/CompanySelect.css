@@ -1,0 +1,196 @@
+.rf-company-select {
+  display: inline-block;
+}
+
+/* ── Trigger ──────────────────────────────────────────────── */
+
+.rf-company-select__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 4px 4px;
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  cursor: pointer;
+  text-align: left;
+  max-width: 280px;
+  transition: background var(--rf-transition-fast), border-color var(--rf-transition-fast);
+}
+
+.rf-company-select__trigger--compact {
+  padding: 2px;
+  gap: 0;
+}
+
+.rf-company-select__trigger:hover,
+.rf-company-select__trigger--open {
+  background: var(--rf-color-surface-elevated);
+  border-color: var(--rf-color-border-strong);
+}
+
+.rf-company-select__trigger:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
+}
+
+.rf-company-select__trigger-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.rf-company-select__trigger-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 180px;
+}
+
+.rf-company-select__trigger-name {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.rf-company-select__trigger-meta {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rf-company-select__placeholder {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-company-select__placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-company-select__chevron {
+  display: inline-flex;
+  align-items: center;
+  color: var(--rf-color-text-tertiary);
+  transition: transform var(--rf-transition-fast);
+  flex-shrink: 0;
+}
+
+.rf-company-select__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* ── Menu ─────────────────────────────────────────────────── */
+
+.rf-company-select__menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 280px;
+  max-width: 360px;
+}
+
+.rf-company-select__search {
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-company-select__items {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.rf-company-select__empty {
+  padding: 16px;
+  text-align: center;
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-company-select__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--rf-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--rf-transition-fast);
+}
+
+.rf-company-select__item:hover,
+.rf-company-select__item--active {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-company-select__item--selected {
+  background: var(--rf-color-surface-elevated);
+}
+
+.rf-company-select__item--active {
+  outline: 2px solid var(--rf-color-brand-border);
+  outline-offset: -2px;
+}
+
+.rf-company-select__item-tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  color: var(--rf-color-primary);
+  flex-shrink: 0;
+}
+
+.rf-company-select__item-all-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  color: var(--rf-color-text-secondary);
+  flex-shrink: 0;
+}
+
+.rf-company-select__item-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.rf-company-select__item-name {
+  font: var(--rf-text-body-sm-strong);
+  color: var(--rf-color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rf-company-select__item-meta {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
