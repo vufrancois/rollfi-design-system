@@ -57,6 +57,27 @@ export const Default: Story = {
   },
 };
 
+export const Static: Story = {
+  name: 'Static (1 option, no combo)',
+  render: () => (
+    <div style={{ minWidth: 260 }}>
+      <CompanySelect
+        options={[{ id: 'a', name: 'Acme Corp' }]}
+        value="a"
+        onChange={() => {}}
+      />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Auto-collapses to a non-interactive display when there is nothing to choose: a single option and no `allowAll`. No chevron, no click affordance — same visual box (`--rf-radius-md`, `--rf-color-border`) so it lines up next to the interactive variant in a shared header.',
+      },
+    },
+  },
+};
+
 export const WithAllOption: Story = {
   name: 'With "All companies" row',
   args: { allowAll: true },

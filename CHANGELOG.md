@@ -2,6 +2,17 @@
 
 All notable changes to the Rollfi Design System land here. This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] — 2026-05-14
+
+### Changed
+
+- **`CompanySelect`** — auto-collapses to a non-interactive static display when there is nothing to choose. Trigger condition: `options.length + (allowAll ? 1 : 0) <= 1`. In static mode the trigger renders as a plain `<div>` (no `<button>`, no chevron, no click affordance) — same visual box (`--rf-radius-md`, `--rf-color-border`, avatar + name) so it lines up next to the interactive combobox variant in a shared header row. No API change; single-tenant apps get the right UX for free.
+
+### Added
+
+- New `Static (1 option, no combo)` Storybook story under **Layout / CompanySelect**.
+- Library-demo `CompanySelect` Section showcasing both variants side-by-side under UPPERCASE eyebrows.
+
 ## [0.2.0] — 2026-05-14
 
 Broad expansion of the design system with **11 new components**, extensions to **6 existing primitives**, a **top-bar refactor** of the partner-portal mock, and full **Spacing / Motion / Z-index** token documentation. Bundle: 267 KB → 300 KB (~88 KB gzipped) for the new surface area.
@@ -81,6 +92,7 @@ Total library bundle: `dist-lib/index.cjs` **267 KB → 300 KB** (~88 KB gzipped
 
 Initial versioned release. Baseline library with Tier-1 and Tier-2 primitives, ThemeProvider, semantic color / typography / spacing tokens, portal-mock and onboarding-mock demos, README + CONTRIBUTING + `design-system.md`, publishable library build target (`dist-lib/`), Storybook bootstrap. See `README.md` for the full inventory.
 
-[Unreleased]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/vufrancois/rollfi-design-system/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/vufrancois/rollfi-design-system/releases/tag/v0.1.0

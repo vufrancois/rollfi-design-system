@@ -1377,6 +1377,15 @@ function Demo() {
         </div>
       </Section>
 
+      <Section title="CompanySelect">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Auto-collapses to a non-interactive static display when there's nothing to choose
+          (single option, no <code>allowAll</code>). With multiple options it renders the
+          full combobox with autofocused search + keyboard nav.
+        </p>
+        <CompanySelectDemo />
+      </Section>
+
       <Section title="UserMenu">
         <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 16, maxWidth: 640 }}>
           Top-bar avatar trigger with a dropdown for help / settings / theme / sign-out. Pair with{' '}
@@ -1735,6 +1744,41 @@ const PAY_PERIOD_DEMO: PayPeriodOption[] = [
   { id: 'pp-5', payDate: '2026-03-31', payBeginDate: '2026-03-16', payEndDate: '2026-03-31', type: 'Regular',  status: 'paid'    },
   { id: 'pp-6', payDate: '2026-03-22', payBeginDate: '2026-03-22', payEndDate: '2026-03-22', type: 'Dismissal', status: 'paid'   },
 ];
+
+function CompanySelectDemo() {
+  const [single] = useState<CompanyOption[]>([{ id: 'a', name: 'Acme Corp' }]);
+  const [singleValue] = useState<string | null>('a');
+  const [manyValue, setManyValue] = useState<string | null>(null);
+  const many = useMemo<CompanyOption[]>(
+    () => PORTAL_COMPANIES.map(c => ({ id: c.id, name: c.name })),
+    []
+  );
+  return (
+    <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+          Static (1 option, no combo)
+        </span>
+        <CompanySelect
+          options={single}
+          value={singleValue}
+          onChange={() => {}}
+        />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+          Combobox ({many.length} options + All)
+        </span>
+        <CompanySelect
+          options={many}
+          value={manyValue}
+          onChange={setManyValue}
+          allowAll
+        />
+      </div>
+    </div>
+  );
+}
 
 function UserMenuDemo() {
   const { theme, toggleTheme } = useTheme();

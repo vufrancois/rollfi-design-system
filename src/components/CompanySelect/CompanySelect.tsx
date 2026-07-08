@@ -120,6 +120,43 @@ export function CompanySelect({
     }
   };
 
+  // Auto-collapse to a static display when there's nothing to choose:
+  // one option and no "All companies" affordance = no menu needed.
+  const effectiveOptionCount = options.length + (allowAll ? 1 : 0);
+  const isStatic = effectiveOptionCount <= 1;
+
+  if (isStatic) {
+    const only = selected ?? options[0] ?? null;
+    return (
+      <div className={`rf-company-select rf-company-select--static ${className}`} style={{ width }}>
+        <div className="rf-company-select__trigger rf-company-select__trigger--static">
+          <div className="rf-company-select__trigger-inner">
+            {only ? (
+              <>
+                <Avatar name={only.name} src={only.avatarSrc} size="sm" />
+                {!compact && (
+                  <span className="rf-company-select__trigger-text">
+                    <span className="rf-company-select__trigger-name">{only.name}</span>
+                    {only.meta && (
+                      <span className="rf-company-select__trigger-meta">{only.meta}</span>
+                    )}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="rf-company-select__placeholder-icon">
+                  <Buildings size={16} />
+                </span>
+                {!compact && <span className="rf-company-select__placeholder">{placeholder}</span>}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const triggerContent = selected ? (
     <>
       <Avatar name={selected.name} src={selected.avatarSrc} size="sm" />

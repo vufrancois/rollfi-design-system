@@ -2,6 +2,16 @@
   display: inline-block;
 }
 
+/* Static mode: identical box, no cursor/hover affordance, no chevron. */
+.rf-company-select__trigger--static {
+  cursor: default;
+}
+
+.rf-company-select__trigger--static:hover {
+  background: var(--rf-color-surface);
+  border-color: var(--rf-color-border);
+}
+
 /* ── Trigger ──────────────────────────────────────────────── */
 
 .rf-company-select__trigger {

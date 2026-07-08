@@ -751,6 +751,8 @@ Chip-style multi-value select. **Props:** `label?`, `values`, `onChange`, `optio
 
 Combobox-flavored company picker with always-on search, full keyboard navigation, and an optional **"All companies"** affordance for multi-tenant portal headers. Pairs naturally with a `SegmentedControl` view switcher and `UserMenu` in the same header row.
 
+**Auto-static mode** — when there is nothing to choose (single option and no `allowAll`), the trigger auto-collapses to a non-interactive display: same visual box (`--rf-radius-md`, avatar + name) but no `<button>`, no chevron, no click affordance. Single-tenant apps get the right UX for free without a special prop.
+
 ```tsx
 import { CompanySelect, type CompanyOption } from 'rollfi-design-system';
 
