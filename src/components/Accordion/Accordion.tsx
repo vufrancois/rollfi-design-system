@@ -59,7 +59,7 @@ export function AccordionItem({ value, children }: AccordionItemProps) {
   );
 }
 
-export function AccordionTrigger({ children }: { children: ReactNode }) {
+export function AccordionTrigger({ children, trailing }: { children: ReactNode; trailing?: ReactNode }) {
   const ctx = useContext(AccordionContext);
   const value = useContext(ItemContext);
   if (!ctx || value === null) return null;
@@ -72,6 +72,7 @@ export function AccordionTrigger({ children }: { children: ReactNode }) {
       aria-expanded={open}
     >
       <span className="rf-accordion__trigger-label">{children}</span>
+      {trailing && <span className="rf-accordion__trigger-trailing">{trailing}</span>}
       <CaretDown size={14} className="rf-accordion__chevron" />
     </button>
   );

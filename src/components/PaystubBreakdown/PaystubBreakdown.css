@@ -1,0 +1,68 @@
+.rf-paystub {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── Value display (header + line, colored when negative) ── */
+
+.rf-paystub__value {
+  font-variant-numeric: tabular-nums;
+}
+
+.rf-paystub__value--header {
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+}
+
+.rf-paystub__value--line {
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+  font-weight: 600;
+}
+
+.rf-paystub__value--negative {
+  color: var(--rf-color-danger-text);
+}
+
+/* ── Line items (inside an expanded section) ─────────────── */
+
+.rf-paystub__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.rf-paystub__line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rf-paystub__line-label {
+  font: var(--rf-text-body-md);
+  color: var(--rf-color-text-tertiary);
+}
+
+/* ── Non-expandable static row (e.g. Deposit Details) ────── */
+
+.rf-paystub__static-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+}
+
+.rf-paystub__static-label {
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+}
+
+/* ── Bottom action slot ──────────────────────────────────── */
+
+.rf-paystub__action {
+  padding-top: 4px;
+}

@@ -1,0 +1,120 @@
+.rf-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-7);
+  padding: var(--rf-space-7);
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+
+.rf-detail-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-4);
+  min-height: 32px;
+}
+
+.rf-detail-card__title-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+  min-width: 0;
+}
+
+.rf-detail-card__title {
+  margin: 0;
+  font: var(--rf-text-heading-sm);
+  color: var(--rf-color-text);
+  letter-spacing: var(--rf-tracking-tight);
+}
+
+/* Small pill next to the title (e.g. "W-4", "State", "Primary") */
+.rf-detail-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+  border-radius: var(--rf-radius-xs);
+  font: var(--rf-text-caption);
+  font-weight: 500;
+}
+
+.rf-detail-card__action {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Grid layout (default) ───────────────────────────────── */
+
+.rf-detail-card__grid {
+  display: grid;
+  gap: var(--rf-space-6) var(--rf-space-7);
+}
+
+.rf-detail-card__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-2);
+  min-width: 0;
+}
+
+.rf-detail-card__label {
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-detail-card__value {
+  font: var(--rf-text-body-md);
+  font-weight: 700;
+  color: var(--rf-color-text);
+  word-break: break-word;
+}
+
+/* ── List layout — full-width rows with hairline dividers ── */
+
+.rf-detail-card__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rf-detail-card__list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-4);
+  padding: var(--rf-space-4) 0;
+  border-bottom: 1px solid var(--rf-color-border-subtle);
+}
+
+.rf-detail-card__list-row:first-child {
+  padding-top: 0;
+}
+
+.rf-detail-card__list-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.rf-detail-card__list-row .rf-detail-card__row {
+  flex: 1;
+  min-width: 0;
+}
+
+.rf-detail-card__row-action {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+
+.rf-detail-card__footer {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+}

@@ -1,0 +1,69 @@
+.rf-payroll-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-6);
+  padding: var(--rf-space-7);
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+
+.rf-payroll-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-4);
+  min-height: 32px;
+}
+
+.rf-payroll-card__title {
+  margin: 0;
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+}
+
+.rf-payroll-card__trailing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+}
+
+/* Optional big-total slot — consumer opts in by adding this class. */
+.rf-payroll-card__amount {
+  font: var(--rf-text-heading-xl);
+  color: var(--rf-color-text);
+  letter-spacing: var(--rf-tracking-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stats grid ───────────────────────────────────────────── */
+
+.rf-payroll-card__stats {
+  display: grid;
+  gap: var(--rf-space-4);
+  flex: 1;
+}
+
+.rf-payroll-card__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-2);
+  min-width: 0;
+}
+
+.rf-payroll-card__stat-label {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-payroll-card__stat-value {
+  font: var(--rf-text-body-md);
+  color: var(--rf-color-text);
+  font-weight: 500;
+}
+
+.rf-payroll-card__stat-value--emphasized {
+  font-weight: 700;
+}

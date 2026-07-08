@@ -13,10 +13,39 @@
   background: var(--rf-color-surface-elevated);
 }
 
+.rf-stacked-bar--inline-labels .rf-stacked-bar__track {
+  border-radius: var(--rf-radius-sm);
+}
+
 .rf-stacked-bar__segment {
   height: 100%;
   min-width: 2px;
   transition: width var(--rf-transition-normal);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--rf-color-on-primary);
+  font: var(--rf-text-body-sm-strong);
+  overflow: hidden;
+}
+
+/* Inline label: only visible when the segment is wide enough to hold it. */
+.rf-stacked-bar__segment-label {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding: 0 var(--rf-space-3);
+  opacity: 0;
+  transition: opacity var(--rf-transition-fast);
+}
+
+/* Show inline labels only in segments that can hold ~5 characters. Container-query
+   would be ideal; short of that, a min-width fallback covers the common case. */
+.rf-stacked-bar--inline-labels .rf-stacked-bar__segment {
+  min-width: 40px;
+}
+
+.rf-stacked-bar--inline-labels .rf-stacked-bar__segment-label {
+  opacity: 1;
 }
 
 .rf-stacked-bar__legend {
@@ -49,4 +78,9 @@
   font: var(--rf-text-body-sm-strong);
   font-variant-numeric: tabular-nums;
   color: var(--rf-color-text);
+}
+
+.rf-stacked-bar__legend-pct {
+  font-weight: 500;
+  color: var(--rf-color-text-secondary);
 }

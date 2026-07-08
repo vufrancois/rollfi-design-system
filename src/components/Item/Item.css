@@ -1,4 +1,5 @@
 .rf-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -9,6 +10,11 @@
 
 .rf-item:last-child { border-bottom: none; }
 
+/* When dismissible, reserve room on the right so the button never sits under the X. */
+.rf-item--dismissible {
+  padding-right: 44px;
+}
+
 .rf-item--interactive {
   cursor: pointer;
   transition: background var(--rf-transition-fast);
@@ -17,6 +23,8 @@
 .rf-item--interactive:hover {
   background: var(--rf-color-surface-elevated);
 }
+
+/* ── Icon ────────────────────────────────────────────────── */
 
 .rf-item__icon {
   display: inline-flex;
@@ -29,6 +37,33 @@
   color: var(--rf-color-text-secondary);
   flex-shrink: 0;
 }
+
+.rf-item__icon--neutral {
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-secondary);
+}
+.rf-item__icon--info {
+  background: var(--rf-color-info-soft);
+  color: var(--rf-color-info-text);
+}
+.rf-item__icon--success {
+  background: var(--rf-color-success-soft);
+  color: var(--rf-color-success-text);
+}
+.rf-item__icon--warning {
+  background: var(--rf-color-warning-soft);
+  color: var(--rf-color-warning-text);
+}
+.rf-item__icon--danger {
+  background: var(--rf-color-danger-soft);
+  color: var(--rf-color-danger-text);
+}
+.rf-item__icon--brand {
+  background: var(--rf-color-brand-soft);
+  color: var(--rf-color-brand-text);
+}
+
+/* ── Body / Action ───────────────────────────────────────── */
 
 .rf-item__body { flex: 1; min-width: 0; }
 
@@ -47,4 +82,35 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+/* ── Dismiss ─────────────────────────────────────────────── */
+
+.rf-item__dismiss {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-surface-elevated);
+  color: var(--rf-color-text-tertiary);
+  cursor: pointer;
+  transition: background var(--rf-transition-fast), color var(--rf-transition-fast);
+}
+
+.rf-item__dismiss:hover {
+  background: var(--rf-color-border);
+  color: var(--rf-color-text);
+}
+
+.rf-item__dismiss:focus-visible {
+  outline: 2px solid var(--rf-color-border-focus);
+  outline-offset: 2px;
 }

@@ -5,11 +5,14 @@
   flex-shrink: 0;
   background: var(--rf-color-surface-elevated);
   color: var(--rf-color-text-secondary);
+  /* Reserve the border slot so the box doesn't shift when `outlined` is added. */
+  border: 1px solid transparent;
 }
 
 .rf-icon-tile--sm { width: 24px; height: 24px; }
 .rf-icon-tile--md { width: 32px; height: 32px; }
 .rf-icon-tile--lg { width: 40px; height: 40px; }
+.rf-icon-tile--xl { width: 48px; height: 48px; }
 
 .rf-icon-tile--square { border-radius: var(--rf-radius-sm); }
 .rf-icon-tile--circle { border-radius: var(--rf-radius-full); }
@@ -22,3 +25,16 @@
 .rf-icon-tile--teal    { background: var(--rf-color-accent-teal-soft); color: var(--rf-color-accent-teal-text); }
 .rf-icon-tile--purple  { background: var(--rf-color-accent-purple-soft); color: var(--rf-color-accent-purple-text); }
 .rf-icon-tile--orange  { background: var(--rf-color-accent-orange-soft); color: var(--rf-color-accent-orange-text); }
+
+/* Outlined — Button-weight border. Combines cleanly with any tone; on the neutral
+   tone it matches the reference "muted surface, thin outline" look. Each tone
+   uses its matching `-border` token so a colored tile keeps a same-hue rim. */
+
+.rf-icon-tile--outlined                    { border-color: var(--rf-color-border); }
+.rf-icon-tile--outlined.rf-icon-tile--success { border-color: var(--rf-color-success-border); }
+.rf-icon-tile--outlined.rf-icon-tile--danger  { border-color: var(--rf-color-danger-border); }
+.rf-icon-tile--outlined.rf-icon-tile--warning { border-color: var(--rf-color-warning-border); }
+.rf-icon-tile--outlined.rf-icon-tile--info    { border-color: var(--rf-color-info-border); }
+.rf-icon-tile--outlined.rf-icon-tile--teal    { border-color: var(--rf-color-accent-teal-border); }
+.rf-icon-tile--outlined.rf-icon-tile--purple  { border-color: var(--rf-color-accent-purple-border); }
+.rf-icon-tile--outlined.rf-icon-tile--orange  { border-color: var(--rf-color-accent-orange-border); }

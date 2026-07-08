@@ -32,7 +32,9 @@ import {
   IconTile, StatCard, SettingsRow, DataGrid, StackedBar, SaveBar,
   BrandProvider, ThemeToggle, PayPeriodSelect, type PayPeriodOption,
   UserMenu, type UserMenuItem, CompanySelect, type CompanyOption,
+  PayrollCard, DetailCard, PaystubBreakdown, ClockWidget,
 } from './components';
+import { DownloadSimple } from '@phosphor-icons/react';
 import { Question, GearSix, SunDim, MoonStars, SignOut as SignOutIcon } from '@phosphor-icons/react';
 import './tokens/index.css';
 
@@ -470,6 +472,229 @@ function Demo() {
         </div>
       </Section>
 
+      <Section title="IconTile">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Decorative icon container. Not interactive. Use next to labels in section
+          headers, feature callouts, and empty states. Pass <code>outlined</code> for
+          a Button-weight rim.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Sizes (neutral tone, outlined)</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12 }}>
+              <IconTile outlined size="sm"><CreditCard size={14} /></IconTile>
+              <IconTile outlined size="md"><CreditCard size={16} /></IconTile>
+              <IconTile outlined size="lg"><CreditCard size={20} /></IconTile>
+              <IconTile outlined size="xl"><CreditCard size={24} /></IconTile>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Filled (no outline)</span>
+            <div style={{ display: 'inline-flex', gap: 12 }}>
+              <IconTile size="lg" variant="neutral"><CreditCard size={20} /></IconTile>
+              <IconTile size="lg" variant="info"><FileText size={20} /></IconTile>
+              <IconTile size="lg" variant="success"><CheckCircle size={20} /></IconTile>
+              <IconTile size="lg" variant="warning"><Warning size={20} /></IconTile>
+              <IconTile size="lg" variant="danger"><XCircle size={20} /></IconTile>
+              <IconTile size="lg" variant="teal"><Bank size={20} /></IconTile>
+              <IconTile size="lg" variant="purple"><Star size={20} /></IconTile>
+              <IconTile size="lg" variant="orange"><Bell size={20} /></IconTile>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Outlined (border matches tone)</span>
+            <div style={{ display: 'inline-flex', gap: 12 }}>
+              <IconTile outlined size="lg" variant="neutral"><CreditCard size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="info"><FileText size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="success"><CheckCircle size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="warning"><Warning size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="danger"><XCircle size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="teal"><Bank size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="purple"><Star size={20} /></IconTile>
+              <IconTile outlined size="lg" variant="orange"><Bell size={20} /></IconTile>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Circle shape</span>
+            <div style={{ display: 'inline-flex', gap: 12 }}>
+              <IconTile shape="circle" size="lg" variant="success"><CheckCircle size={20} /></IconTile>
+              <IconTile shape="circle" outlined size="lg"><CreditCard size={20} /></IconTile>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section title="ClockWidget">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Employee time-tracking card. Owns its wall-clock tick + elapsed timers internally.
+          Three states — <code>idle</code> (big clock + Clock In button), <code>working</code>{' '}
+          (dual stat panel + Clock Out / Start Break), <code>break</code> (End Break). Fully
+          uncontrolled by default; pass <code>status</code> + callbacks to persist server-side.
+        </p>
+        <ClockWidget />
+      </Section>
+
+      <Section title="PaystubBreakdown">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Domain composition on top of <code>Accordion</code> for a paystub view. Each section
+          has a header value (auto-formatted currency; negatives render in danger color), an
+          optional list of line items, and a bottom action slot for a download button.
+        </p>
+        <div style={{ maxWidth: 420 }}>
+          <Card variant="outlined" padding="md">
+            <PaystubBreakdown
+              defaultOpen={['earnings', 'taxes']}
+              sections={[
+                {
+                  id: 'earnings',
+                  label: 'Earnings',
+                  value: 4615.38,
+                  lines: [{ label: 'Regular (80.00 hrs)', value: 4615.38 }],
+                },
+                {
+                  id: 'taxes',
+                  label: 'Taxes',
+                  value: -1067.52,
+                  lines: [
+                    { label: 'Federal Income Tax', value: -587.14 },
+                    { label: 'Social Security', value: -298.91 },
+                    { label: 'Medicare', value: -74.73 },
+                    { label: 'State Income Tax', value: -106.75 },
+                  ],
+                },
+                {
+                  id: 'deductions',
+                  label: 'Deductions',
+                  value: -300.00,
+                  lines: [
+                    { label: '401(k) contribution', value: -250.00 },
+                    { label: 'Vision insurance', value: -50.00 },
+                  ],
+                },
+                {
+                  id: 'deposit',
+                  label: 'Deposit Details',
+                  value: 'Direct Deposit',
+                  lines: [
+                    { label: 'First Platypus Bank ···0000', value: 2598.29 },
+                    { label: 'Chase Bank ···4521', value: 649.57 },
+                  ],
+                },
+              ]}
+              action={
+                <Button fullWidth icon={<DownloadSimple size={16} weight="bold" />} onClick={() => toast('Downloading paystub…')}>
+                  Download Paystub
+                </Button>
+              }
+            />
+          </Card>
+        </div>
+      </Section>
+
+      <Section title="DetailCard">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 720 }}>
+          Two-column key/value card for account & settings review pages. Header row
+          (title + optional badge + optional action) sits above a grid of label/value
+          rows, with an optional footer line. Pair two cards side-by-side for
+          "Federal & State" or "Personal & Direct deposit" review layouts.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+          <DetailCard
+            title="Federal"
+            badge="W-4"
+            action={<Button variant="secondary" size="sm" onClick={() => toast('Edit federal')}>Edit</Button>}
+            items={[
+              { label: 'Filing status', value: 'Single' },
+              { label: 'Residency', value: 'US citizen/resident' },
+              { label: 'Tax exempt', value: 'No' },
+              { label: 'Multiple jobs (2c)', value: 'No' },
+              { label: 'Dependents under 17', value: '0 ($0)' },
+              { label: 'Other dependents', value: '0 ($0)' },
+              { label: 'Total dependent amount', value: '$0' },
+              { label: 'Other income (4a)', value: '$0' },
+              { label: 'Deductions (4b)', value: '$0' },
+              { label: 'Extra withholding (4c)', value: '$0' },
+            ]}
+            footer="Last updated: May 15, 2026"
+          />
+          <DetailCard
+            title="Washington"
+            badge="State"
+            action={<Button variant="secondary" size="sm" onClick={() => toast('Edit state')}>Edit</Button>}
+            items={[
+              { label: 'State', value: 'Washington' },
+              { label: 'Filing status', value: 'Not set' },
+              { label: 'Exempt', value: 'No' },
+              { label: 'Additional withholding', value: '$0.00' },
+              { label: 'Annual withholding allowance', value: '$0.00' },
+            ]}
+            footer="Last updated: May 15, 2026"
+          />
+        </div>
+
+        <p style={{ marginTop: 20, marginBottom: 12, color: 'var(--rf-color-text-secondary)', maxWidth: 640 }}>
+          <strong>List layout</strong> — set <code>layout="list"</code> for editable-settings
+          panels. Rows stack vertically with hairline dividers and a per-row <code>action</code>
+          slot (typically a small <code>Edit</code> button).
+        </p>
+        <div style={{ maxWidth: 720 }}>
+          <DetailCard
+            title="Account & Security"
+            layout="list"
+            items={[
+              {
+                label: 'Login email',
+                value: 'adlerfr@mailsac.com',
+                action: <Button variant="ghost" size="sm" onClick={() => toast('Edit login email')}>Edit</Button>,
+              },
+              {
+                label: 'Phone number',
+                value: '(746) 577-8677',
+                action: <Button variant="ghost" size="sm" onClick={() => toast('Edit phone')}>Edit</Button>,
+              },
+              {
+                label: 'Password',
+                value: '••••••••',
+                masked: true,
+                action: <Button variant="ghost" size="sm" onClick={() => toast('Edit password')}>Edit</Button>,
+              },
+            ]}
+          />
+        </div>
+      </Section>
+
+      <Section title="PayrollCard">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Domain-specific summary card for a pay period. Header row (title + trailing accessory),
+          2- or 3-column stat grid, optional full-width action button. Two common shapes shown
+          below: an <strong>upcoming</strong> payroll (trailing <code>Badge</code>) and a
+          <strong> past</strong> payroll (trailing large amount).
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
+          <PayrollCard
+            title="Upcoming payroll"
+            trailing={<Badge variant="warning">Upcoming</Badge>}
+            stats={[
+              { label: 'Payday', value: 'Fri, May 29', emphasized: true },
+              { label: 'Pay period', value: 'May 16 – May 29' },
+            ]}
+            action={{ label: 'View status', onClick: () => toast('View status') }}
+          />
+          <PayrollCard
+            title="Last payroll"
+            trailing={<span className="rf-payroll-card__amount">$3,247.86</span>}
+            stats={[
+              { label: 'Payday', value: 'Thu, May 15', emphasized: true },
+              { label: 'Pay period', value: 'May 1 – May 15' },
+            ]}
+            action={{ label: 'View details', onClick: () => toast('View details') }}
+          />
+        </div>
+      </Section>
+
       <Section title="PayPeriodSelect">
         <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
           Domain-specific dropdown for picking a pay period. Trigger shows the selected pay date +
@@ -477,6 +702,48 @@ function Demo() {
           <code>payDate</code> — default <code>paydate-desc</code> (newest first).
         </p>
         <PayPeriodSelectDemo />
+      </Section>
+
+      <Section title="StackedBar">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 640 }}>
+          Two variants: <strong>compact</strong> (10px pill bar, legend below — the default) and
+          <strong> inline-label</strong> (28px bar with the formatted value rendered inside each
+          segment; pair with <code>showPercent</code> for the "paycheck preview" pattern).
+        </p>
+
+        {/* Compact / default */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+          <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+            Default (compact)
+          </span>
+          <StackedBar
+            format={(n) => `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+            segments={[
+              { label: 'Direct deposits (ACH)', value: 8250 },
+              { label: 'Check payments', value: 3120 },
+              { label: 'Garnishments', value: 1270.5 },
+            ]}
+          />
+        </div>
+
+        {/* Paycheck preview pattern */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+            Paycheck preview (inline labels + percent)
+          </span>
+          <div style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)' }}>
+            <strong style={{ color: 'var(--rf-color-text)' }}>Paycheck preview</strong> — based on $3,247.86 net pay
+          </div>
+          <StackedBar
+            inlineLabels
+            showPercent
+            format={(n) => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            segments={[
+              { label: 'First Platypus Bank ···0000', value: 2598.29, color: 'var(--rf-color-success)' },
+              { label: 'Chase Bank ···4521', value: 649.57, color: 'var(--rf-color-info)' },
+            ]}
+          />
+        </div>
       </Section>
 
       <Section title="StatCard">
@@ -913,6 +1180,33 @@ function Demo() {
           <Item icon={<CreditCard size={18} />} title="Treasury funding account" description="Primary settlement account ending in 2481." action={<Badge variant="success">Verified</Badge>} />
           <Item icon={<CheckCircle size={18} />} title="Review queue" description="Three payroll drafts need final owner sign-off." action={<Badge variant="warning">3 pending</Badge>} onClick={() => toast('Opening queue')} />
         </Card>
+        <p style={{ marginTop: 20, marginBottom: 12, color: 'var(--rf-color-text-secondary)', maxWidth: 640 }}>
+          <strong>Task pattern</strong> — pair <code>iconTone</code> with <code>onDismiss</code>
+          for actionable to-do rows. Each row renders standalone (no shared card), so a list
+          of tasks composes as sibling <code>Item</code>s in a flex column.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Card variant="outlined" padding="none">
+            <Item
+              icon={<FileText size={18} />}
+              iconTone="info"
+              title="Complete Federal W-4"
+              description="Complete your federal tax holding forms"
+              action={<Button size="sm" onClick={() => toast('Signing…')}>Complete signing</Button>}
+              onDismiss={() => toast('Task dismissed')}
+            />
+          </Card>
+          <Card variant="outlined" padding="none">
+            <Item
+              icon={<FileText size={18} />}
+              iconTone="info"
+              title="Complete Form I-9"
+              description="Employment eligibility verification — required within 3 days of hire"
+              action={<Button size="sm" onClick={() => toast('Opening form…')}>Complete</Button>}
+              onDismiss={() => toast('Task dismissed')}
+            />
+          </Card>
+        </div>
       </Section>
 
       <Section title="NotificationItem">

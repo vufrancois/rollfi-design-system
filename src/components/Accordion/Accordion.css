@@ -33,6 +33,18 @@
   border-radius: var(--rf-radius-xs);
 }
 
+.rf-accordion__trigger-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.rf-accordion__trigger-trailing {
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
 .rf-accordion__chevron {
   color: var(--rf-color-text-tertiary);
   transition: transform var(--rf-transition-fast);

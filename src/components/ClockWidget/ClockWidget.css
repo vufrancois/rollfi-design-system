@@ -1,0 +1,112 @@
+.rf-clock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rf-space-5);
+  padding: var(--rf-space-7);
+  background: var(--rf-color-surface);
+  border: 1px solid var(--rf-color-border);
+  border-radius: var(--rf-radius-md);
+  max-width: 400px;
+  width: 100%;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+
+.rf-clock__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-4);
+}
+
+.rf-clock__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+  font: var(--rf-text-body-md-strong);
+  color: var(--rf-color-text);
+}
+
+.rf-clock__title svg { color: var(--rf-color-text-secondary); }
+
+.rf-clock__date {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Idle: big clock display ─────────────────────────────── */
+
+.rf-clock__now-label {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-text-tertiary);
+  margin-top: var(--rf-space-2);
+}
+
+.rf-clock__now {
+  font: var(--rf-text-display-md);
+  color: var(--rf-color-text);
+  letter-spacing: var(--rf-tracking-tight);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--rf-space-3);
+}
+
+/* ── Working / Break: two-stat panel ─────────────────────── */
+
+.rf-clock__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--rf-space-7);
+  padding: var(--rf-space-4) var(--rf-space-5);
+  background: var(--rf-color-surface-elevated);
+  border-radius: var(--rf-radius-sm);
+}
+
+.rf-clock__stat { display: flex; flex-direction: column; gap: var(--rf-space-1); }
+
+.rf-clock__stat-label {
+  font: var(--rf-text-caption-sm);
+  color: var(--rf-color-text-tertiary);
+}
+
+.rf-clock__stat-value {
+  font: var(--rf-text-heading-lg);
+  color: var(--rf-color-text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--rf-tracking-tight);
+}
+
+/* ── "Clocked in since" line + status pulse ──────────────── */
+
+.rf-clock__since {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+  font: var(--rf-text-body-sm);
+  color: var(--rf-color-text);
+}
+
+.rf-clock__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-color-text-tertiary);
+  box-shadow: 0 0 0 0 currentColor;
+  animation: rf-clock-pulse 1.6s ease-out infinite;
+}
+
+.rf-clock__pulse--success { background: var(--rf-color-success); color: var(--rf-color-success); }
+.rf-clock__pulse--warning { background: var(--rf-color-warning); color: var(--rf-color-warning); }
+
+@keyframes rf-clock-pulse {
+  0%   { box-shadow: 0 0 0 0 currentColor; }
+  70%  { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+/* ── Action row ──────────────────────────────────────────── */
+
+.rf-clock__actions {
+  display: flex;
+  gap: var(--rf-space-3);
+}

@@ -955,8 +955,15 @@ Standalone form label. Auto-appends a red asterisk when `required`.
     <AccordionContent>Tax, employee status, bank connectivity.</AccordionContent>
   </AccordionItem>
 </Accordion>
+
+{/* AccordionTrigger with a trailing slot (badge, amount, status) */}
+<AccordionTrigger trailing={<Badge variant="warning">Action required</Badge>}>
+  Tax withholding
+</AccordionTrigger>
 ```
 **Types:** `single` (only one open) | `multiple`. Animates with CSS grid `grid-template-rows` for height transitions without measuring.
+
+**`AccordionTrigger.trailing?: ReactNode`** — optional right-side slot rendered just before the chevron. Use for a small `Badge`, a status pill, an amount, or any inline label that summarizes the section's state without expanding. Underpins `PaystubBreakdown` (see below).
 
 ### Collapsible
 ```tsx
@@ -1209,8 +1216,26 @@ Social-style log with leading avatar per row.
 ### Item
 ```tsx
 <Item icon={<FileText />} title="Payroll packet" description="…" action={<Badge>Ready</Badge>} />
+
+{/* Task card pattern: colored icon tone + dismissible X */}
+<Card variant="outlined" padding="none">
+  <Item
+    icon={<FileText size={18} />}
+    iconTone="info"
+    title="Complete Federal W-4"
+    description="Complete your federal tax holding forms"
+    action={<Button size="sm">Complete signing</Button>}
+    onDismiss={handleDismiss}
+  />
+</Card>
 ```
 Reusable list row. Combine inside a `Card variant="outlined" padding="none"` to get a clean inbox / settings-list layout.
+
+**Props:** `icon?`, `title`, `description?`, `action?`, `onClick?`, `iconTone?`, `onDismiss?`, `className?`.
+
+**`iconTone?: 'neutral' | 'info' | 'success' | 'warning' | 'danger' | 'brand'`** — colors the icon container's background + foreground using the matching `-soft` / `-text` tokens. Default `neutral`.
+
+**`onDismiss?: () => void`** — when set, renders a small circular `X` in the top-right (`stopPropagation` on click so it doesn't fire the row's `onClick`). The row auto-reserves 44px on the right so the action button never sits under the X. Ideal for the task-card pattern shown above.
 
 ### NotificationItem
 ```tsx
@@ -1338,13 +1363,15 @@ Horizontal flow of label-above-value pairs. Used inside cards (bank account deta
 ### IconTile
 ```tsx
 <IconTile variant="danger"><Clock size={16} /></IconTile>
-<IconTile variant="success" size="lg" shape="circle"><Check /></IconTile>
+<IconTile outlined size="xl"><CreditCard size={24} /></IconTile>
+<IconTile variant="success" shape="circle" size="lg"><Check /></IconTile>
 ```
-Colored container for an icon — used in task lists, settings rows, notification icons, file rows, and anywhere a tinted icon "chip" is needed.
+Decorative container for an icon — used in task lists, settings rows, notification icons, file rows, empty states, and anywhere a tinted icon "chip" is needed. Never interactive (marked `aria-hidden`).
 
 **Variants:** `neutral` (default) | `success` | `danger` | `warning` | `info` | `teal` | `purple` | `orange`
-**Sizes:** `sm` (24px) | `md` (32px, default) | `lg` (40px)
+**Sizes:** `sm` (24px) | `md` (32px, default) | `lg` (40px) | `xl` (48px)
 **Shapes:** `square` (default, `radius-sm`) | `circle`
+**`outlined?: boolean`** — adds a Button-weight border. On the neutral tone this gives the muted-surface + thin-outline look for feature callouts and section-header decorations; on colored tones each tone's `-border` token drives the rim so the outline matches the fill hue. Because the base always reserves a `1px solid transparent` slot, toggling `outlined` on/off never shifts adjacent content.
 
 ### StackedBar
 ```tsx
@@ -1359,7 +1386,23 @@ Colored container for an icon — used in task lists, settings rows, notificatio
 ```
 Horizontal stacked bar chart with an optional legend (color swatch + label + formatted value). Each segment's width is proportional to its value relative to the total. Auto-rotates through semantic accent tokens when `color` is omitted, or supply per-segment colors.
 
-**Props:** `segments` (`{ label, value, color? }[]`), `total?` (override the auto-summed total), `format?` (number → string for the legend), `height?` (default 10px), `showLegend?` (default true), `className?`.
+**Props:** `segments` (`{ label, value, color? }[]`), `total?` (override the auto-summed total), `format?` (number → string for the legend and inline labels), `height?` (default 10px, or 28px when `inlineLabels`), `showLegend?` (default true), `inlineLabels?`, `showPercent?`, `className?`.
+
+**`inlineLabels?: boolean`** — renders `format(value)` inside each segment. Auto-hides in segments narrower than ~40px so tiny slivers stay clean. When on, the bar corners switch from pill to `radius-sm` so inline text has proper edge breathing room.
+
+**`showPercent?: boolean`** — appends `(NN%)` to each legend value in a lighter weight/color. Ideal for the "paycheck preview" pattern:
+
+```tsx
+<StackedBar
+  inlineLabels
+  showPercent
+  format={n => `$${n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+  segments={[
+    { label: 'First Platypus Bank ···0000', value: 2598.29, color: 'var(--rf-color-success)' },
+    { label: 'Chase Bank ···4521',          value: 649.57,  color: 'var(--rf-color-info)' },
+  ]}
+/>
+```
 
 > When to use: a few categorical values that sum to a meaningful whole (cash breakdown, revenue-by-product, plan distribution, employee count by department, scenario comparison). For continuous progress toward a single target, use `Progress`; for a multi-step indicator, use `Stepper` or `SegmentedProgress`.
 
@@ -1377,6 +1420,140 @@ Footer-style strip with a status message + Reset / Save buttons. Highlights warn
 **Props:** `dirty`, `onSave`, `onReset?`, `cleanLabel?` (default "All changes saved."), `dirtyLabel?` (default "You have unsaved changes."), `saveLabel?` (default "Save changes"), `resetLabel?` (default "Reset to defaults"), `saving?`, `className?`.
 
 Pair with batched-save forms (pricing controls, settings panes, profile editors) so users get an unmistakable affordance that there's pending work and a one-click escape hatch.
+
+### PayrollCard
+
+Summary card for a pay period. Header row (title + trailing accessory), 2- or 3-column stat grid, optional full-width action button.
+
+```tsx
+<PayrollCard
+  title="Upcoming payroll"
+  trailing={<Badge variant="warning">Upcoming</Badge>}
+  stats={[
+    { label: 'Payday',     value: 'Fri, May 29', emphasized: true },
+    { label: 'Pay period', value: 'May 16 – May 29' },
+  ]}
+  action={{ label: 'View status', onClick: openStatus }}
+/>
+
+{/* Past-paycheck variant — big amount replaces the badge */}
+<PayrollCard
+  title="Last payroll"
+  trailing={<span className="rf-payroll-card__amount">$3,247.86</span>}
+  stats={[
+    { label: 'Payday',     value: 'Thu, May 15', emphasized: true },
+    { label: 'Pay period', value: 'May 1 – May 15' },
+  ]}
+  action={{ label: 'View details', onClick: openDetails }}
+/>
+```
+
+**Props:** `title`, `trailing?`, `stats: PayrollCardStat[]` (each `label`, `value`, `emphasized?`), `action?: { label, onClick?, variant? }`, `className?`. The `.rf-payroll-card__amount` helper class renders text at `--rf-text-heading-xl` with tabular numerals + tight tracking so multiple totals align.
+
+**Section composition** — for a "Payroll details" strip:
+```tsx
+<h2>Payroll details</h2>
+<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
+  <PayrollCard title="Upcoming payroll" ... />
+  <PayrollCard title="Last payroll" ... />
+</div>
+```
+
+### DetailCard
+
+Two-column key/value card for review pages, with a list variant for editable settings.
+
+```tsx
+{/* Grid layout — read-only review (Federal / State tax details) */}
+<DetailCard
+  title="Federal"
+  badge="W-4"
+  action={<Button size="sm" variant="secondary">Edit</Button>}
+  items={[
+    { label: 'Filing status', value: 'Single' },
+    { label: 'SSN', value: '123-45-6789', masked: true },
+    { label: 'Dependents under 17', value: '0 ($0)' },
+  ]}
+  footer="Last updated: May 15, 2026"
+/>
+
+{/* List layout — editable settings with per-row Edit */}
+<DetailCard
+  title="Account & Security"
+  layout="list"
+  items={[
+    { label: 'Login email', value: 'x@rollfi.com', action: <Button variant="ghost" size="sm">Edit</Button> },
+    { label: 'Password',    value: '••••••••', masked: true, action: <Button variant="ghost" size="sm">Edit</Button> },
+  ]}
+/>
+```
+
+**Props:** `title`, `badge?` (small pill next to title), `action?` (header slot — usually Edit), `items: DetailCardItem[]`, `layout?: 'grid' | 'list'` (default `grid`), `columns?: 1 | 2 | 3` (grid layout, default 2), `footer?`, `className?`.
+
+**`DetailCardItem`:** `label`, `value`, `masked?`, `action?` (right-side per-row slot — rendered only in list layout; grid uses the card-level header action).
+
+**How to choose:**
+- **Grid** — many read-only facts arranged compactly (Federal + State tax review, personal profile snapshot).
+- **List** — a handful of editable rows with per-item affordances (Account & Security, Notifications, Integrations).
+
+### PaystubBreakdown
+
+Domain composition on top of `Accordion` for a paystub view.
+
+```tsx
+<PaystubBreakdown
+  defaultOpen={['earnings', 'taxes']}
+  sections={[
+    { id: 'earnings',   label: 'Earnings',        value:  4615.38, lines: [...] },
+    { id: 'taxes',      label: 'Taxes',           value: -1067.52, lines: [...] },
+    { id: 'deductions', label: 'Deductions',      value:  -300.00, lines: [...] },
+    { id: 'deposit',    label: 'Deposit Details', value:  'Direct Deposit', lines: [...] },
+  ]}
+  action={<Button fullWidth icon={<DownloadSimple />}>Download Paystub</Button>}
+/>
+```
+
+**Props:** `sections: PaystubSection[]`, `defaultOpen?: string[]` (multi-open), `action?` (bottom-anchored slot — usually a full-width `Button`), `format?: (n) => string` (default USD, 2 decimals with a leading `-` for negatives), `className?`.
+
+**`PaystubSection` / `PaystubLine`:**
+
+| Field   | Type              | Purpose                                                                     |
+|---------|-------------------|-----------------------------------------------------------------------------|
+| `id`    | `string`          | Stable identifier used by `defaultOpen`.                                    |
+| `label` | `string`          | Section / line label.                                                       |
+| `value` | `number \| string`| **Number** — auto-formatted; negatives render in `--rf-color-danger-text`. **String** — verbatim (e.g. `"Direct Deposit"`). |
+| `lines` | `PaystubLine[]?`  | Line items shown when the section is expanded. Omit for a non-expandable row. |
+
+Number vs string is the whole trick: it lets you mix currency sections with categorical ones (Deposit Details) in the same list without hedging the API.
+
+### ClockWidget
+
+Employee time-tracking card. Owns its wall-clock tick + elapsed timers internally.
+
+```tsx
+{/* Uncontrolled — self-contained */}
+<ClockWidget />
+
+{/* Controlled — persist to a backend */}
+<ClockWidget
+  status={sessionStatus}                       // 'idle' | 'working' | 'break'
+  onStatusChange={setSessionStatus}
+  clockInTime={sessionClockInTime}
+  onClockIn={(t) => api.punch('in', t)}
+  onClockOut={(t) => api.punch('out', t)}
+  onBreakStart={(t) => api.punch('break-start', t)}
+  onBreakEnd={(t) => api.punch('break-end', t)}
+/>
+```
+
+**Props:** `status?`, `onStatusChange?`, `clockInTime?`, `onClockIn?`, `onClockOut?`, `onBreakStart?`, `onBreakEnd?`, `title?` (default `Clock In/Out`), `className?`. Uncontrolled by default; supplying `status` opts into controlled mode so a caller can persist server-side.
+
+**States:**
+- **idle** — header + `Current time` label + big time display + full-width primary **Clock In** button
+- **working** — dual-stat panel (Current time + Working time HH:MM:SS) + green pulsing dot + `Clocked in since HH:MM` + **Clock Out** (danger) / **Start Break** (secondary)
+- **break** — same panel with `Break time` label + yellow pulsing dot + `On break` line + full-width **End Break** button
+
+Timers restart per phase; the widget always ticks internally so consumers don't need to feed it time.
 
 ## Patterns
 
