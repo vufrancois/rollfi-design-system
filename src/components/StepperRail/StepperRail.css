@@ -1,0 +1,215 @@
+.rf-stepper-rail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 100%;
+  background: var(--rf-color-sidebar);
+  border-right: 1px solid var(--rf-color-sidebar-border);
+  flex-shrink: 0;
+  color: var(--rf-color-sidebar-text);
+}
+
+.rf-stepper-rail__header {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--rf-color-sidebar-border);
+}
+
+/* ── Progress ─────────────────────────────────────────────── */
+
+.rf-stepper-rail__progress {
+  padding: 20px 28px 12px;
+}
+
+.rf-stepper-rail__progress-label {
+  font: var(--rf-text-caption-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--rf-tracking-wider);
+  color: var(--rf-color-sidebar-text-dim);
+  margin-bottom: 10px;
+}
+
+.rf-stepper-rail__progress-track {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--rf-radius-full);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+[data-sidebar-mode="light"] .rf-stepper-rail__progress-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.rf-stepper-rail__progress-fill {
+  height: 100%;
+  background: var(--rf-color-brand);
+  border-radius: var(--rf-radius-full);
+  transition: width var(--rf-transition-normal);
+}
+
+.rf-stepper-rail__progress-pct {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-sidebar-text-dim);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Steps ────────────────────────────────────────────────── */
+
+.rf-stepper-rail__nav {
+  padding: 20px 16px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rf-stepper-rail__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: var(--rf-radius-sm);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--rf-transition-fast);
+  width: 100%;
+}
+
+.rf-stepper-rail__step:hover:not(:disabled) {
+  background: var(--rf-color-sidebar-hover);
+}
+
+.rf-stepper-rail__step--active {
+  background: var(--rf-color-brand-soft);
+}
+
+.rf-stepper-rail__step--disabled {
+  opacity: 0.35;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ── Node (numbered circle) ──────────────────────────────── */
+
+.rf-stepper-rail__node {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--rf-radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--rf-text-caption-sm);
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: background var(--rf-transition-fast), color var(--rf-transition-fast);
+}
+
+.rf-stepper-rail__node--pending {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--rf-color-sidebar-text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rf-stepper-rail__node--active {
+  background: var(--rf-color-brand);
+  color: var(--rf-color-on-primary);
+  box-shadow: 0 0 0 3px var(--rf-color-brand-soft);
+}
+
+.rf-stepper-rail__node--done {
+  background: var(--rf-color-success);
+  color: var(--rf-color-on-primary);
+}
+
+.rf-stepper-rail__node--conditional {
+  background: color-mix(in srgb, var(--rf-color-warning) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rf-color-warning) 45%, transparent);
+  color: color-mix(in srgb, var(--rf-color-warning) 70%, white);
+}
+
+[data-sidebar-mode="light"] .rf-stepper-rail__node--pending {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--rf-color-sidebar-text-dim);
+}
+
+/* ── Info column (label + meta + tag) ─────────────────────── */
+
+.rf-stepper-rail__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rf-stepper-rail__name {
+  font: var(--rf-text-body-sm);
+  font-weight: 500;
+  color: var(--rf-color-sidebar-text);
+  line-height: 1.3;
+}
+
+.rf-stepper-rail__step--active .rf-stepper-rail__name {
+  color: var(--rf-color-sidebar-text-strong);
+}
+
+.rf-stepper-rail__step--pending .rf-stepper-rail__name {
+  color: var(--rf-color-sidebar-text-dim);
+}
+
+.rf-stepper-rail__meta {
+  font: var(--rf-text-caption);
+  color: var(--rf-color-sidebar-text-dim);
+}
+
+/* Tags */
+
+.rf-stepper-rail__tag {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--rf-radius-xs);
+  font: var(--rf-text-caption-sm);
+  font-weight: 600;
+  letter-spacing: var(--rf-tracking-wide);
+  margin-top: 3px;
+}
+
+.rf-stepper-rail__tag--required {
+  background: color-mix(in srgb, var(--rf-color-brand) 20%, transparent);
+  color: color-mix(in srgb, var(--rf-color-brand) 45%, white);
+}
+
+.rf-stepper-rail__tag--optional {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--rf-color-sidebar-text-dim);
+}
+
+[data-sidebar-mode="light"] .rf-stepper-rail__tag--optional {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.rf-stepper-rail__tag--conditional {
+  background: color-mix(in srgb, var(--rf-color-warning) 22%, transparent);
+  color: color-mix(in srgb, var(--rf-color-warning) 65%, white);
+}
+
+.rf-stepper-rail__tag--new {
+  background: color-mix(in srgb, var(--rf-color-info) 20%, transparent);
+  color: color-mix(in srgb, var(--rf-color-info) 55%, white);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+
+.rf-stepper-rail__footer {
+  padding: 20px 28px;
+  border-top: 1px solid var(--rf-color-sidebar-border);
+}

@@ -33,7 +33,9 @@ import {
   BrandProvider, ThemeToggle, PayPeriodSelect, type PayPeriodOption,
   UserMenu, type UserMenuItem, CompanySelect, type CompanyOption,
   PayrollCard, DetailCard, PaystubBreakdown, ClockWidget,
+  StepperRail, type StepperRailStep, FormSection, FieldRow,
 } from './components';
+import { Buildings, MapPin } from '@phosphor-icons/react';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { Question, GearSix, SunDim, MoonStars, SignOut as SignOutIcon } from '@phosphor-icons/react';
 import './tokens/index.css';
@@ -71,7 +73,7 @@ function Demo() {
   const [step, setStep] = useState(3);
   const [phone, setPhone] = useState('');
   const [countryCode, setCountryCode] = useState('+1');
-  const [view, setView] = useState<'library' | 'portal' | 'onboarding' | 'docs'>('library');
+  const [view, setView] = useState<'library' | 'portal' | 'onboarding' | 'employer-onboarding' | 'docs'>('library');
   const [tabValue, setTabValue] = useState('overview');
   const [toggleOn, setToggleOn] = useState(true);
   const [multi, setMulti] = useState<string[]>(['acme']);
@@ -88,6 +90,9 @@ function Demo() {
   if (view === 'docs') {
     return <Docs onExit={() => setView('library')} />;
   }
+  if (view === 'employer-onboarding') {
+    return <EmployerOnboardingMock onExit={() => setView('library')} />;
+  }
 
   return (
     <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 24px' }}>
@@ -101,6 +106,7 @@ function Demo() {
         <div style={{ display: 'flex', gap: 8 }}>
           <Button variant="secondary" onClick={() => setView('docs')}>View Docs</Button>
           <Button variant="secondary" onClick={() => setView('onboarding')}>View Onboarding Mock</Button>
+          <Button variant="secondary" onClick={() => setView('employer-onboarding')}>View Employer Onboarding</Button>
           <Button variant="secondary" onClick={() => setView('portal')}>View Portal Mock</Button>
           <Button variant="secondary" onClick={toggleTheme}>
             {theme === 'light' ? 'Dark' : 'Light'} mode
@@ -525,6 +531,28 @@ function Demo() {
             </div>
           </div>
         </div>
+      </Section>
+
+      <Section title="StepperRail">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 720 }}>
+          Vertical stepper for multi-step flows. Lives in a dark sidebar; renders a progress bar +
+          per-step tag pill (<code>required</code>, <code>optional</code>, <code>conditional</code>,
+          <code>new</code>) + click navigation. Status auto-derives from position vs{' '}
+          <code>activeId</code> (done ✓ / active / pending), or override per step. See the full
+          employer-onboarding view via the <strong>View Employer Onboarding</strong> button at the
+          top of this page.
+        </p>
+        <StepperRailDemo />
+      </Section>
+
+      <Section title="FormSection">
+        <p style={{ color: 'var(--rf-color-text-secondary)', marginBottom: 12, maxWidth: 720 }}>
+          Card container for a titled group of form fields. Head row (icon + title + description +
+          optional right-side action) sits above a body with{' '}
+          <code>--rf-space-5</code> gap between children. Pair with <code>FieldRow</code> for
+          1 / 2 / 3-column field grids that collapse to 1-col at 640px.
+        </p>
+        <FormSectionDemo />
       </Section>
 
       <Section title="ClockWidget">
@@ -1745,6 +1773,99 @@ const PAY_PERIOD_DEMO: PayPeriodOption[] = [
   { id: 'pp-6', payDate: '2026-03-22', payBeginDate: '2026-03-22', payEndDate: '2026-03-22', type: 'Dismissal', status: 'paid'   },
 ];
 
+const ONBOARDING_STEPS: StepperRailStep[] = [
+  { id: 'admin-profile',    label: 'Your profile',                meta: 'Your account',              tag: 'required' },
+  { id: 'company-info',     label: 'Company information',         meta: 'EIN, entity type & more',   tag: 'required' },
+  { id: 'company-location', label: 'Company location',            meta: 'Filing & mailing address',  tag: 'required' },
+  { id: 'beneficial-owner', label: 'Beneficial Owner or Officer', meta: 'Ownership & identity',      tag: 'required' },
+  { id: 'bank-account',     label: 'Bank account',                meta: 'Connect for payroll',       tag: 'required' },
+  { id: 'needed-forms',     label: 'Needed forms',                meta: 'POA & IRS authorization',   tag: 'optional' },
+  { id: 'complete',         label: 'All done!' },
+];
+
+function StepperRailDemo() {
+  const [activeA, setActiveA] = useState('company-info');
+  const [activeB, setActiveB] = useState('bank-account');
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, maxWidth: 720 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+          With progress + tags
+        </span>
+        <div style={{ height: 480, border: '1px solid var(--rf-color-border)', borderRadius: 'var(--rf-radius-md)', overflow: 'hidden' }}>
+          <StepperRail
+            steps={ONBOARDING_STEPS.map((s, i) => ({ ...s, status: i < ONBOARDING_STEPS.findIndex(x => x.id === activeA) ? 'done' as const : s.status }))}
+            activeId={activeA}
+            onSelect={setActiveA}
+            width="100%"
+            showProgress
+          />
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <span style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-text-tertiary)', textTransform: 'uppercase', letterSpacing: 0.4 }}>
+          No progress, later step active
+        </span>
+        <div style={{ height: 480, border: '1px solid var(--rf-color-border)', borderRadius: 'var(--rf-radius-md)', overflow: 'hidden' }}>
+          <StepperRail
+            steps={ONBOARDING_STEPS.map((s, i) => ({ ...s, status: i < ONBOARDING_STEPS.findIndex(x => x.id === activeB) ? 'done' as const : s.status }))}
+            activeId={activeB}
+            onSelect={setActiveB}
+            width="100%"
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FormSectionDemo() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 720 }}>
+      <FormSection
+        icon={<Buildings size={18} />}
+        title="Company information"
+        description="Legal name, EIN, and entity type"
+      >
+        <FieldRow>
+          <Input label="Legal company name" placeholder="Acme Corp" required />
+          <Input label="DBA (optional)" placeholder="Acme" />
+        </FieldRow>
+        <FieldRow>
+          <Input label="Employer Identification Number (EIN)" placeholder="12-3456789" hint="9 digits, hyphen after the first two" required />
+          <Select
+            label="Entity type"
+            options={[
+              { value: 'llc', label: 'LLC' },
+              { value: 'ccorp', label: 'C Corporation' },
+              { value: 'scorp', label: 'S Corporation' },
+              { value: 'sole', label: 'Sole proprietorship' },
+            ]}
+          />
+        </FieldRow>
+      </FormSection>
+
+      <FormSection
+        icon={<MapPin size={18} />}
+        title="Filing address"
+        description="Where the IRS should send tax correspondence"
+        action={<Button variant="ghost" size="sm">Copy from…</Button>}
+      >
+        <FieldRow columns={1}>
+          <Input label="Street address" placeholder="1600 Amphitheatre Pkwy" required />
+        </FieldRow>
+        <FieldRow columns={3}>
+          <Input label="City" placeholder="Mountain View" required />
+          <Select label="State" options={[
+            { value: 'ca', label: 'CA' }, { value: 'wa', label: 'WA' }, { value: 'ny', label: 'NY' }, { value: 'tx', label: 'TX' },
+          ]} />
+          <Input label="ZIP" placeholder="94043" required />
+        </FieldRow>
+      </FormSection>
+    </div>
+  );
+}
+
 function CompanySelectDemo() {
   const [single] = useState<CompanyOption[]>([{ id: 'a', name: 'Acme Corp' }]);
   const [singleValue] = useState<string | null>('a');
@@ -2188,6 +2309,356 @@ function Row({ children }: { children: React.ReactNode }) {
 //   everything below this banner should move out of the library build.
 //
 // ═══════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════
+//   Employer onboarding — full-page mock built entirely from DS primitives
+//   (StepperRail + FormSection + FieldRow + PageHeader.eyebrow + Callout).
+// ═══════════════════════════════════════════════════════════════════════════
+
+const EMPLOYER_ONBOARDING_STEPS: StepperRailStep[] = [
+  { id: 'admin-profile',    label: 'Your profile',                meta: 'Your account',              tag: 'required' },
+  { id: 'company-info',     label: 'Company information',         meta: 'EIN, entity type & more',   tag: 'required' },
+  { id: 'company-location', label: 'Company location',            meta: 'Filing & mailing address',  tag: 'required' },
+  { id: 'beneficial-owner', label: 'Beneficial Owner or Officer', meta: 'Ownership & identity',      tag: 'required' },
+  { id: 'bank-account',     label: 'Bank account',                meta: 'Connect for payroll',       tag: 'required' },
+  { id: 'needed-forms',     label: 'Needed forms',                meta: 'POA & IRS authorization',   tag: 'optional' },
+  { id: 'complete',         label: 'All done!' },
+];
+
+function EmployerOnboardingMock({ onExit }: { onExit: () => void }) {
+  const [activeId, setActiveId] = useState('admin-profile');
+  const activeIndex = EMPLOYER_ONBOARDING_STEPS.findIndex(s => s.id === activeId);
+  const totalNavigable = EMPLOYER_ONBOARDING_STEPS.length - 1;
+  const isLast = activeIndex === EMPLOYER_ONBOARDING_STEPS.length - 1;
+
+  // Mark steps before activeId as done so the rail's progress fills correctly.
+  const decoratedSteps = EMPLOYER_ONBOARDING_STEPS.map((s, i) => ({
+    ...s,
+    status: i < activeIndex ? ('done' as const) : s.status,
+  }));
+
+  const next = () => setActiveId(EMPLOYER_ONBOARDING_STEPS[Math.min(activeIndex + 1, EMPLOYER_ONBOARDING_STEPS.length - 1)].id);
+  const prev = () => setActiveId(EMPLOYER_ONBOARDING_STEPS[Math.max(activeIndex - 1, 0)].id);
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', height: '100vh', background: 'var(--rf-color-canvas)' }}>
+      <StepperRail
+        steps={decoratedSteps}
+        activeId={activeId}
+        onSelect={setActiveId}
+        showProgress
+        progressLabel="Onboarding progress"
+        header={
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%' }}>
+            <Logo size={22} color="var(--rf-color-sidebar-text-strong)" title="Rollfi" />
+            <button
+              type="button"
+              onClick={onExit}
+              style={{ background: 'transparent', border: 'none', color: 'var(--rf-color-sidebar-text-dim)', cursor: 'pointer', font: 'var(--rf-text-caption-sm)' }}
+              aria-label="Back to library"
+            >
+              ← Library
+            </button>
+          </div>
+        }
+        footer={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <IconTile size="md" outlined><Buildings size={16} /></IconTile>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ font: 'var(--rf-text-caption-sm)', color: 'var(--rf-color-sidebar-text-dim)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Onboarding for</div>
+              <div style={{ font: 'var(--rf-text-body-sm-strong)', color: 'var(--rf-color-sidebar-text)' }}>Acme Corp</div>
+            </div>
+          </div>
+        }
+      />
+
+      <main style={{ overflow: 'auto' }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '48px 56px 96px' }}>
+          {activeId === 'admin-profile' && <EmployerOnboardingAdminProfile step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'company-info' && <EmployerOnboardingCompanyInfo step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'company-location' && <EmployerOnboardingCompanyLocation step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'beneficial-owner' && <EmployerOnboardingBeneficialOwner step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'bank-account' && <EmployerOnboardingBankAccount step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'needed-forms' && <EmployerOnboardingNeededForms step={activeIndex + 1} total={totalNavigable} />}
+          {activeId === 'complete' && <EmployerOnboardingComplete onExit={onExit} />}
+
+          {!isLast && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 32 }}>
+              <Button variant="secondary" disabled={activeIndex === 0} onClick={prev}>Back</Button>
+              <Button onClick={next}>{activeIndex === EMPLOYER_ONBOARDING_STEPS.length - 2 ? 'Finish' : 'Save & continue'}</Button>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function EmployerOnboardingAdminProfile({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Your profile"
+        subtitle="Review and confirm your personal information. This will be associated with your payroll admin account."
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <FormSection icon={<UserCircle size={18} />} title="Personal information" description="Your name and contact details">
+          <FieldRow>
+            <Input label="Legal first name" hint="As it appears on government-issued ID" defaultValue="Gustav" required />
+            <Input label="Legal last name" hint="As it appears on government-issued ID" defaultValue="Gill" required />
+          </FieldRow>
+          <FieldRow columns={1}>
+            <Input label="Legal middle name (optional)" placeholder="Enter legal middle name" />
+          </FieldRow>
+          <FieldRow>
+            <Input label="Phone number" type="tel" placeholder="(555) 555-0000" defaultValue="(265) 222-7589" required />
+            <Input label="Email" defaultValue="gustav@acme.example.com" required />
+          </FieldRow>
+        </FormSection>
+
+        <FormSection icon={<Lock size={18} />} title="Your role" description="Choose the role that best describes you">
+          <RadioGroup value="payroll-admin" onChange={() => {}} name="employer_role">
+            <Radio value="payroll-admin">
+              <div>
+                <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Payroll admin</div>
+                <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Can edit employee pay details, company details, and run payroll</div>
+              </div>
+            </Radio>
+            <Radio value="bookkeeper">
+              <div>
+                <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Bookkeeper</div>
+                <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Can view employee and company details and run reports</div>
+              </div>
+            </Radio>
+            <Radio value="beneficial-owner">
+              <div>
+                <div style={{ font: 'var(--rf-text-body-sm-strong)' }}>Beneficial owner</div>
+                <div style={{ font: 'var(--rf-text-caption)', color: 'var(--rf-color-text-secondary)' }}>Owner or officer required for company verification</div>
+              </div>
+            </Radio>
+          </RadioGroup>
+        </FormSection>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingCompanyInfo({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Company information"
+        subtitle="Legal entity details — must match your IRS records exactly."
+      />
+      <Callout variant="info" icon={<Info size={16} />} title="EIN required">
+        Your Employer Identification Number is required for federal filings and to open a payroll bank connection.
+      </Callout>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 20 }}>
+        <FormSection icon={<Buildings size={18} />} title="Legal entity" description="Name, EIN, and entity type">
+          <FieldRow>
+            <Input label="Legal company name" placeholder="Acme Corporation" required />
+            <Input label="DBA (optional)" placeholder="Acme" />
+          </FieldRow>
+          <FieldRow>
+            <Input label="Employer Identification Number (EIN)" placeholder="12-3456789" hint="9 digits, hyphen after the first two" required />
+            <Select
+              label="Entity type"
+              options={[
+                { value: 'llc', label: 'LLC' },
+                { value: 'ccorp', label: 'C Corporation' },
+                { value: 'scorp', label: 'S Corporation' },
+                { value: 'sole', label: 'Sole proprietorship' },
+                { value: 'partnership', label: 'Partnership' },
+                { value: 'nonprofit', label: 'Nonprofit' },
+              ]}
+            />
+          </FieldRow>
+          <FieldRow>
+            <Input label="Business phone" type="tel" placeholder="(555) 555-0000" required />
+            <Input label="Business email" type="email" placeholder="hr@acme.example.com" required />
+          </FieldRow>
+        </FormSection>
+
+        <FormSection icon={<CalendarIcon size={18} />} title="Payroll schedule" description="How often you'll run payroll">
+          <FieldRow>
+            <Select
+              label="Pay frequency"
+              options={[
+                { value: 'weekly', label: 'Weekly' },
+                { value: 'biweekly', label: 'Every 2 weeks' },
+                { value: 'semimonthly', label: 'Twice a month' },
+                { value: 'monthly', label: 'Monthly' },
+              ]}
+            />
+            <Input label="First pay date" type="date" required />
+          </FieldRow>
+        </FormSection>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingCompanyLocation({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Company location"
+        subtitle="Where the IRS and state agencies will send correspondence."
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <FormSection icon={<MapPin size={18} />} title="Filing address" description="Must match the address on file with the IRS">
+          <FieldRow columns={1}>
+            <Input label="Street address" placeholder="1600 Amphitheatre Pkwy" required />
+          </FieldRow>
+          <FieldRow columns={1}>
+            <Input label="Address line 2 (optional)" placeholder="Suite / Unit / Building" />
+          </FieldRow>
+          <FieldRow columns={3}>
+            <Input label="City" placeholder="Mountain View" required />
+            <Select
+              label="State"
+              options={[
+                { value: 'ca', label: 'California' },
+                { value: 'wa', label: 'Washington' },
+                { value: 'ny', label: 'New York' },
+                { value: 'tx', label: 'Texas' },
+                { value: 'fl', label: 'Florida' },
+              ]}
+            />
+            <Input label="ZIP" placeholder="94043" required />
+          </FieldRow>
+        </FormSection>
+
+        <FormSection icon={<Envelope size={18} />} title="Mailing address" description="Only if different from filing address">
+          <Checkbox checked onChange={() => {}}>Use the same address for mailing</Checkbox>
+        </FormSection>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingBeneficialOwner({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Beneficial owner or officer"
+        subtitle="Federal law requires us to verify one owner or authorized officer for each business."
+      />
+      <Callout variant="warning" icon={<Warning size={16} />} title="Sensitive information">
+        SSN and date of birth are encrypted end-to-end and shared only with the IRS.
+      </Callout>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginTop: 20 }}>
+        <FormSection icon={<UserCircle size={18} />} title="Identity">
+          <FieldRow>
+            <Input label="Legal first name" defaultValue="Gustav" required />
+            <Input label="Legal last name" defaultValue="Gill" required />
+          </FieldRow>
+          <FieldRow>
+            <Input label="Date of birth" type="date" required />
+            <Input label="SSN" placeholder="•••-••-••••" required />
+          </FieldRow>
+          <FieldRow>
+            <Select label="Title" options={[
+              { value: 'ceo', label: 'CEO' },
+              { value: 'cfo', label: 'CFO' },
+              { value: 'coo', label: 'COO' },
+              { value: 'president', label: 'President' },
+              { value: 'other', label: 'Other officer' },
+            ]} />
+            <Input label="Ownership %" type="number" placeholder="100" hint="Percent of the company owned" required />
+          </FieldRow>
+        </FormSection>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingBankAccount({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Bank account"
+        subtitle="Connect a business checking account to fund payroll runs."
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <FormSection icon={<Bank size={18} />} title="Instant verification" description="Recommended — connects in seconds via Plaid">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ font: 'var(--rf-text-body-sm)', color: 'var(--rf-color-text-secondary)', margin: 0 }}>
+              We use Plaid to securely link your bank without ever storing your login credentials.
+            </p>
+            <Button variant="primary" icon={<Bank size={16} />}>Connect with Plaid</Button>
+          </div>
+        </FormSection>
+
+        <FormSection icon={<PencilSimple size={18} />} title="Manual entry" description="Requires micro-deposit verification (2–3 business days)">
+          <FieldRow>
+            <Input label="Routing number" placeholder="9 digits" required />
+            <Input label="Account number" placeholder="Account #" required />
+          </FieldRow>
+          <FieldRow columns={1}>
+            <Select label="Account type" options={[
+              { value: 'checking', label: 'Business checking' },
+              { value: 'savings', label: 'Business savings' },
+            ]} />
+          </FieldRow>
+        </FormSection>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingNeededForms({ step, total }: { step: number; total: number }) {
+  return (
+    <>
+      <PageHeader
+        eyebrow={`Step ${step} of ${total}`}
+        title="Needed forms"
+        subtitle="Sign these authorizations so we can file taxes and communicate with the IRS on your behalf."
+      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <Card variant="outlined" padding="none">
+          <Item
+            icon={<FileText size={18} />}
+            iconTone="info"
+            title="Form 8655 — Reporting Agent Authorization"
+            description="Authorizes Rollfi to sign and file your federal payroll tax returns"
+            action={<Button size="sm">Sign now</Button>}
+          />
+        </Card>
+        <Card variant="outlined" padding="none">
+          <Item
+            icon={<FileText size={18} />}
+            iconTone="info"
+            title="Power of Attorney (state)"
+            description="Authorizes Rollfi to represent your business with state tax agencies"
+            action={<Button size="sm">Sign now</Button>}
+          />
+        </Card>
+      </div>
+    </>
+  );
+}
+
+function EmployerOnboardingComplete({ onExit }: { onExit: () => void }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', paddingTop: 64 }}>
+      <IconTile size="xl" shape="circle" variant="success"><CheckCircle size={28} weight="fill" /></IconTile>
+      <h1 style={{ font: 'var(--rf-text-heading-xl)', color: 'var(--rf-color-text)', letterSpacing: 'var(--rf-tracking-tight)', margin: '20px 0 8px' }}>All done!</h1>
+      <p style={{ font: 'var(--rf-text-body-lg)', color: 'var(--rf-color-text-secondary)', margin: '0 0 32px', maxWidth: 460 }}>
+        Your company is set up and ready to run its first payroll. We'll email you when the bank connection finishes verifying.
+      </p>
+      <div style={{ display: 'flex', gap: 12 }}>
+        <Button variant="secondary" onClick={onExit}>Back to library</Button>
+        <Button>Go to dashboard</Button>
+      </div>
+    </div>
+  );
+}
 
 function OnboardingMock({ onExit }: { onExit: () => void }) {
   const [step, setStep] = useState(0);

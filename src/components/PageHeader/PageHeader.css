@@ -11,6 +11,15 @@
   min-width: 0;
 }
 
+.rf-page-header__eyebrow {
+  font: var(--rf-text-caption-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--rf-tracking-wider);
+  color: var(--rf-color-brand-text);
+  margin-bottom: 8px;
+}
+
 .rf-page-header__title {
   font: var(--rf-text-heading-xl);
   letter-spacing: var(--rf-tracking-tight);

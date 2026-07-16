@@ -2,6 +2,36 @@
 
 All notable changes to the Rollfi Design System land here. This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-07-09
+
+Adds a **multi-step onboarding flow** to the design system: two new components for the sidebar rail + form pane, a small extension to `PageHeader`, and a full-page **Employer Onboarding** mock accessible from the library header.
+
+### Added — New components
+
+- **`StepperRail`** — vertical stepper for multi-step flows. Lives in a dark sidebar (colors from `--rf-color-sidebar-*` so the light-sidebar tenant flip works for free). Progress bar + per-step tag pill (`required` / `optional` / `conditional` / `new`) + click navigation. Step status auto-derives from position vs `activeId` (done ✓ / active with brand pulse / pending), or override per step via `status`. Accepts `header` and `footer` slots for logo, back link, partner badge.
+- **`FormSection`** — card container for a titled group of form fields (icon + title + description + optional right-side action → body). The canonical pattern for onboarding, settings panes, and multi-section forms. `headTone` toggles the head-row background between `surface-elevated` (default) and `transparent`.
+- **`FieldRow`** — grid row for laying out form fields inside a `FormSection`. `columns: 1 | 2 | 3 | 'auto'` (auto derives from child count). Collapses to 1-col at 640px.
+
+### Added — Extended components
+
+- **`PageHeader.eyebrow?: string`** — small uppercase kicker rendered above the title in `--rf-color-brand-text` with wider tracking. For step numbering (`Step 2 of 6`), status tags (`Beta`, `New`), or category labels.
+
+### Added — Employer Onboarding mock
+
+- New top-level app view accessible via a `View Employer Onboarding` button in the library header. Full-page recreation of the employer onboarding flow — 7-step rail + form pane — built entirely from DS primitives. Steps: Your profile, Company information, Company location, Beneficial Owner or Officer, Bank account, Needed forms, All done!
+- Every step content is a real DS composition (`Input` / `Select` / `RadioGroup` + `Radio` / `Checkbox` / `FormSection` / `FieldRow` / `Callout` / `Card + Item` for the task-card pattern on Needed forms).
+- Form column is 960px max-width, centered, with 56px inner gutter.
+
+### Added — Library demo
+
+- Two isolated demo Sections: `StepperRail` (side-by-side rails showing with-progress vs no-progress + different active steps) and `FormSection` (standalone cards demonstrating the head-row action slot and the 3-column `FieldRow` variant).
+
+### Added — Storybook
+
+- `Navigation / StepperRail` — 5 stories: Default, WithProgress, AllTagVariants, WithHeaderAndFooter, CompactNoNav.
+- `Layout / FormSection` — 5 stories: CompanyInformation, WithAction, TransparentHead, Stacked, FieldRowColumns.
+- `Layout / PageHeader` — 4 stories: Default, WithAction, WithEyebrow, TitleOnly.
+
 ## [0.2.1] — 2026-05-14
 
 ### Changed
@@ -92,7 +122,8 @@ Total library bundle: `dist-lib/index.cjs` **267 KB → 300 KB** (~88 KB gzipped
 
 Initial versioned release. Baseline library with Tier-1 and Tier-2 primitives, ThemeProvider, semantic color / typography / spacing tokens, portal-mock and onboarding-mock demos, README + CONTRIBUTING + `design-system.md`, publishable library build target (`dist-lib/`), Storybook bootstrap. See `README.md` for the full inventory.
 
-[Unreleased]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/vufrancois/rollfi-design-system/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/vufrancois/rollfi-design-system/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/vufrancois/rollfi-design-system/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/vufrancois/rollfi-design-system/releases/tag/v0.1.0

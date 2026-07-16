@@ -534,9 +534,18 @@ The stacked variant pairs naturally with `Card variant="outlined" padding="md"` 
 
 ```tsx
 <PageHeader title="Personal Information" subtitle="Enter your legal name" />
+
+{/* Step kicker via the eyebrow prop */}
+<PageHeader
+  eyebrow="Step 2 of 6"
+  title="Company information"
+  subtitle="Legal entity details — must match your IRS records exactly."
+/>
 ```
 
-**Props:** `title`, `subtitle?`
+**Props:** `eyebrow?`, `title`, `subtitle?`, `action?`.
+
+**`eyebrow?: string`** — small uppercase kicker rendered above the title in `--rf-color-brand-text` with wider tracking. Use for step numbering (`Step 2 of 6`), status tags (`Beta`, `New`), or category labels.
 
 ### PhoneInput
 
@@ -1527,6 +1536,106 @@ Domain composition on top of `Accordion` for a paystub view.
 | `lines` | `PaystubLine[]?`  | Line items shown when the section is expanded. Omit for a non-expandable row. |
 
 Number vs string is the whole trick: it lets you mix currency sections with categorical ones (Deposit Details) in the same list without hedging the API.
+
+### StepperRail
+
+Vertical stepper for multi-step onboarding flows. Lives in a dark sidebar rail (all colors from `--rf-color-sidebar-*` tokens so the light-sidebar tenant flip works for free) with a progress bar, per-step tag pill, and click navigation.
+
+```tsx
+import { StepperRail, type StepperRailStep } from 'rollfi-design-system';
+
+const steps: StepperRailStep[] = [
+  { id: 'admin-profile',    label: 'Your profile',        meta: 'Your account',            tag: 'required' },
+  { id: 'company-info',     label: 'Company information', meta: 'EIN, entity type & more', tag: 'required' },
+  { id: 'needed-forms',     label: 'Needed forms',        meta: 'POA & IRS auth',          tag: 'optional' },
+  { id: 'complete',         label: 'All done!' },
+];
+
+<StepperRail
+  steps={steps}
+  activeId={activeId}
+  onSelect={setActiveId}
+  showProgress
+  progressLabel="Onboarding progress"
+  header={<Logo size={22} />}
+  footer={<PartnerBadge />}
+/>
+```
+
+**`StepperRailStep`:**
+
+| Field      | Type                                                          | Purpose                                                                 |
+|------------|---------------------------------------------------------------|-------------------------------------------------------------------------|
+| `id`       | `string`                                                      | Stable identifier for `activeId` / `onSelect`.                          |
+| `label`    | `string`                                                      | Step name (primary line).                                               |
+| `meta`     | `string?`                                                     | Dim helper line under the label (e.g. "EIN, entity type & more").       |
+| `tag`      | `'required' \| 'optional' \| 'conditional' \| 'new'`?         | Colored pill. `required` → brand, `optional` → neutral, `conditional` → warning, `new` → info. |
+| `status`   | `'pending' \| 'done' \| 'conditional'`?                       | Explicit override. If omitted, steps before `activeId` are `done`, at is active, after are `pending`. |
+| `disabled` | `boolean?`                                                    | Renders greyed-out and non-clickable — for steps skipped in this branch. |
+
+**Component props:**
+
+| Prop              | Type                        | Default                | Purpose                                                       |
+|-------------------|-----------------------------|------------------------|---------------------------------------------------------------|
+| `steps`           | `StepperRailStep[]`         | —                      | The step list.                                                |
+| `activeId`        | `string`                    | —                      | Currently active step id.                                     |
+| `onSelect`        | `(id: string) => void`?     | —                      | Fires on step click. Omit to render read-only.                |
+| `showProgress`    | `boolean`?                  | `false`                | Renders a top progress bar + label + `NN%`.                   |
+| `progressLabel`   | `string`?                   | `'Onboarding progress'`| Uppercase label above the progress bar.                       |
+| `progressPercent` | `number`?                   | derived                | Override the auto-computed percent (0–100).                   |
+| `header`          | `ReactNode`?                | —                      | Slot above the progress/steps (e.g. logo + Library link).     |
+| `footer`          | `ReactNode`?                | —                      | Slot below the steps (e.g. "Onboarding for Acme" badge).      |
+| `width`           | `number \| string`?         | `280`                  | Rail width.                                                   |
+| `className`       | `string`?                   | —                      | Class on the root.                                            |
+
+**Node visuals:** `pending` → hollow circle with number; `active` → brand-filled circle with pulse glow; `done` → success-filled circle with `Check`; `conditional` → warning-tinted circle with `Question`.
+
+### FormSection
+
+Card-shaped container for a titled group of form fields — the canonical pattern for onboarding, settings panes, and multi-section forms.
+
+```tsx
+import { FormSection, FieldRow } from 'rollfi-design-system';
+
+<FormSection
+  icon={<Buildings size={18} />}
+  title="Company information"
+  description="Legal name, EIN, and entity type"
+  action={<Button variant="ghost" size="sm">Copy from…</Button>}
+>
+  <FieldRow>
+    <Input label="Legal company name" required />
+    <Input label="DBA (optional)" />
+  </FieldRow>
+  <FieldRow columns={3}>
+    <Input label="City" required />
+    <Select label="State" options={STATES} />
+    <Input label="ZIP" required />
+  </FieldRow>
+</FormSection>
+```
+
+**`FormSection` props:**
+
+| Prop          | Type                                      | Default              | Purpose                                                                |
+|---------------|-------------------------------------------|----------------------|------------------------------------------------------------------------|
+| `title`       | `ReactNode`                               | —                    | Section title in the head row.                                         |
+| `description` | `ReactNode`?                              | —                    | Subtitle under the title.                                              |
+| `icon`        | `ReactNode`?                              | —                    | Small icon rendered in a rounded surface-elevated tile in the head.    |
+| `action`      | `ReactNode`?                              | —                    | Right-side head slot (edit button, "Copy from…" menu, etc.).           |
+| `headTone`    | `'surface-elevated' \| 'transparent'`?    | `'surface-elevated'` | Background of the head row. Transparent for a lighter, less-boxy look. |
+| `children`    | `ReactNode`                               | —                    | Body content — typically a stack of `FieldRow`s.                       |
+| `className`   | `string`?                                 | —                    | Class on the root.                                                     |
+
+**`FieldRow` props:**
+
+| Prop      | Type                              | Default  | Purpose                                                            |
+|-----------|-----------------------------------|----------|--------------------------------------------------------------------|
+| `columns` | `1 \| 2 \| 3 \| 'auto'`?          | `'auto'` | Grid column count. `auto` derives from child count (1 / 2 / 3+).   |
+| `children`| `ReactNode`                       | —        | Field cells (typically `<Input />`, `<Select />`, etc.).           |
+| `className`| `string`?                        | —        | Class on the row.                                                  |
+
+**Behavior:** grid collapses to a single column below 640px so forms stay usable on narrow viewports. Body has `--rf-space-5` gap between children, so consecutive `FieldRow`s naturally breathe without extra margin.
 
 ### ClockWidget
 
